@@ -56,11 +56,6 @@ export interface CableProps extends GenericProps<SVGPathElement> {
     
     // behaviors:
     precisionLevel ?: number
-    
-    
-    
-    // pointers:
-    pointerPositionRef : React.MutableRefObject<{ x: number, y: number }>
 }
 export const Cable = (props: CableProps): JSX.Element|null => {
     const {
@@ -74,11 +69,6 @@ export const Cable = (props: CableProps): JSX.Element|null => {
         
         // behaviors:
         precisionLevel = 5,
-        
-        
-        
-        // pointers:
-        pointerPositionRef,
     ...restGenericProps} = props;
     
     
@@ -102,11 +92,11 @@ export const Cable = (props: CableProps): JSX.Element|null => {
         const firstNodeState = simulatorState[0];
         const lastNodeState  = simulatorState[simulatorState.length - 1];
         
-        firstNodeState.fx    = pointerPositionRef.current.x;
-        firstNodeState.fy    = pointerPositionRef.current.y;
-        
-        lastNodeState.fx     = pointerPositionRef.current.x;
-        lastNodeState.fy     = pointerPositionRef.current.y;
+        // update head & tail:
+        firstNodeState.fx = headX;
+        firstNodeState.fy = headY;
+        lastNodeState.fx  = tailX;
+        lastNodeState.fy  = tailY;
         
         simulatorStateRef.current = simulatorState;
         
@@ -140,6 +130,12 @@ export const Cable = (props: CableProps): JSX.Element|null => {
         );
         simulatorEngineRef.current = simulatorEngine;
         
+        // measure distance between head & tail:
+        const distance = Math.sqrt(
+            Math.pow(lastNodeState.fx - firstNodeState.fx, 2) + Math.pow(lastNodeState.fy - firstNodeState.fy, 2)
+        );
+        (simulatorEngine.force('links') as any)?.distance?.(distance / precisionLevel);
+        
         
         
         // cleanups:
@@ -161,21 +157,22 @@ export const Cable = (props: CableProps): JSX.Element|null => {
         const simulatorEngine = simulatorEngineRef.current;
         if (!simulatorEngine) return;
         
-        // update head & tail:
-        simulatorState[0].fx = headX;
-        simulatorState[0].fy = headY;
-        simulatorState[simulatorState.length - 1].fx = tailX;
-        simulatorState[simulatorState.length - 1].fy = tailY;
-        
-        // measure distance between head & tail:
         const firstNodeState = simulatorState[0];
         const lastNodeState  = simulatorState[simulatorState.length - 1];
+        
+        // update head & tail:
+        firstNodeState.fx = headX;
+        firstNodeState.fy = headY;
+        lastNodeState.fx  = tailX;
+        lastNodeState.fy  = tailY;
+        
+        // measure distance between head & tail:
         const distance = Math.sqrt(
             Math.pow(lastNodeState.fx - firstNodeState.fx, 2) + Math.pow(lastNodeState.fy - firstNodeState.fy, 2)
         );
-        
-        // set the link distance:
         (simulatorEngine.force('links') as any)?.distance?.(distance / precisionLevel);
+        
+        // update simulator:
         simulatorEngine.alpha(1);
         simulatorEngine.restart();
     }, [headX, headY, tailX, tailY, precisionLevel]);

@@ -401,11 +401,6 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                         
                         // behaviors:
                         precisionLevel={precisionLevel}
-                        
-                        
-                        
-                        // pointers:
-                        pointerPositionRef={pointerPositionRef}
                     />
                 )}
             </svg>
