@@ -142,24 +142,9 @@ export const Cable = (props: CableProps): JSX.Element|null => {
         };
     }, [precisionLevel]);
     
-    useIsomorphicLayoutEffect(() => {
-        const simulatorState = simulatorStateRef.current;
-        if (!simulatorState) return;
-        
-        simulatorState[0].fx = headX;
-        simulatorState[0].fy = headY;
-    }, [headX, headY]);
-    
-    useIsomorphicLayoutEffect(() => {
-        const simulatorState = simulatorStateRef.current;
-        if (!simulatorState) return;
-        
-        simulatorState[simulatorState.length - 1].fx = tailX;
-        simulatorState[simulatorState.length - 1].fy = tailY;
-    }, [tailX, tailY]);
-    
     const isInitialChange = useRef<boolean>(true);
     useIsomorphicLayoutEffect(() => {
+        // ignore first update:
         if (isInitialChange.current) {
             isInitialChange.current = false;
             return;
@@ -170,14 +155,20 @@ export const Cable = (props: CableProps): JSX.Element|null => {
         const simulatorEngine = simulatorEngineRef.current;
         if (!simulatorEngine) return;
         
-        // measure distance
+        // update head & tail:
+        simulatorState[0].fx = headX;
+        simulatorState[0].fy = headY;
+        simulatorState[simulatorState.length - 1].fx = tailX;
+        simulatorState[simulatorState.length - 1].fy = tailY;
+        
+        // measure distance between head & tail:
         const firstNodeState = simulatorState[0];
         const lastNodeState  = simulatorState[simulatorState.length - 1];
         const distance = Math.sqrt(
             Math.pow(lastNodeState.fx - firstNodeState.fx, 2) + Math.pow(lastNodeState.fy - firstNodeState.fy, 2)
         );
         
-        // set the link distance
+        // set the link distance:
         (simulatorEngine.force('links') as any)?.distance?.(distance / precisionLevel);
         simulatorEngine.alpha(1);
         simulatorEngine.restart();
