@@ -147,6 +147,7 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
             const elmB = nodeRefs.get(sideB) ?? null;
             
             if (!elmA || !elmB) {
+                console.log({newInvalidCables});
                 newInvalidCables.push(val);
             }
             else {
