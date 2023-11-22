@@ -35,6 +35,15 @@ export default function Home() {
                             { id: 'out-4', label: '4', limit: Infinity  },
                         ],
                     },
+                    // mixed : {
+                    //     label : <>Mixed</>,
+                    //     nodes : [
+                    //         { id: 'mix-1', label: '1', limit: Infinity  },
+                    //         { id: 'mix-2', label: '2', limit: Infinity  },
+                    //         { id: 'mix-3', label: '3', limit: Infinity  },
+                    //         { id: 'mix-4', label: '4', limit: Infinity  },
+                    //     ],
+                    // },
                 }}
                 
                 

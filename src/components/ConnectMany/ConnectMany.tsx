@@ -128,6 +128,7 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
     
     // effects:
     const [validCables, setValidCables] = useState<(Connection & { elmA : Element, elmB: Element })[]>([]);
+    const [draftCable , setDraftCable ] = useState<(Connection & { elmA : Element, elmB: Element|null })|null>(null);
     useIsomorphicLayoutEffect(() => {
         // conditions:
         if (!value?.length) {
@@ -138,15 +139,15 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
         
         
         // setups:
-        const newValidCables : typeof validCables = [];
-        const invalidCables : Connection[] = [];
+        const newValidCables   : typeof validCables = [];
+        const newInvalidCables : Connection[] = [];
         for (const val of value) {
             const {sideA, sideB} = val;
             const elmA = nodeRefs.get(sideA) ?? null;
             const elmB = nodeRefs.get(sideB) ?? null;
             
             if (!elmA || !elmB) {
-                invalidCables.push(val);
+                newInvalidCables.push(val);
             }
             else {
                 newValidCables.push({
@@ -161,7 +162,7 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
         setValidCables(newValidCables);
         
         // remove invalid connections, if any:
-        if (invalidCables.length) {
+        if (newInvalidCables.length) {
             // TODO: trigger onValueChange
         } // if
         
@@ -176,14 +177,14 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
         
         const newCables : typeof cables = [];
         const {left: svgLeft, top: svgTop } = svgElm.getBoundingClientRect();
-        for (const {sideA, elmA, sideB, elmB} of validCables) {
+        for (const {sideA, elmA, sideB, elmB} of [...validCables, ...(draftCable ? [draftCable] : [])]) {
             const rectA = elmA.getBoundingClientRect();
-            const rectB = elmB.getBoundingClientRect();
+            const rectB = elmB?.getBoundingClientRect();
             
-            const headX = (rectA.left - svgLeft) + (rectA.width  / 2);
-            const headY = (rectA.top  - svgTop ) + (rectA.height / 2);
-            const tailX = (rectB.left - svgLeft) + (rectB.width  / 2);
-            const tailY = (rectB.top  - svgTop ) + (rectB.height / 2);
+            const headX =         (rectA.left - svgLeft) + (rectA.width  / 2);
+            const headY =         (rectA.top  - svgTop ) + (rectA.height / 2);
+            const tailX = rectB ? (rectB.left - svgLeft) + (rectB.width  / 2) : pointerPositionRef.current.x;
+            const tailY = rectB ? (rectB.top  - svgTop ) + (rectB.height / 2) : pointerPositionRef.current.y;
             newCables.push({
                 sideA,
                 headX,
@@ -218,7 +219,7 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
         return () => {
             resizeObserver.disconnect();
         };
-    }, [validCables]);
+    }, [validCables, draftCable]);
     
     
     
@@ -243,15 +244,80 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
     const handleMouseMove = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
         if (!pointerActiveRef.current) return;
         calculatePointerPosition(event);
+        
+        
+        
+        if (draftCable) {
+            const selectedNode = getNodeFromPoint(event.clientX, event.clientY);
+            if (selectedNode && (draftCable.sideA !== selectedNode.id) && (draftCable.elmA !== selectedNode.elm)) {
+                if ((draftCable.sideB !== selectedNode.id) || (draftCable.elmB !== selectedNode.elm)) {
+                    setDraftCable({
+                        ...draftCable,
+                        sideB : selectedNode.id,
+                        elmB  : selectedNode.elm,
+                    });
+                } // if
+            }
+            else {
+                if ((draftCable.sideB !== '') || (draftCable.elmB !== null)) {
+                    setDraftCable({
+                        ...draftCable,
+                        sideB : '',
+                        elmB  : null,
+                    });
+                } // if
+            } // if
+            
+            
+            
+            requestAnimationFrame(refreshCables);
+        };
     });
     
-    
+    const getNodeFromPoint = useEvent((clientX: number, clientY: number): { id: string, elm: Element }|null => {
+        const selectedNodeElms = document.elementsFromPoint(clientX, clientY);
+        if (!selectedNodeElms.length) return null;
+        const selectedNode = Array.from(nodeRefs.entries()).find(([key, elm]) => !!elm && selectedNodeElms.includes(elm));
+        if (!selectedNode) return null;
+        const [id, elm] = selectedNode;
+        if (!elm) return null;
+        return { id: `${id}`, elm };
+    });
     const handleMouseDown = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
         pointerActiveRef.current = true;
         calculatePointerPosition(event);
+        
+        
+        
+        const selectedNode = getNodeFromPoint(event.clientX, event.clientY);
+        if (!selectedNode) return;
+        setDraftCable({
+            sideA : selectedNode.id,
+            elmA  : selectedNode.elm,
+            
+            sideB : '',
+            elmB  : null,
+        });
     });
     const handleMouseUp   = useEvent<React.MouseEventHandler<HTMLElement>>(() => {
         pointerActiveRef.current = false;
+        
+        
+        
+        if (draftCable && draftCable.sideB && draftCable.elmB) {
+            const newValidCable : typeof validCables[number] = {
+                sideA : draftCable.sideA,
+                elmA  : draftCable.elmA,
+                
+                sideB : draftCable.sideB,
+                elmB  : draftCable.elmB,
+            };
+            setValidCables([
+                ...validCables,
+                newValidCable,
+            ]);
+        } // if
+        setDraftCable(null);
     });
     
     
