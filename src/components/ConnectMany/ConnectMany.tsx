@@ -105,11 +105,9 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
     
     
     // effects:
+    const [validCables, setValidCables] = useState<{ elmA : Element, elmB: Element }[]>([]);
     useIsomorphicLayoutEffect(() => {
         // conditions:
-        const svgElm = svgRef.current;
-        if (!svgElm) return;
-        
         if (!value?.length) {
             setCables([]);
             return;
@@ -118,29 +116,39 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
         
         
         // setups:
-        const validConnections   : { elmA : Element, elmB: Element }[] = [];
-        const invalidConnections : Connection[] = [];
+        const validCables   : { elmA : Element, elmB: Element }[] = [];
+        const invalidCables : Connection[] = [];
         for (const val of value) {
             const {sideA, sideB} = val;
             const elmA = nodeRefs.get(sideA) ?? null;
             const elmB = nodeRefs.get(sideB) ?? null;
             
             if (!elmA || !elmB) {
-                invalidConnections.push(val);
+                invalidCables.push(val);
             }
             else {
-                validConnections.push({elmA, elmB});
+                validCables.push({elmA, elmB});
             } // if
         } //
+        setValidCables(validCables);
         
         // remove invalid connections, if any:
-        if (invalidConnections.length) {
+        if (invalidCables.length) {
             // TODO:
         } // if
         
+    }, [value]);
+    
+    const refreshCables = useEvent((): void => {
+        // conditions:
+        const svgElm = svgRef.current;
+        if (!svgElm) return;
+        
+        
+        
         const cables : CableDef[] = [];
         const {left: svgLeft, top: svgTop } = svgElm.getBoundingClientRect();
-        for (const {elmA, elmB} of validConnections) {
+        for (const {elmA, elmB} of validCables) {
             const rectA = elmA.getBoundingClientRect();
             const rectB = elmB.getBoundingClientRect();
             
@@ -148,7 +156,6 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
             const headY = (rectA.top  - svgTop ) + (rectA.height / 2);
             const tailX = (rectB.left - svgLeft) + (rectB.width  / 2);
             const tailY = (rectB.top  - svgTop ) + (rectB.height / 2);
-            console.log({headX, headY});
             cables.push({
                 headX,
                 headY,
@@ -157,7 +164,30 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
             });
         } // for
         setCables(cables);
-    }, [value]);
+    });
+    useIsomorphicLayoutEffect(() => {
+        // conditions:
+        const svgElm = svgRef.current;
+        if (!svgElm) return;
+        
+        
+        
+        // setups:
+        refreshCables();
+        
+        const resizeObserver = new ResizeObserver(refreshCables);
+        resizeObserver.observe(svgElm, { box: 'content-box' });
+        for (const uniqueElm of new Set<Element>(validCables.map(({elmA, elmB}) => [elmA, elmB]).flat())) {
+            resizeObserver.observe(uniqueElm, { box: 'border-box' });
+        } // for
+        
+        
+        
+        // cleanups:
+        return () => {
+            resizeObserver.disconnect();
+        };
+    }, [validCables]);
     
     
     
