@@ -81,6 +81,7 @@ export default () => [
             pointerEvents: 'none',
             
             ...children('path', {
+                pointerEvents: 'auto',
                 fill: 'none',
                 stroke: '#ff0000',
                 strokeWidth: '0.3rem',
@@ -89,6 +90,9 @@ export default () => [
                 ...rule(':hover', {
                     opacity: 0.5,
                 }),
+                filter: [[
+                    'drop-shadow(0 0 2px rgba(0,0,0,0.8))'
+                ]],
             }),
         }),
     }, { specificityWeight: 2 }),
