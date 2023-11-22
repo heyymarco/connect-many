@@ -54,7 +54,7 @@ interface NodeState {
     vx    : number
     vy    : number
 }
-export const ConnectMany = (props: ConnectManyProps) => {
+export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
     // styles:
     const styleSheet = useConnectManyStyleSheet();
     
@@ -98,7 +98,7 @@ export const ConnectMany = (props: ConnectManyProps) => {
         .on('mousedown', (mouseEvent) => {
             const cable = svg.append('path').attr('stroke', '#ff0000');
             
-            const nodeStates     = d3.range(CABLE_SEGMENTS).map(() => ({} as NodeState));
+            const nodeStates     = (new Array(CABLE_SEGMENTS)).fill(null).map(() => ({} as NodeState));
             const firstNodeState = nodeStates[0];
             const lastNodeState  = nodeStates[nodeStates.length - 1];
             

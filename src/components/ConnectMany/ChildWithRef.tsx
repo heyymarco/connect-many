@@ -14,13 +14,13 @@ import {
     // react helper hooks:
     useEvent,
     useMergeRefs,
-}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
+}                           from '@reusable-ui/core'                // a set of reusable-ui packages which are responsible for building any component
 
 // reusable-ui components:
 import type {
-    // react components:
+    // base-components:
     GenericProps,
-}                           from '@reusable-ui/generic'         // a generic component
+}                           from '@reusable-ui/components'          // a set of official Reusable-UI components
 
 
 

@@ -15,7 +15,7 @@ import { useConnectManyStyleSheet } from './styles/loader'
 
 // react components:
 export interface CircleConnectionProps extends ControlProps {}
-export const CircleConnection = (props: CircleConnectionProps) => {
+export const CircleConnection = (props: CircleConnectionProps): JSX.Element|null => {
     // styles:
     const styleSheet = useConnectManyStyleSheet();
     
