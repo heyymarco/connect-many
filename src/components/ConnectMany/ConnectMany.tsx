@@ -171,6 +171,7 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
     const refreshCables = useEvent((): void => {
         // conditions:
         const svgElm = svgRef.current;
+        if (!svgElm) console.log('refreshCables: nosvg');
         if (!svgElm) return;
         
         
@@ -200,6 +201,7 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
     useIsomorphicLayoutEffect(() => {
         // conditions:
         const svgElm = svgRef.current;
+        if (!svgElm) console.log('useIsomorphicLayoutEffect: nosvg');
         if (!svgElm) return;
         
         
