@@ -120,9 +120,7 @@ export const ConnectMany = (props: ConnectManyProps) => {
                 .force('collide', d3.forceCollide(20)) // simulate cable auto disentanglement (cable nodes will push each other away)
                 .force('links'  , d3.forceLink(nodeLinks).strength(0.9)) // string the cables nodes together
                 .on('tick', () => {
-                    cable.attr('d', (d: any) =>
-                        simulationNodeDrawer(d.nodeStates)
-                    );
+                    cable.attr('d', simulationNodeDrawer(nodeStates as any));
                 }); // draw the path on each simulation tick
             
             cable.datum({nodeStates, simulator});
