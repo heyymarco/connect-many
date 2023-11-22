@@ -64,18 +64,6 @@ export interface ConnectManyProps
     // components:
     defaultNodeComponent ?: React.ReactComponentElement<any, React.HTMLAttributes<HTMLElement>>
 }
-interface NodeState {
-    index : number
-    
-    x     : number
-    y     : number
-    
-    fx    : number
-    fy    : number
-    
-    vx    : number
-    vy    : number
-}
 type CableDef = Pick<CableProps, 'headX'|'headY'|'tailX'|'tailY'>
 export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
     // styles:
