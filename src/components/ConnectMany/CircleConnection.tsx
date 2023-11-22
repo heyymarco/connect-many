@@ -13,6 +13,7 @@ import { useConnectManyStyleSheet } from './styles/loader'
 
 
 
+// react components:
 export interface CircleConnectionProps extends ControlProps {}
 export const CircleConnection = (props: CircleConnectionProps) => {
     // styles:
@@ -20,6 +21,7 @@ export const CircleConnection = (props: CircleConnectionProps) => {
     
     
     
+    // jsx:
     return (
         <Control
             {...props}

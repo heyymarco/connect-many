@@ -12,6 +12,8 @@ import { BasicProps, Basic, ContentProps, Content } from '@reusable-ui/component
 import { useConnectManyStyleSheet } from './styles/loader'
 import * as d3 from 'd3'
 import { CircleConnection } from './CircleConnection'
+import { ChildWithRef } from './ChildWithRef'
+import { useEvent } from '@reusable-ui/core'
 
 
 
@@ -40,6 +42,18 @@ export interface ConnectManyProps extends BasicProps {
     // components:
     defaultNodeComponent ?: React.ReactComponentElement<any, React.HTMLAttributes<HTMLElement>>
 }
+interface NodeState {
+    index : number
+    
+    x     : number
+    y     : number
+    
+    fx    : number
+    fy    : number
+    
+    vx    : number
+    vy    : number
+}
 export const ConnectMany = (props: ConnectManyProps) => {
     // styles:
     const styleSheet = useConnectManyStyleSheet();
@@ -58,11 +72,9 @@ export const ConnectMany = (props: ConnectManyProps) => {
     
     
     
+    // refs:
+    const [nodeRefs] = useState<Map<React.Key, Element|null>>(() => new Map<React.Key, Element|null>());
     const svgRef = useRef<SVGSVGElement|null>(null);
-    // const [cables, setCables] = useState<Cable[]>(() => []);
-    // const cablesRef = useRef<Cable[]>(cables);
-    // cablesRef.current = cables;
-    // const [, triggerRender] = useState<{}>({});
     
     useEffect(() => {
         const svgElm = svgRef.current;
@@ -72,7 +84,8 @@ export const ConnectMany = (props: ConnectManyProps) => {
         
         
         // Draws a line out of the simulation points
-        const simulationNodeDrawer = d3
+        const simulationNodeDrawer =
+            d3
             .line()
             .x((d: any) => d.x)
             .y((d: any) => d.y)
@@ -85,39 +98,34 @@ export const ConnectMany = (props: ConnectManyProps) => {
         .on('mousedown', (mouseEvent) => {
             const cable = svg.append('path').attr('stroke', '#ff0000');
             
-            const nodes = d3.range(CABLE_SEGMENTS).map(() => ({} as {
-                index : number
-                
-                x     : number
-                y     : number
-                
-                fx    : number
-                fy    : number
-                
-                vx    : number
-                vy    : number
-            }));
+            const nodeStates     = d3.range(CABLE_SEGMENTS).map(() => ({} as NodeState));
+            const firstNodeState = nodeStates[0];
+            const lastNodeState  = nodeStates[nodeStates.length - 1];
             
-            const links = d3
-                .pairs(nodes)
+            firstNodeState.fx    = pointerPositionRef.current.x;
+            firstNodeState.fy    = pointerPositionRef.current.y;
+            
+            lastNodeState.fx     = pointerPositionRef.current.x;
+            lastNodeState.fy     = pointerPositionRef.current.y;
+            
+            const nodeLinks =
+                d3
+                .pairs(nodeStates)
                 .map(([source, target]) => ({ source, target }));
             
-            nodes[0].fx = mouseEvent.offsetX;
-            nodes[0].fy = mouseEvent.offsetY;
-            
-            const sim = d3
-                .forceSimulation(nodes)
+            const simulator =
+                d3
+                .forceSimulation(nodeStates)
                 .force('gravity', d3.forceY(2000).strength(0.001)) // simulate gravity
                 .force('collide', d3.forceCollide(20)) // simulate cable auto disentanglement (cable nodes will push each other away)
-                .force('links', d3.forceLink(links).strength(0.9)) // string the cables nodes together
+                .force('links'  , d3.forceLink(nodeLinks).strength(0.9)) // string the cables nodes together
                 .on('tick', () => {
                     cable.attr('d', (d: any) =>
-                        simulationNodeDrawer(d.nodes)
+                        simulationNodeDrawer(d.nodeStates)
                     );
-                    // triggerRender({});
                 }); // draw the path on each simulation tick
             
-            cable.datum({nodes, sim});
+            cable.datum({nodeStates, simulator});
             
             lastCable = cable;
         })
@@ -127,24 +135,24 @@ export const ConnectMany = (props: ConnectManyProps) => {
             
             
             const {
-                nodes,
-                sim,
+                nodeStates,
+                simulator,
             } = lastCable.datum() as any;
-            const start = nodes[0];
-            const end = nodes[nodes.length - 1];
+            const firstNodeState = nodeStates[0];
+            const lastNodeState  = nodeStates[nodeStates.length - 1];
             
-            end.fx = mouseEvent.offsetX;
-            end.fy = mouseEvent.offsetY;
+            lastNodeState.fx = pointerPositionRef.current.x;
+            lastNodeState.fy = pointerPositionRef.current.y;
             
             // measure distance
             const distance = Math.sqrt(
-                Math.pow(end.fx - start.fx, 2) + Math.pow(end.fy - start.fy, 2)
+                Math.pow(lastNodeState.fx - firstNodeState.fx, 2) + Math.pow(lastNodeState.fy - firstNodeState.fy, 2)
             );
             
             // set the link distance
-            sim.force('links').distance(distance / CABLE_SEGMENTS);
-            sim.alpha(1);
-            sim.restart();
+            simulator.force('links').distance(distance / CABLE_SEGMENTS);
+            simulator.alpha(1);
+            simulator.restart();
         })
         .on('mouseup', () => {
             lastCable = undefined;
@@ -153,28 +161,90 @@ export const ConnectMany = (props: ConnectManyProps) => {
     
     
     
+    // handlers:
+    const pointerActiveRef   = useRef<boolean>(false);
+    const pointerPositionRef = useRef<{x: number, y: number}>({x: 0, y: 0});
+    
+    const calculatePointerPosition = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
+        const viewportRect = event.currentTarget.getBoundingClientRect();
+        const style = getComputedStyle(event.currentTarget);
+        const borderLeftWidth = Number.parseInt(style.borderLeftWidth);
+        const borderTopWidth  = Number.parseInt(style.borderTopWidth);
+        const [relativeX, relativeY] = [event.clientX - viewportRect.left - borderLeftWidth, event.clientY - viewportRect.top - borderTopWidth];
+        if (relativeX < 0) return;
+        if (relativeY < 0) return;
+        const borderRightWidth = Number.parseInt(style.borderLeftWidth);
+        const borderBottomWidth  = Number.parseInt(style.borderTopWidth);
+        if (relativeX > (viewportRect.width  - borderLeftWidth - borderRightWidth )) return;
+        if (relativeY > (viewportRect.height - borderTopWidth  - borderBottomWidth)) return;
+        pointerPositionRef.current = {x: relativeX, y: relativeY};
+    });
+    const handleMouseMove = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
+        if (!pointerActiveRef.current) return;
+        calculatePointerPosition(event);
+    });
+    
+    
+    const handleMouseDown = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
+        pointerActiveRef.current = true;
+        calculatePointerPosition(event);
+    });
+    const handleMouseUp   = useEvent<React.MouseEventHandler<HTMLElement>>(() => {
+        pointerActiveRef.current = false;
+    });
+    
+    
+    
+    // jsx:
     return (
         <Basic
             {...restBasicProps}
             className={styleSheet.main}
+            onMouseMove={handleMouseMove}
+            onMouseDown={handleMouseDown}
+            onMouseUp={handleMouseUp}
         >
-            {Object.entries(connections).map(([key, {label: groupName, nodes}]) =>
-                <div key={key} className='group'>
+            {Object.entries(connections).map(([groupKey, {label: groupName, nodes}], groupIndex) =>
+                <div key={groupKey} className='group'>
                     {!!groupName && <div className='label'>{groupName}</div>}
                     <div className='nodes'>
-                        {nodes.map(({id, label, limit, nodeComponent = defaultNodeComponent}, index) =>
-                            React.cloneElement(nodeComponent,
-                                // props:
-                                {
-                                    key : id || index,
-                                },
-                                
-                                
-                                
-                                // children:
-                                nodeComponent.props.children ?? label,
-                            )
-                        )}
+                        {nodes.map(({id, label, limit, nodeComponent = defaultNodeComponent}, nodeIndex) => {
+                            const nodeId = `${groupIndex}/${nodeIndex}`;
+                            
+                            
+                            
+                            // jsx:
+                            if (!nodeRefs.has(nodeId)) nodeRefs.delete(nodeId);
+                            return (
+                                <ChildWithRef
+                                    // identifiers:
+                                    key={id || nodeIndex}
+                                    
+                                    
+                                    
+                                    // refs:
+                                    childId={nodeId}
+                                    childRefs={nodeRefs}
+                                    
+                                    
+                                    
+                                    // components:
+                                    elementComponent={
+                                        React.cloneElement(nodeComponent,
+                                            // props:
+                                            {
+                                                key : id || nodeIndex,
+                                            },
+                                            
+                                            
+                                            
+                                            // children:
+                                            nodeComponent.props.children ?? label,
+                                        )
+                                    }
+                                />
+                            );
+                        })}
                     </div>
                 </div>
             )}
