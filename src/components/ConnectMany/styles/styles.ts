@@ -50,36 +50,57 @@ import {
 export default () => [
     scope('main', {
         display: 'grid',
-        gridTemplate: [[
-            '"outputs cables inputs" 1fr',
-            '/',
-            'auto 1fr auto',
-        ]],
-        ...children('.outputs', {
-            gridArea: 'outputs',
-        }),
-        ...children('.inputs', {
-            gridArea: 'inputs',
-        }),
-        ...children(['.outputs', '.inputs'], {
+        gridAutoFlow : 'column',
+        position: 'relative', // important to detect pointer coordinate correctly
+        ...children('.group', {
+            border: 'solid 1px red',
             display: 'grid',
-            gridAutoRows : '"connector" 1fr',
-            gridTemplateColumns: '1fr',
-            rowGap: '1rem',
-            alignContent: 'space-between',
+            gap: '0.5rem',
+            
+            ...children('.label', {
+                display: 'grid',
+                justifyContent: 'center',
+                alignContent: 'center',
+            }),
+            ...children('.nodes', {
+                display: 'grid',
+                gridAutoFlow: 'column',
+                gridTemplateRows: '1fr 1fr',
+                gap: '0.5rem',
+                padding: '0.5rem',
+                justifyItems: 'center',
+                alignItems: 'center',
+            }),
         }),
         ...children('.cables', {
-            position: 'relative',
-            gridArea: 'outputs / outputs / inputs / inputs',
-            justifySelf: 'stretch',
-            alignSelf: 'stretch',
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
             // pointerEvents: 'none',
             
             ...children('path', {
                 fill: 'none',
-                strokeWidth: '0.5rem',
+                strokeWidth: '0.3rem',
                 strokeLinecap: 'round',
+                cursor: 'pointer',
+                ...rule(':hover', {
+                    opacity: 0.5,
+                }),
             }),
         }),
+    }, { specificityWeight: 2 }),
+    
+    scope('circleConnection', {
+        borderRadius: '50%',
+        borderWidth : '2px',
+        display: 'grid',
+        justifyContent: 'center',
+        alignContent: 'center',
+        overflow: 'hidden',
+        inlineSize: '2em',
+        aspectRatio: '1 / 1',
+        padding: 0,
+        userSelect: 'none',
     }, { specificityWeight: 2 }),
 ];

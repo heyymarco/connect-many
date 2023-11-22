@@ -1,5 +1,6 @@
 import styles from './page.module.css'
 import { ConnectMany } from '@/components/ConnectMany'
+import { CircleConnection } from '@/components/ConnectMany/CircleConnection'
 
 
 
@@ -7,25 +8,39 @@ export default function Home() {
     return (
         <main className={styles.main}>
             <ConnectMany
-                style={{
-                    boxSizing : 'content-box',
-                    minWidth: '20rem',
-                }}
+                // variants:
+                theme='primary'
+                mild={true}
+                
+                
+                
+                // configs:
                 connections={{
-                    outputs : [
-                        { id: 'l586xh0avs', name: 'Out 1'  },
-                        { id: 'z85scjcrme', name: 'Out 2'  },
-                        { id: 'e622edk1aq', name: 'Out 3'  },
-                        { id: 'yutmi19hts', name: 'Out 4'  },
-                    ],
-                    inputs : [
-                        { id: 'fnw0ahndzg', name: 'In 1'  },
-                        { id: 'k45nlrbfu0', name: 'In 2'  },
-                        { id: 'jzli19bw4s', name: 'In 3'  },
-                        { id: 'eftzyn0k0o', name: 'In 4'  },
-                        { id: 'x8y5yf37ev', name: 'In 5'  },
-                    ],
+                    inputs : {
+                        label : <>Inputs</>,
+                        nodes : [
+                            { id: 'inp-1', label: '1' , limit: 1         },
+                            { id: 'inp-2', label: '2' , limit: 1, nodeComponent: <CircleConnection theme='danger' /> },
+                            { id: 'inp-3', label: '3' , limit: 1         },
+                            { id: 'inp-4', label: '4' , limit: 1         },
+                            { id: 'inp-5', label: '5' , limit: 1         },
+                        ],
+                    },
+                    outputs : {
+                        label : <>Outputs</>,
+                        nodes : [
+                            { id: 'out-1', label: '1', limit: Infinity  },
+                            { id: 'out-2', label: '2', limit: Infinity  },
+                            { id: 'out-3', label: '3', limit: Infinity  },
+                            { id: 'out-4', label: '4', limit: Infinity  },
+                        ],
+                    },
                 }}
+                
+                
+                
+                // components:
+                defaultNodeComponent={<CircleConnection theme='warning' />}
             />
         </main>
     )

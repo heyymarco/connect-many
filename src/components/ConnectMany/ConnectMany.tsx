@@ -11,25 +11,34 @@ import {
 import { BasicProps, Basic, ContentProps, Content } from '@reusable-ui/components'
 import { useConnectManyStyleSheet } from './styles/loader'
 import * as d3 from 'd3'
+import { CircleConnection } from './CircleConnection'
 
 
 
 const CABLE_SEGMENTS = 5;
 
 
-export interface Connector {
-    id   : string|number
-    name : string
+export interface ConnectionNode {
+    id             : string|number
+    label         ?: React.ReactNode
+    limit         ?: number
+    nodeComponent ?: React.ReactComponentElement<any, React.HTMLAttributes<HTMLElement>>
 }
-export interface Connections {
-    outputs : Connector[],
-    inputs  : Connector[],
+export type ConnectionGroup = {
+    label ?: React.ReactNode
+    nodes  : ConnectionNode[]
+}
+export type ConnectionConfig = {
+    [key in string] : ConnectionGroup
 }
 export interface ConnectManyProps extends BasicProps {
-    connections : Connections
-}
-interface Cable {
-    data  : string|null
+    // configs:
+    connections    : ConnectionConfig
+    
+    
+    
+    // components:
+    defaultNodeComponent ?: React.ReactComponentElement<any, React.HTMLAttributes<HTMLElement>>
 }
 export const ConnectMany = (props: ConnectManyProps) => {
     // styles:
@@ -38,10 +47,13 @@ export const ConnectMany = (props: ConnectManyProps) => {
     
     
     const {
-        connections : {
-            outputs,
-            inputs,
-        },
+        // configs:
+        connections,
+        
+        
+        
+        // components:
+        defaultNodeComponent = <CircleConnection /> as React.ReactComponentElement<any, React.HTMLAttributes<HTMLElement>>,
     ...restBasicProps} = props;
     
     
@@ -144,24 +156,28 @@ export const ConnectMany = (props: ConnectManyProps) => {
     return (
         <Basic
             {...restBasicProps}
-            theme='primary'
-            mild={true}
             className={styleSheet.main}
         >
-            <div className='outputs'>
-                {outputs.map(({name}, index) =>
-                    <Basic key={index}>
-                        {name}
-                    </Basic>
-                )}
-            </div>
-            <div className='inputs'>
-                {inputs.map(({name}, index) =>
-                    <Basic key={index}>
-                        {name}
-                    </Basic>
-                )}
-            </div>
+            {Object.entries(connections).map(([key, {label: groupName, nodes}]) =>
+                <div key={key} className='group'>
+                    {!!groupName && <div className='label'>{groupName}</div>}
+                    <div className='nodes'>
+                        {nodes.map(({id, label, limit, nodeComponent = defaultNodeComponent}, index) =>
+                            React.cloneElement(nodeComponent,
+                                // props:
+                                {
+                                    key : id || index,
+                                },
+                                
+                                
+                                
+                                // children:
+                                nodeComponent.props.children ?? label,
+                            )
+                        )}
+                    </div>
+                </div>
+            )}
             <svg className='cables' ref={svgRef}>
             </svg>
         </Basic>
