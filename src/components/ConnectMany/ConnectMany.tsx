@@ -64,7 +64,7 @@ export interface ConnectManyProps
     // components:
     defaultNodeComponent ?: React.ReactComponentElement<any, React.HTMLAttributes<HTMLElement>>
 }
-type CableDef = Pick<CableProps, 'headX'|'headY'|'tailX'|'tailY'>
+type CableDef = Connection & Pick<CableProps, 'headX'|'headY'|'tailX'|'tailY'>
 export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
     // styles:
     const styleSheet = useConnectManyStyleSheet();
@@ -105,7 +105,7 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
     
     
     // effects:
-    const [validCables, setValidCables] = useState<{ elmA : Element, elmB: Element }[]>([]);
+    const [validCables, setValidCables] = useState<(Connection & { elmA : Element, elmB: Element })[]>([]);
     useIsomorphicLayoutEffect(() => {
         // conditions:
         if (!value?.length) {
@@ -116,7 +116,7 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
         
         
         // setups:
-        const validCables   : { elmA : Element, elmB: Element }[] = [];
+        const newValidCables : typeof validCables = [];
         const invalidCables : Connection[] = [];
         for (const val of value) {
             const {sideA, sideB} = val;
@@ -127,14 +127,20 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                 invalidCables.push(val);
             }
             else {
-                validCables.push({elmA, elmB});
+                newValidCables.push({
+                    sideA,
+                    elmA,
+                    
+                    sideB,
+                    elmB,
+                });
             } // if
         } //
-        setValidCables(validCables);
+        setValidCables(newValidCables);
         
         // remove invalid connections, if any:
         if (invalidCables.length) {
-            // TODO:
+            // TODO: trigger onValueChange
         } // if
         
     }, [value]);
@@ -146,9 +152,9 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
         
         
         
-        const cables : CableDef[] = [];
+        const newCables : typeof cables = [];
         const {left: svgLeft, top: svgTop } = svgElm.getBoundingClientRect();
-        for (const {elmA, elmB} of validCables) {
+        for (const {sideA, elmA, sideB, elmB} of validCables) {
             const rectA = elmA.getBoundingClientRect();
             const rectB = elmB.getBoundingClientRect();
             
@@ -156,14 +162,17 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
             const headY = (rectA.top  - svgTop ) + (rectA.height / 2);
             const tailX = (rectB.left - svgLeft) + (rectB.width  / 2);
             const tailY = (rectB.top  - svgTop ) + (rectB.height / 2);
-            cables.push({
+            newCables.push({
+                sideA,
                 headX,
                 headY,
+                
+                sideB,
                 tailX,
                 tailY,
             });
         } // for
-        setCables(cables);
+        setCables(newCables);
     });
     useIsomorphicLayoutEffect(() => {
         // conditions:
@@ -279,10 +288,10 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                 </div>
             )}
             <svg className='cables' ref={svgRef}>
-                {cables.map(({headX, headY, tailX, tailY}, cableIndex) =>
+                {cables.map(({sideA, headX, headY, sideB, tailX, tailY}, cableIndex) =>
                     <Cable
                         // identifiers:
-                        key={cableIndex}
+                        key={`${sideA}/${sideB}`}
                         
                         
                         
