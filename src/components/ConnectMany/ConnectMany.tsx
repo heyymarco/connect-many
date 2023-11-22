@@ -4,20 +4,23 @@
 import {
     // react:
     default as React,
-    useEffect,
     useRef,
     useState,
 }                           from 'react'
-import { BasicProps, Basic, ContentProps, Content } from '@reusable-ui/components'
+
+// reusable-ui core:
+import {
+    // react helper hooks:
+    useIsomorphicLayoutEffect,
+}                           from '@reusable-ui/core'                // a set of reusable-ui packages which are responsible for building any component
+
+import { BasicProps, Basic } from '@reusable-ui/components'
 import { useConnectManyStyleSheet } from './styles/loader'
-import * as d3 from 'd3'
 import { CircleConnection } from './CircleConnection'
 import { ChildWithRef } from './ChildWithRef'
 import { useEvent } from '@reusable-ui/core'
+import { Cable, CableProps } from './Cable'
 
-
-
-const CABLE_SEGMENTS = 5;
 
 
 export interface ConnectionNode {
@@ -26,16 +29,35 @@ export interface ConnectionNode {
     limit         ?: number
     nodeComponent ?: React.ReactComponentElement<any, React.HTMLAttributes<HTMLElement>>
 }
-export type ConnectionGroup = {
+export interface ConnectionGroup {
     label ?: React.ReactNode
     nodes  : ConnectionNode[]
 }
 export type ConnectionConfig = {
     [key in string] : ConnectionGroup
 }
-export interface ConnectManyProps extends BasicProps {
+export interface Connection {
+    sideA : string
+    sideB : string
+}
+export interface ConnectManyProps
+    extends
+        // bases:
+        BasicProps,
+        
+        // components:
+        Pick<CableProps,
+            // behaviors:
+            |'precisionLevel'
+        >
+{
     // configs:
     connections    : ConnectionConfig
+    
+    
+    
+    // values:
+    value ?: Connection[]
     
     
     
@@ -54,6 +76,7 @@ interface NodeState {
     vx    : number
     vy    : number
 }
+type CableDef = Pick<CableProps, 'headX'|'headY'|'tailX'|'tailY'>
 export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
     // styles:
     const styleSheet = useConnectManyStyleSheet();
@@ -66,6 +89,16 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
         
         
         
+        // behaviors:
+        precisionLevel,
+        
+        
+        
+        // values:
+        value,
+        
+        
+        
         // components:
         defaultNodeComponent = <CircleConnection /> as React.ReactComponentElement<any, React.HTMLAttributes<HTMLElement>>,
     ...restBasicProps} = props;
@@ -74,88 +107,69 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
     
     // refs:
     const [nodeRefs] = useState<Map<React.Key, Element|null>>(() => new Map<React.Key, Element|null>());
-    const svgRef = useRef<SVGSVGElement|null>(null);
+    const svgRef     = useRef<SVGSVGElement|null>(null);
     
-    useEffect(() => {
+    
+    
+    // states:
+    const [cables, setCables] = useState<CableDef[]>([]);
+    
+    
+    
+    // effects:
+    useIsomorphicLayoutEffect(() => {
+        // conditions:
         const svgElm = svgRef.current;
         if (!svgElm) return;
-        const svg = d3.select(svgElm);
+        
+        if (!value?.length) {
+            setCables([]);
+            return;
+        } // if
         
         
         
-        // Draws a line out of the simulation points
-        const simulationNodeDrawer =
-            d3
-            .line()
-            .x((d: any) => d.x)
-            .y((d: any) => d.y)
-            .curve(d3.curveBasis);
+        // setups:
+        const validConnections   : { elmA : Element, elmB: Element }[] = [];
+        const invalidConnections : Connection[] = [];
+        for (const val of value) {
+            const {sideA, sideB} = val;
+            const elmA = nodeRefs.get(sideA) ?? null;
+            const elmB = nodeRefs.get(sideB) ?? null;
+            
+            if (!elmA || !elmB) {
+                invalidConnections.push(val);
+            }
+            else {
+                validConnections.push({elmA, elmB});
+            } // if
+        } //
         
+        // remove invalid connections, if any:
+        if (invalidConnections.length) {
+            // TODO:
+        } // if
         
-        let lastCable: d3.Selection<SVGPathElement, unknown, null, undefined>|undefined = undefined;
-        
-        d3.select(document)
-        .on('mousedown', (mouseEvent) => {
-            const cable = svg.append('path').attr('stroke', '#ff0000');
+        const cables : CableDef[] = [];
+        const {left: svgLeft, top: svgTop } = svgElm.getBoundingClientRect();
+        for (const {elmA, elmB} of validConnections) {
+            const rectA = elmA.getBoundingClientRect();
+            const rectB = elmB.getBoundingClientRect();
             
-            const nodeStates     = (new Array(CABLE_SEGMENTS)).fill(null).map(() => ({} as NodeState));
-            const firstNodeState = nodeStates[0];
-            const lastNodeState  = nodeStates[nodeStates.length - 1];
-            
-            firstNodeState.fx    = pointerPositionRef.current.x;
-            firstNodeState.fy    = pointerPositionRef.current.y;
-            
-            lastNodeState.fx     = pointerPositionRef.current.x;
-            lastNodeState.fy     = pointerPositionRef.current.y;
-            
-            const nodeLinks =
-                d3
-                .pairs(nodeStates)
-                .map(([source, target]) => ({ source, target }));
-            
-            const simulator =
-                d3
-                .forceSimulation(nodeStates)
-                .force('gravity', d3.forceY(2000).strength(0.001)) // simulate gravity
-                .force('collide', d3.forceCollide(20)) // simulate cable auto disentanglement (cable nodes will push each other away)
-                .force('links'  , d3.forceLink(nodeLinks).strength(0.9)) // string the cables nodes together
-                .on('tick', () => {
-                    cable.attr('d', simulationNodeDrawer(nodeStates as any));
-                }); // draw the path on each simulation tick
-            
-            cable.datum({nodeStates, simulator});
-            
-            lastCable = cable;
-        })
-        .on('mousemove', (mouseEvent) => {
-            if (!lastCable) return;
-            
-            
-            
-            const {
-                nodeStates,
-                simulator,
-            } = lastCable.datum() as any;
-            const firstNodeState = nodeStates[0];
-            const lastNodeState  = nodeStates[nodeStates.length - 1];
-            
-            lastNodeState.fx = pointerPositionRef.current.x;
-            lastNodeState.fy = pointerPositionRef.current.y;
-            
-            // measure distance
-            const distance = Math.sqrt(
-                Math.pow(lastNodeState.fx - firstNodeState.fx, 2) + Math.pow(lastNodeState.fy - firstNodeState.fy, 2)
-            );
-            
-            // set the link distance
-            simulator.force('links').distance(distance / CABLE_SEGMENTS);
-            simulator.alpha(1);
-            simulator.restart();
-        })
-        .on('mouseup', () => {
-            lastCable = undefined;
-        });
-    }, []);
+            const headX = (rectA.left - svgLeft) + (rectA.width  / 2);
+            const headY = (rectA.top  - svgTop ) + (rectA.height / 2);
+            const tailX = (rectB.left - svgLeft) + (rectB.width  / 2);
+            const tailY = (rectB.top  - svgTop ) + (rectB.height / 2);
+            console.log({headX, headY});
+            cables.push({
+                headX,
+                headY,
+                tailX,
+                tailY,
+            });
+        } // for
+        setCables(cables);
+    }, [value]);
     
     
     
@@ -207,7 +221,7 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                     {!!groupName && <div className='label'>{groupName}</div>}
                     <div className='nodes'>
                         {nodes.map(({id, label, limit, nodeComponent = defaultNodeComponent}, nodeIndex) => {
-                            const nodeId = `${groupIndex}/${nodeIndex}`;
+                            const nodeId = id;
                             
                             
                             
@@ -247,6 +261,30 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                 </div>
             )}
             <svg className='cables' ref={svgRef}>
+                {cables.map(({headX, headY, tailX, tailY}, cableIndex) =>
+                    <Cable
+                        // identifiers:
+                        key={cableIndex}
+                        
+                        
+                        
+                        // positions:
+                        headX={headX}
+                        headY={headY}
+                        tailX={tailX}
+                        tailY={tailY}
+                        
+                        
+                        
+                        // behaviors:
+                        precisionLevel={precisionLevel}
+                        
+                        
+                        
+                        // pointers:
+                        pointerPositionRef={pointerPositionRef}
+                    />
+                )}
             </svg>
         </Basic>
     );

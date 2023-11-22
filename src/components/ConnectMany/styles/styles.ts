@@ -74,13 +74,15 @@ export default () => [
         }),
         ...children('.cables', {
             position: 'absolute',
+            zIndex  : 99,
             inset: 0,
             width: '100%',
             height: '100%',
-            // pointerEvents: 'none',
+            pointerEvents: 'none',
             
             ...children('path', {
                 fill: 'none',
+                stroke: '#ff0000',
                 strokeWidth: '0.3rem',
                 strokeLinecap: 'round',
                 cursor: 'pointer',

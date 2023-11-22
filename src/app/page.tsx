@@ -39,6 +39,13 @@ export default function Home() {
                 
                 
                 
+                // values:
+                value={[
+                    { sideA: 'inp-1', sideB: 'out-3' },
+                    { sideA: 'inp-4', sideB: 'out-1' },
+                ]}
+                
+                
                 // components:
                 defaultNodeComponent={<CircleConnection theme='warning' />}
             />
