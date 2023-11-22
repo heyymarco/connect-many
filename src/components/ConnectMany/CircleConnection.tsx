@@ -4,12 +4,19 @@
 import {
     // react:
     default as React,
-    useEffect,
-    useRef,
-    useState,
 }                           from 'react'
-import { ControlProps, Control } from '@reusable-ui/components'
-import { useConnectManyStyleSheet } from './styles/loader'
+
+// reusable-ui components:
+import {
+    // base-components:
+    ControlProps,
+    Control,
+}                           from '@reusable-ui/components'      // a set of official Reusable-UI components
+
+// styles:
+import {
+    useConnectManyStyleSheet,
+}                           from './styles/loader'
 
 
 
@@ -24,9 +31,18 @@ export const CircleConnection = (props: CircleConnectionProps): JSX.Element|null
     // jsx:
     return (
         <Control
+            // other props:
             {...props}
+            
+            
+            
+            // variants:
             size={props.size ?? 'sm'}
             mild={props.mild ?? false}
+            
+            
+            
+            // classes:
             className={styleSheet.circleConnection}
         />
     );

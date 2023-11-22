@@ -4,6 +4,10 @@
 import {
     // react:
     default as React,
+    
+    
+    
+    // hooks:
     useRef,
     useState,
 }                           from 'react'
@@ -12,14 +16,32 @@ import {
 import {
     // react helper hooks:
     useIsomorphicLayoutEffect,
+    useEvent,
 }                           from '@reusable-ui/core'                // a set of reusable-ui packages which are responsible for building any component
 
-import { BasicProps, Basic } from '@reusable-ui/components'
-import { useConnectManyStyleSheet } from './styles/loader'
-import { CircleConnection } from './CircleConnection'
-import { ChildWithRef } from './ChildWithRef'
-import { useEvent } from '@reusable-ui/core'
-import { Cable, CableProps } from './Cable'
+// reusable-ui components:
+import {
+    // base-components:
+    BasicProps,
+    Basic,
+}                           from '@reusable-ui/components'      // a set of official Reusable-UI components
+
+// internal components:
+import {
+    CircleConnection,
+}                           from './CircleConnection'
+import {
+    ChildWithRef,
+}                           from './ChildWithRef'
+import {
+    Cable,
+    CableProps,
+}                           from './Cable'
+
+// styles:
+import {
+    useConnectManyStyleSheet,
+}                           from './styles/loader'
 
 
 
@@ -237,8 +259,13 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
     // jsx:
     return (
         <Basic
+            // other props:
             {...restBasicProps}
             className={styleSheet.main}
+            
+            
+            
+            // handlers:
             onMouseMove={handleMouseMove}
             onMouseDown={handleMouseDown}
             onMouseUp={handleMouseUp}
