@@ -2,138 +2,298 @@
 import {
     // writes css in javascript:
     rule,
-    descendants,
     children,
     style,
     scope,
+    
+    
+    
+    // reads/writes css variables configuration:
+    usesCssProps,
 }                           from '@cssfn/core'          // writes css in javascript
 
 // reusable-ui core:
 import {
-    // a border (stroke) management system:
-    borders,
-    borderRadiuses,
-    
-    
-    
     // a spacer (gap) management system:
     spacers,
     
     
     
-    // a responsive management system:
-    breakpoints,
-    ifScreenWidthAtLeast,
-    ifScreenWidthSmallerThan,
-    
-    
-    
-    // a typography management system:
-    typos,
-    horzRules,
-    
-    
-    
     // border (stroke) stuff of UI:
     usesBorder,
+    
+    
+    
+    // padding (inner spacing) stuff of UI:
+    usesPadding,
+    
+    
+    
+    // size options of UI:
+    usesResizable,
 }                           from '@reusable-ui/core'    // a set of reusable-ui packages which are responsible for building any component
 
 // reusable-ui components:
 import {
     // base-content-components:
-    containers,
-    contents,
+    usesBasicLayout,
+    usesBasicVariants,
+    
+    usesControlLayout,
+    usesControlVariants,
+    usesControlStates,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
+// internals:
+import {
+    // configs:
+    conns,
+}                           from './config'
 
 
-export default () => [
-    scope('main', {
-        display: 'grid',
-        gridAutoFlow : 'column',
-        position: 'relative', // important to detect pointer coordinate correctly
-        ...children('.group', {
-            border: 'solid 1px red',
-            display: 'grid',
-            gap: '0.5rem',
+
+const usesConnectManyLayout = () => {
+    
+    // dependencies:
+    
+    // features:
+    const {borderRule , borderVars } = usesBorder(conns as any);
+    const {paddingRule, paddingVars} = usesPadding(conns);
+    
+    
+    
+    return style({
+        // layouts:
+        ...usesBasicLayout(),
+        ...style({
+            // positions:
+            position     : 'relative', // important to detect pointer coordinate correctly
             
-            ...children('.label', {
-                display: 'grid',
-                justifyContent: 'center',
-                alignContent: 'center',
-            }),
-            ...children('.nodes', {
-                display: 'grid',
-                gridAutoFlow: 'column',
-                gridTemplateRows: '1fr 1fr',
-                gap: '0.5rem',
-                padding: '0.5rem',
-                justifyItems: 'center',
-                alignItems: 'center',
-            }),
-        }),
-        ...children('.cables', {
-            position: 'absolute',
-            zIndex  : 99,
-            inset: 0,
-            width: '100%',
-            height: '100%',
-            pointerEvents: 'none',
             
-            ...children('path', {
-                fill: 'none',
-                stroke: '#ff0000',
-                strokeWidth: '0.3rem',
-                strokeLinecap: 'round',
-                cursor: 'pointer',
-                ...rule(':hover', {
-                    strokeWidth: '0.4rem',
+            
+            // layouts:
+            display      : 'grid',
+            gridAutoFlow : 'column',
+            
+            
+            
+            // customize:
+            ...usesCssProps(conns), // apply config's cssProps
+            
+            
+            
+            // spacings:
+            paddingInline : paddingVars.paddingInline,
+            paddingBlock  : paddingVars.paddingBlock,
+            
+            
+            
+            // children:
+            ...children('.group', {
+                // layouts:
+                display : 'grid',
+                
+                
+                
+                // borders:
+                border : borderVars.border,
+                ...rule(':not(:first-child)', {
+                    borderInlineStartWidth: 0,
                 }),
-                ...rule('.draft', {
-                    pointerEvents: 'none',
+                
+                
+                
+                // children:
+                ...children('.label', {
+                    // layouts:
+                    display        : 'grid',
+                    justifyContent : 'center',
+                    alignContent   : 'center',
+                    
+                    
+                    
+                    // spacings:
+                    padding : spacers.xs,
                 }),
-                filter: [[
-                    'drop-shadow(0 0 2px rgba(0,0,0,0.8))'
-                ]],
+                ...children('.nodes', {
+                    // layouts:
+                    display          : 'grid',
+                    gridAutoFlow     : 'column',
+                    gridTemplateRows : '1fr 1fr',
+                    justifyItems     : 'center',
+                    alignItems       : 'center',
+                    
+                    
+                    
+                    // spacings:
+                    gap     : '0.5em',
+                    padding : '0.5em',
+                }),
             }),
-        }),
-        ...rule(':not(.dragging)', {
             ...children('.cables', {
+                // positions:
+                position : 'absolute',
+                zIndex   : 99,
+                inset    : 0,
+                
+                
+                
+                // sizes:
+                width  : '100%',
+                height : '100%',
+                
+                
+                
+                // accessibilities:
+                pointerEvents: 'none',
+                
+                
+                
+                // children:
                 ...children('path', {
-                    pointerEvents: 'auto',
+                    // appearances:
+                    filter: [[
+                        'drop-shadow(0 0 2px rgba(0,0,0,0.8))'
+                    ]],
+                    
+                    
+                    
+                    // accessibilities:
+                    cursor: 'pointer',
+                    ...rule('.draft', {
+                        pointerEvents: 'none',
+                    }),
+                    
+                    
+                    
+                    // backgrounds:
+                    fill : 'none',
+                    
+                    
+                    
+                    // borders:
+                    stroke          : '#ff0000',
+                    strokeWidth     : conns.cableWidth,
+                    ...rule(':hover', {
+                        strokeWidth : conns.cableWidthHover,
+                    }),
+                    strokeLinecap : 'round',
                 }),
             }),
-        }),
-        ...rule('.dragging', {
-            ...children('.cables', {
-                ...children('path', {
-                    ...rule(':not(.draft)', {
-                        opacity: 0.5,
+            
+            
+            
+            // rules:
+            ...rule(':not(.dragging)', {
+                ...children('.cables', {
+                    ...children('path', {
+                        // accessibilities:
+                        pointerEvents: 'auto',
+                    }),
+                }),
+            }),
+            ...rule('.dragging', {
+                ...children('.cables', {
+                    ...children('path', {
+                        ...rule(':not(.draft)', {
+                            // appearances:
+                            opacity: 0.5,
+                        }),
                     }),
                 }),
             }),
         }),
+        
+        
+        
+        // features:
+        ...borderRule(),  // must be placed at the last
+        ...paddingRule(), // must be placed at the last
+    });
+};
+const usesConnectManyVariants = () => {
+
+    // dependencies:
+    
+    // variants:
+    const {resizableRule} = usesResizable(conns);
+    
+    
+    
+    return style({
+        // variants:
+        ...usesBasicVariants(),
+        ...resizableRule(),
+    });
+};
+
+const usesCircleConnectionLayout = () => {
+    return style({
+        // layouts:
+        ...usesControlLayout(),
+        ...style({
+            // layouts:
+            display        : 'grid',
+            justifyContent : 'center',
+            alignContent   : 'center',
+            
+            
+            
+            // appearances:
+            overflow    : 'hidden',
+            
+            
+            
+            // sizes:
+            inlineSize  : '2em',
+            aspectRatio : '1 / 1',
+            
+            
+            
+            // accessibilities:
+            userSelect  : 'none',
+            
+            
+            
+            // borders:
+            borderRadius : '50%',
+            borderWidth  : '2px',
+            
+            
+            
+            // spacings:
+            padding: 0,
+            
+            
+            
+            // rules:
+            ...rule('.dodrop', {
+                // accessibilities:
+                cursor : 'crosshair'
+            }),
+            ...rule(':not(:is(.dodrop, .nodrop, [aria-disabled]:not([aria-disabled="false"]), [aria-readonly]:not([aria-readonly="false"])))', {
+                // accessibilities:
+                cursor : 'move',
+            }),
+            ...rule(':is(.nodrop, [aria-disabled]:not([aria-disabled="false"]), [aria-readonly]:not([aria-readonly="false"]))', {
+                // accessibilities:
+                cursor : 'not-allowed',
+            }),
+        }),
+    });
+};
+const usesCircleConnectionVariants = usesControlVariants;
+const usesCircleConnectionStates   = usesControlStates;
+
+export default () => [
+    scope('connectMany', {
+        ...usesConnectManyLayout(),
+        ...usesConnectManyVariants(),
     }, { specificityWeight: 2 }),
     
     scope('circleConnection', {
-        borderRadius: '50%',
-        borderWidth : '2px',
-        display: 'grid',
-        justifyContent: 'center',
-        alignContent: 'center',
-        overflow: 'hidden',
-        inlineSize: '2em',
-        aspectRatio: '1 / 1',
-        padding: 0,
-        userSelect: 'none',
-        ...rule('.dodrop', {
-            cursor: 'crosshair'
-        }),
-        ...rule(':not(:is(.dodrop, .nodrop, [aria-disabled]:not([aria-disabled="false"]), [aria-readonly]:not([aria-readonly="false"])))', {
-            cursor: 'move',
-        }),
-        ...rule(':is(.nodrop, [aria-disabled]:not([aria-disabled="false"]), [aria-readonly]:not([aria-readonly="false"]))', {
-            cursor: 'not-allowed',
-        }),
+        ...usesCircleConnectionLayout(),
+        ...usesCircleConnectionVariants(),
+        ...usesCircleConnectionStates(),
     }, { specificityWeight: 2 }),
 ];

@@ -517,7 +517,8 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
         <Basic
             // other props:
             {...restBasicProps}
-            className={`${styleSheet.main}${isDragging ? ' dragging' : ''}`}
+            mainClass={styleSheet.connectMany}
+            className={isDragging ? ' dragging' : undefined}
             
             
             

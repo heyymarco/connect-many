@@ -20,6 +20,7 @@ export default function Home() {
         <main className={styles.main}>
             <ConnectMany
                 // variants:
+                size='md' // sm|md|lg
                 theme='primary'
                 mild={true}
                 
