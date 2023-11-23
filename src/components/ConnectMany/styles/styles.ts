@@ -111,10 +111,10 @@ export default () => [
         aspectRatio: '1 / 1',
         padding: 0,
         userSelect: 'none',
-        ...rule(':not([aria-readonly="true"])', {
+        ...rule(':not(:is([aria-disabled]:not([aria-disabled="false"]), [aria-readonly]:not([aria-readonly="false"])))', {
             cursor: 'move',
         }),
-        ...rule('[aria-readonly="true"]', {
+        ...rule(':is([aria-disabled]:not([aria-disabled="false"]), [aria-readonly]:not([aria-readonly="false"]))', {
             cursor: 'not-allowed',
         }),
     }, { specificityWeight: 2 }),

@@ -342,6 +342,9 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                 // has selection node:
                 selectedNode
                 &&
+                // not point to disabled node:
+                !(!!selectedNode.elm.ariaDisabled && (selectedNode.elm.ariaDisabled !== 'false'))
+                &&
                 // not point to the node itself:
                 ((draftCable.sideA !== selectedNode.id) && (draftCable.elmA !== selectedNode.elm))
             ) {
@@ -418,6 +421,11 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
         return { id: id as (string|number), elm };
     });
     const handleMouseDown          = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
+        // conditions:
+        if (!!event.currentTarget.ariaDisabled && (event.currentTarget.ariaDisabled !== 'false')) return; // ignore if disabled
+        
+        
+        
         pointerActiveRef.current = true;
         calculatePointerPosition(event);
         
@@ -499,7 +507,6 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
             
             // handlers:
             onMouseMove={handleMouseMove}
-            onMouseDown={handleMouseDown}
             onMouseUp={handleMouseUp}
         >
             {Object.entries(connections).map(([groupKey, {label: groupName, nodes}], groupIndex) =>
@@ -530,7 +537,12 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                                         React.cloneElement(nodeComponent,
                                             // props:
                                             {
+                                                // identifiers:
                                                 key             : nodeId || nodeIndex,
+                                                
+                                                
+                                                
+                                                // accessibilities:
                                                 'aria-readonly' : nodeComponent.props['aria-readonly'] ?? !(
                                                     (limit === Infinity)
                                                     ||
@@ -541,6 +553,11 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                                                         return (connectionLimit > connectedCount);
                                                     })()
                                                 ),
+                                                
+                                                
+                                                
+                                                // handlers:
+                                                onMouseDown : handleMouseDown,
                                             },
                                             
                                             
