@@ -145,18 +145,10 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
     
     // watchdog for value => validCables:
     useIsomorphicLayoutEffect(() => {
-        // conditions:
-        if (!value?.length) {
-            setCables([]);
-            return;
-        } // if
-        
-        
-        
         // setups:
         const newValidCables   : typeof validCables = [];
         const oldInvalidCables : Connection[] = [];
-        for (const val of value) {
+        for (const val of (value ?? [])) {
             const {sideA, sideB} = val;
             const elmA = nodeRefs.get(sideA) ?? null;
             const elmB = nodeRefs.get(sideB) ?? null;
@@ -180,7 +172,7 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
         
         // trigger onValueChange if there's some invalid cables:
         if (onValueChange && oldInvalidCables.length) {
-            triggerValueChange(value.filter((val) => !oldInvalidCables.includes(val)));
+            triggerValueChange((value ?? []).filter((val) => !oldInvalidCables.includes(val)));
         } // if
     }, [value]);
     
