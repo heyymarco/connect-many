@@ -89,14 +89,14 @@ export const Cable = (props: CableProps): JSX.Element|null => {
             .map(() => ({} as SimulatorState))
         );
         
-        const firstNodeState = simulatorState[0];
-        const lastNodeState  = simulatorState[simulatorState.length - 1];
-        
-        // update head & tail:
-        firstNodeState.fx = headX;
-        firstNodeState.fy = headY;
-        lastNodeState.fx  = tailX;
-        lastNodeState.fy  = tailY;
+        // update head - middles - tail:
+        for (let index = 0, max = simulatorState.length - 1; index <= max; index++) {
+            const ratioIncrease = index / max;
+            const ratioDecrease = 1 - ratioIncrease;
+            
+            simulatorState[index].x = (ratioDecrease * headX) + (ratioIncrease * tailX);
+            simulatorState[index].y = (ratioDecrease * headY) + (ratioIncrease * tailY);
+        } // for
         
         simulatorStateRef.current = simulatorState;
         
@@ -131,6 +131,8 @@ export const Cable = (props: CableProps): JSX.Element|null => {
         simulatorEngineRef.current = simulatorEngine;
         
         // measure distance between head & tail:
+        const firstNodeState = simulatorState[0];
+        const lastNodeState  = simulatorState[simulatorState.length - 1];
         const distance = Math.sqrt(
             Math.pow(lastNodeState.fx - firstNodeState.fx, 2) + Math.pow(lastNodeState.fy - firstNodeState.fy, 2)
         );
