@@ -83,6 +83,11 @@ export interface ConnectManyProps
     
     
     
+    // animations:
+    magnetTransitionInterval ?: number
+    
+    
+    
     // components:
     defaultNodeComponent ?: React.ReactComponentElement<any, React.HTMLAttributes<HTMLElement>>
 }
@@ -109,6 +114,11 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
         
         
         
+        // animations:
+        magnetTransitionInterval = 150, // ms
+        
+        
+        
         // components:
         defaultNodeComponent = <CircleConnection /> as React.ReactComponentElement<any, React.HTMLAttributes<HTMLElement>>,
     ...restBasicProps} = props;
@@ -128,7 +138,9 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
     
     // effects:
     const [validCables, setValidCables] = useState<(Connection & { elmA : Element, elmB: Element })[]>([]);
-    const [draftCable , setDraftCable ] = useState<(Connection & { elmA : Element, elmB: Element|null })|null>(null);
+    const [draftCable , setDraftCable ] = useState<(Connection & { elmA : Element, elmB: Element|null, transition: number, lastX: number, lastY: number })|null>(null);
+    
+    // watchdog for value => validCables:
     useIsomorphicLayoutEffect(() => {
         // conditions:
         if (!value?.length) {
@@ -168,6 +180,7 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
         
     }, [value]);
     
+    // convert validCables & draftCable => cables:
     const refreshCables = useEvent((): void => {
         // conditions:
         const svgElm = svgRef.current;
@@ -177,7 +190,9 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
         
         const newCables : typeof cables = [];
         const {left: svgLeft, top: svgTop } = svgElm.getBoundingClientRect();
-        for (const {sideA, elmA, sideB, elmB} of [...validCables, ...(draftCable ? [draftCable] : [])]) {
+        for (const cable of [...validCables, ...(draftCable ? [draftCable] : [])]) {
+            const {sideA, elmA, sideB, elmB} = cable;
+            
             const rectA = elmA.getBoundingClientRect();
             const rectB = elmB?.getBoundingClientRect();
             
@@ -185,18 +200,27 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
             const headY =         (rectA.top  - svgTop ) + (rectA.height / 2);
             const tailX = rectB ? (rectB.left - svgLeft) + (rectB.width  / 2) : pointerPositionRef.current.x;
             const tailY = rectB ? (rectB.top  - svgTop ) + (rectB.height / 2) : pointerPositionRef.current.y;
+            
+            const isDraftCable = 'transition' in cable;
+            if (isDraftCable && !!rectB) {
+                cable.lastX = tailX;
+                cable.lastY = tailY;
+            } // if
+            
             newCables.push({
                 sideA,
                 headX,
                 headY,
                 
-                sideB,
-                tailX,
-                tailY,
+                sideB : !isDraftCable ? sideB : '',
+                tailX : !isDraftCable ? tailX : ((cable.lastX * cable.transition) + (pointerPositionRef.current.x * (1 - cable.transition))),
+                tailY : !isDraftCable ? tailY : ((cable.lastY * cable.transition) + (pointerPositionRef.current.y * (1 - cable.transition))),
             });
         } // for
         setCables(newCables);
     });
+    
+    // watchdog for onResize => refreshCables():
     useIsomorphicLayoutEffect(() => {
         // conditions:
         const svgElm = svgRef.current;
@@ -220,6 +244,63 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
             resizeObserver.disconnect();
         };
     }, [validCables, draftCable]);
+    
+    // draft cable magnetic transition:
+    useIsomorphicLayoutEffect(() => {
+        // conditions:
+        if (!draftCable) return; // no draft cable => ignore
+        if (!!draftCable.elmB ? (draftCable.transition >= 1) : (draftCable.transition <= 0)) return; // magnetic transition done => ignore
+        
+        
+        
+        // handlers:
+        const transitionSpeed = (!!draftCable.elmB ? +1 : -1) / magnetTransitionInterval;
+        let previousTime : number|undefined = undefined;
+        const handleAnimate : FrameRequestCallback = (currentTime) => {
+            if (previousTime === undefined) {
+                previousTime = currentTime;
+                cancelAnimating = requestAnimationFrame(handleAnimate);
+                return;
+            } // if
+            const deltaTime = currentTime - previousTime;
+            previousTime = currentTime;
+            
+            const remainingTransition = !!draftCable.elmB ? (1 - draftCable.transition) : draftCable.transition;
+            let deltaTransition = transitionSpeed * deltaTime;
+            if (!!draftCable.elmB) {
+                deltaTransition = Math.min(Math.max(0, deltaTransition), +remainingTransition);
+            }
+            else {
+                deltaTransition = Math.max(Math.min(0, deltaTransition), -remainingTransition)
+            } // if
+            draftCable.transition += deltaTransition;
+            
+            
+            
+            if (Math.abs(remainingTransition) > 0.01) {
+                cancelAnimating = requestAnimationFrame(handleAnimate);
+            }
+            else {
+                draftCable.transition = !!draftCable.elmB ? 1 : 0;
+            } // if
+            
+            
+            
+            setDraftCable({...draftCable});
+        };
+        
+        
+        
+        // setups:
+        let cancelAnimating = requestAnimationFrame(handleAnimate);
+        
+        
+        
+        // cleanups:
+        return () => {
+            cancelAnimationFrame(cancelAnimating);
+        };
+    }, [draftCable, magnetTransitionInterval]);
     
     
     
@@ -253,8 +334,11 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                 if ((draftCable.sideB !== selectedNode.id) || (draftCable.elmB !== selectedNode.elm)) {
                     setDraftCable({
                         ...draftCable,
-                        sideB : selectedNode.id,
-                        elmB  : selectedNode.elm,
+                        
+                        sideB      : selectedNode.id,
+                        elmB       : selectedNode.elm,
+                        
+                        transition : 0, // restart attach transition from cursor to node
                     });
                 } // if
             }
@@ -262,8 +346,9 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                 if ((draftCable.sideB !== '') || (draftCable.elmB !== null)) {
                     setDraftCable({
                         ...draftCable,
-                        sideB : '',
-                        elmB  : null,
+                        
+                        sideB      : '',
+                        elmB       : null,
                     });
                 } // if
             } // if
@@ -292,11 +377,15 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
         const selectedNode = getNodeFromPoint(event.clientX, event.clientY);
         if (!selectedNode) return;
         setDraftCable({
-            sideA : selectedNode.id,
-            elmA  : selectedNode.elm,
+            sideA      : selectedNode.id,
+            elmA       : selectedNode.elm,
             
-            sideB : '',
-            elmB  : null,
+            sideB      : '',
+            elmB       : null,
+            
+            transition : 0,
+            lastX      : 0,
+            lastY      : 0,
         });
     });
     const handleMouseUp   = useEvent<React.MouseEventHandler<HTMLElement>>(() => {
