@@ -425,18 +425,36 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
         
         
         const selectedNode = getNodeFromPoint(event.clientX, event.clientY);
-        if (!selectedNode) return;
-        setDraftCable({
-            sideA      : selectedNode.id,
-            elmA       : selectedNode.elm,
-            
-            sideB      : '',
-            elmB       : null,
-            
-            transition : 0,
-            lastX      : 0,
-            lastY      : 0,
-        });
+        if (
+            // has selection node:
+            selectedNode
+        ) {
+            const startingNodeId = selectedNode.id;
+            if (
+                // still within connection limit:
+                ((): boolean => {
+                    const allNodes = Object.values(connections).flatMap((group) => group.nodes);
+                    const targetNode = allNodes.find(({id}) => (id === startingNodeId));
+                    if (!targetNode) return false; // not registered
+                    const connectionLimit = targetNode.limit ?? Infinity;
+                    if (connectionLimit === Infinity) return true;
+                    const connectedCount = (value ?? []).filter(({sideA, sideB}) => (sideA === startingNodeId) || (sideB === startingNodeId)).length;
+                    return (connectionLimit > connectedCount);
+                })()
+            ) {
+                setDraftCable({
+                    sideA      : selectedNode.id,
+                    elmA       : selectedNode.elm,
+                    
+                    sideB      : '',
+                    elmB       : null,
+                    
+                    transition : 0,
+                    lastX      : 0,
+                    lastY      : 0,
+                });
+            } // if
+        } // if
     });
     const handleMouseUp            = useEvent<React.MouseEventHandler<HTMLElement>>(() => {
         pointerActiveRef.current = false;
