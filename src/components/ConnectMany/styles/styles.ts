@@ -174,7 +174,7 @@ const usesConnectManyLayout = () => {
                     ...children('path', {
                         ...rule(':not(.draft)', {
                             // appearances:
-                            opacity: 0.5,
+                            opacity: conns.cableOpacityDragging,
                         }),
                     }),
                 }),

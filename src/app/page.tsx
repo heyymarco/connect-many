@@ -34,10 +34,13 @@ export default function Home() {
                         label : <>Inputs</>,
                         nodes : [
                             { id: 'inp-1', label: '1' , limit: 1         },
-                            { id: 'inp-2', label: '2' , limit: 1, nodeComponent: <CircleConnection theme='special' /> },
+                            { id: 'inp-2', label: '2' , limit: 3, nodeComponent: <CircleConnection theme='special' size={size} /> },
                             { id: 'inp-3', label: '3' , limit: 1, enabled: false },
                             { id: 'inp-4', label: '4' , limit: 1         },
                             { id: 'inp-5', label: '5' , limit: 1         },
+                            { id: 'inp-6', label: '6' , limit: 1         },
+                            { id: 'inp-7', label: '7' , limit: 1         },
+                            { id: 'inp-8', label: '8' , limit: 1         },
                         ],
                     },
                     outputs : {
@@ -47,6 +50,8 @@ export default function Home() {
                             { id: 'out-2', label: '2', limit: Infinity  },
                             { id: 'out-3', label: '3', limit: Infinity  },
                             { id: 'out-4', label: '4', limit: Infinity, enabled: false },
+                            { id: 'out-5', label: '5', limit: Infinity  },
+                            { id: 'out-6', label: '6', limit: Infinity  },
                         ],
                     },
                     // mixed : {
@@ -69,7 +74,7 @@ export default function Home() {
                 
                 
                 // components:
-                defaultNodeComponent={<CircleConnection theme='gold' />}
+                defaultNodeComponent={<CircleConnection theme='gold' size={size} />}
                 cableComponent={<Cable theme='cable' />}
             />
             <List theme='primary'>
