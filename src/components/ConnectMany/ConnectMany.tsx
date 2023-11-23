@@ -343,12 +343,14 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                 // not point to the node itself:
                 ((draftCable.sideA !== selectedNode.id) && (draftCable.elmA !== selectedNode.elm))
             ) {
+                const startingNodeId = draftCable.sideA
+                const selectedNodeId = selectedNode.id;
                 if (
                     // not point to self group:
                     ((): boolean => {
                         const nodeGroups = Object.values(connections).map((group) => group.nodes.map((node) => node.id));
-                        const sideAGroup        = nodeGroups.find((nodeGroup) => nodeGroup.includes(draftCable.sideA));
-                        const selectedNodeGroup = nodeGroups.find((nodeGroup) => nodeGroup.includes(selectedNode.id));
+                        const sideAGroup        = nodeGroups.find((nodeGroup) => nodeGroup.includes(startingNodeId));
+                        const selectedNodeGroup = nodeGroups.find((nodeGroup) => nodeGroup.includes(selectedNodeId));
                         return (sideAGroup !== selectedNodeGroup);
                     })()
                     &&
@@ -356,22 +358,33 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                     ((): boolean => {
                         if (!value) return true; // passed
                         if (value.some(({sideA, sideB}) =>
-                            ((draftCable.sideA === sideA) && (selectedNode.id === sideB))
+                            ((startingNodeId === sideA) && (selectedNodeId === sideB))
                             ||
-                            ((draftCable.sideA === sideB) && (selectedNode.id === sideA))
+                            ((startingNodeId === sideB) && (selectedNodeId === sideA))
                         )) return false; // failed
                         return true; // passed
+                    })()
+                    &&
+                    // still within connection limit:
+                    ((): boolean => {
+                        const allNodes = Object.values(connections).flatMap((group) => group.nodes);
+                        const targetNode = allNodes.find(({id}) => (id === selectedNodeId));
+                        if (!targetNode) return false; // not registered
+                        const connectionLimit = targetNode.limit ?? Infinity;
+                        if (connectionLimit === Infinity) return true;
+                        const connectedCount = (value ?? []).filter(({sideA, sideB}) => (sideA === selectedNodeId) || (sideB === selectedNodeId)).length;
+                        return (connectionLimit > connectedCount);
                     })()
                 ) {
                     if (
                         // not already previously magnetized:
-                        ((draftCable.sideB !== selectedNode.id) && (draftCable.elmB !== selectedNode.elm))
+                        ((draftCable.sideB !== selectedNodeId) && (draftCable.elmB !== selectedNode.elm))
                     ) {
                         // magnetize:
                         setDraftCable({
                             ...draftCable,
                             
-                            sideB      : selectedNode.id,
+                            sideB      : selectedNodeId,
                             elmB       : selectedNode.elm,
                             
                             transition : 0, // restart attach transition from cursor to node
