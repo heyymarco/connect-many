@@ -95,8 +95,8 @@ export const Cable = (props: CableProps): JSX.Element|null => {
         // positions:
         headX = 0,
         headY = 0,
-        tailX = 0,
-        tailY = 0,
+        tailX = 10,
+        tailY = 10,
         
         
         
