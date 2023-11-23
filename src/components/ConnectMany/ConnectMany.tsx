@@ -60,8 +60,8 @@ export type ConnectionConfig = {
     [key in string] : ConnectionGroup
 }
 export interface Connection {
-    sideA : string
-    sideB : string
+    sideA : string|number
+    sideB : string|number
 }
 export interface ConnectManyProps
     extends
@@ -336,16 +336,37 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
         
         if (draftCable) {
             const selectedNode = getNodeFromPoint(event.clientX, event.clientY);
-            if (selectedNode && (draftCable.sideA !== selectedNode.id) && (draftCable.elmA !== selectedNode.elm)) {
-                if ((draftCable.sideB !== selectedNode.id) || (draftCable.elmB !== selectedNode.elm)) {
-                    setDraftCable({
-                        ...draftCable,
-                        
-                        sideB      : selectedNode.id,
-                        elmB       : selectedNode.elm,
-                        
-                        transition : 0, // restart attach transition from cursor to node
-                    });
+            if (
+                // has selection node:
+                selectedNode
+                &&
+                // not point to the node itself:
+                ((draftCable.sideA !== selectedNode.id) && (draftCable.elmA !== selectedNode.elm))
+            ) {
+                if (
+                    // not point to self group:
+                    ((): boolean => {
+                        const nodeGroups = Object.values(connections).map((group) => group.nodes.map((node) => node.id));
+                        const sideAGroup        = nodeGroups.find((nodeGroup) => nodeGroup.includes(draftCable.sideA));
+                        const selectedNodeGroup = nodeGroups.find((nodeGroup) => nodeGroup.includes(selectedNode.id));
+                        console.log({selected: selectedNode.id, sideAGroup, selectedNodeGroup, test: sideAGroup === selectedNodeGroup})
+                        return (sideAGroup !== selectedNodeGroup);
+                    })()
+                ) {
+                    if (
+                        // not already previously magnetized:
+                        ((draftCable.sideB !== selectedNode.id) && (draftCable.elmB !== selectedNode.elm))
+                    ) {
+                        // magnetize:
+                        setDraftCable({
+                            ...draftCable,
+                            
+                            sideB      : selectedNode.id,
+                            elmB       : selectedNode.elm,
+                            
+                            transition : 0, // restart attach transition from cursor to node
+                        });
+                    } // if
                 } // if
             }
             else {
@@ -365,14 +386,14 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
         };
     });
     
-    const getNodeFromPoint         = useEvent((clientX: number, clientY: number): { id: string, elm: Element }|null => {
+    const getNodeFromPoint         = useEvent((clientX: number, clientY: number): { id: string|number, elm: Element }|null => {
         const selectedNodeElms = document.elementsFromPoint(clientX, clientY);
         if (!selectedNodeElms.length) return null;
         const selectedNode = Array.from(nodeRefs.entries()).find(([key, elm]) => !!elm && selectedNodeElms.includes(elm));
         if (!selectedNode) return null;
         const [id, elm] = selectedNode;
         if (!elm) return null;
-        return { id: `${id}`, elm };
+        return { id: id as (string|number), elm };
     });
     const handleMouseDown          = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
         pointerActiveRef.current = true;
