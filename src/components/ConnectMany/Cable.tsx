@@ -226,6 +226,7 @@ export const Cable = (props: CableProps): JSX.Element|null => {
             {...restGenericProps}
             ref={pathRef}
             className={`${styleSheet.cable} ${themeableVariant.class}`}
+            tabIndex={0}
         />
     );
 }

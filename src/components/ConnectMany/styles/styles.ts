@@ -2,6 +2,7 @@
 import {
     // writes css in javascript:
     rule,
+    states,
     children,
     style,
     scope,
@@ -16,6 +17,11 @@ import {
 import {
     // a spacer (gap) management system:
     spacers,
+    
+    
+    
+    // removes browser's default stylesheet:
+    stripoutFocusableElement,
     
     
     
@@ -275,6 +281,11 @@ const usesCableLayout = () => {
     
     
     return style({
+        // resets:
+        ...stripoutFocusableElement(), // clear browser's default styles
+        
+        
+        
         // layouts:
         ...style({
             // appearances:
@@ -298,11 +309,8 @@ const usesCableLayout = () => {
             
             
             // borders:
-            stroke          : backgroundVars.backgColorFn,
-            strokeWidth     : conns.cableWidth,
-            ...rule(':hover', {
-                strokeWidth : conns.cableWidthHover,
-            }),
+            stroke        : backgroundVars.backgColorFn,
+            strokeWidth   : conns.cableWidth,
             strokeLinecap : 'round',
         }),
         
@@ -325,6 +333,18 @@ const usesCableVariants = () => {
         ...themeableRule(),
     });
 };
+const usesCableStates = () => {
+    return style({
+        ...states([
+            rule([':hover', ':focus'], {
+                strokeWidth : conns.cableWidthHover,
+            }),
+            rule(':focus', {
+                stroke: 'red',
+            }),
+        ]),
+    });
+};
 
 
 
@@ -343,5 +363,6 @@ export default () => [
     scope('cable', {
         ...usesCableLayout(),
         ...usesCableVariants(),
+        ...usesCableStates(),
     }),
 ];
