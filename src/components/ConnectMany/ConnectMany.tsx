@@ -352,6 +352,17 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                         console.log({selected: selectedNode.id, sideAGroup, selectedNodeGroup, test: sideAGroup === selectedNodeGroup})
                         return (sideAGroup !== selectedNodeGroup);
                     })()
+                    &&
+                    // not already having exact connection:
+                    ((): boolean => {
+                        if (!value) return true; // passed
+                        if (value.some(({sideA, sideB}) =>
+                            ((draftCable.sideA === sideA) && (selectedNode.id === sideB))
+                            ||
+                            ((draftCable.sideA === sideB) && (selectedNode.id === sideA))
+                        )) return false; // failed
+                        return true; // passed
+                    })()
                 ) {
                     if (
                         // not already previously magnetized:
