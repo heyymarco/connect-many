@@ -7,7 +7,7 @@ import Color                from 'color'                // color utilities
 
 // Theme:
 
-const primaryCol = Color('#9FA742').lighten(0.5);
+const primaryCol = Color('#9FA742').lighten(0.8);
 defineTheme('primary', primaryCol);
 
 const goldCol = Color('#D19B3E');
@@ -15,9 +15,9 @@ defineTheme('gold', goldCol);
 // @ts-ignore
 colorValues.goldBold = goldCol.darken(0.8);
 
-const cableCol = Color('#8B4EF0');
+const cableCol = Color('#0083D0');
 defineTheme('cable', cableCol);
 
-const brokenCol = Color('#323232').lighten(0.9);
-defineTheme('broken', brokenCol);
+const specialCol = Color('#FFD43F');
+defineTheme('special', specialCol);
 

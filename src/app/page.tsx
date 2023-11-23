@@ -4,7 +4,7 @@ import { Cable } from '@/components/ConnectMany/Cable'
 import styles from './page.module.css'
 import { ConnectMany, Connection } from '@/components/ConnectMany'
 import { CircleConnection } from '@/components/ConnectMany/CircleConnection'
-import { Button, List, ListItem } from '@reusable-ui/components'
+import { Button, Group, Label, List, ListItem, Radio, SizeName } from '@reusable-ui/components'
 import { useState } from 'react'
 
 
@@ -14,6 +14,7 @@ export default function Home() {
         { sideA: 'inp-1', sideB: 'out-3' },
         { sideA: 'inp-4', sideB: 'out-1' },
     ]);
+    const [size, setSize] = useState<SizeName>('lg');
     
     
     
@@ -21,7 +22,7 @@ export default function Home() {
         <main className={styles.main}>
             <ConnectMany
                 // variants:
-                size='md' // sm|md|lg
+                size={size} // sm|md|lg
                 theme='primary'
                 mild={true}
                 
@@ -33,7 +34,7 @@ export default function Home() {
                         label : <>Inputs</>,
                         nodes : [
                             { id: 'inp-1', label: '1' , limit: 1         },
-                            { id: 'inp-2', label: '2' , limit: 1, nodeComponent: <CircleConnection theme='broken' /> },
+                            { id: 'inp-2', label: '2' , limit: 1, nodeComponent: <CircleConnection theme='special' /> },
                             { id: 'inp-3', label: '3' , limit: 1, enabled: false },
                             { id: 'inp-4', label: '4' , limit: 1         },
                             { id: 'inp-5', label: '5' , limit: 1         },
@@ -83,6 +84,22 @@ export default function Home() {
                     </ListItem>
                 )}
             </List>
+            <Group theme='primary'>
+                <Label>
+                    Size:
+                </Label>
+                {(['sm', 'md', 'lg'] as SizeName[]).map((sizeOption) =>
+                    <Radio
+                        key={sizeOption}
+                        active={(sizeOption === size)}
+                        onActiveChange={() => setSize(sizeOption)}
+                        mild={true}
+                        nude={false}
+                    >
+                        {sizeOption}
+                    </Radio>
+                )}
+            </Group>
         </main>
     )
 }
