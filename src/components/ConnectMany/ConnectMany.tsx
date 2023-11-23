@@ -313,7 +313,8 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
     
     
     // handlers:
-    const [isDragging, setIsDragging] = useState<string|number|false>(false);
+    const [isDragging       , setIsDragging       ] = useState<string|number|false>(false);
+    const [isDroppingAllowed, setIsDroppingAllowed] = useState<boolean>(true);
     const pointerPositionRef          = useRef<{x: number, y: number}>({x: 0, y: 0});
     
     const calculatePointerPosition    = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
@@ -378,6 +379,10 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                         return (connectionLimit > connectedCount);
                     })()
                 ) {
+                    if (!isDroppingAllowed) setIsDroppingAllowed(true);
+                    
+                    
+                    
                     if (
                         // not already previously magnetized:
                         ((draftCable.sideB !== selectedNodeId) && (draftCable.elmB !== selectedNode.elm))
@@ -392,9 +397,16 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                             transition : 0, // restart attach transition from cursor to node
                         });
                     } // if
+                }
+                else {
+                    if (isDroppingAllowed) setIsDroppingAllowed(false);
                 } // if
             }
             else {
+                if (isDroppingAllowed) setIsDroppingAllowed(false);
+                
+                
+                
                 if ((draftCable.sideB !== '') || (draftCable.elmB !== null)) {
                     setDraftCable({
                         ...draftCable,
@@ -542,6 +554,15 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                                             {
                                                 // identifiers:
                                                 key             : nodeId || nodeIndex,
+                                                
+                                                
+                                                
+                                                // classes:
+                                                className : (
+                                                    (isDragging !== nodeId)
+                                                    ? ''
+                                                    : (isDroppingAllowed ? 'dodrop' : 'nodrop')
+                                                ),
                                                 
                                                 
                                                 

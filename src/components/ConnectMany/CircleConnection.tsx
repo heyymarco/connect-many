@@ -43,7 +43,7 @@ export const CircleConnection = (props: CircleConnectionProps): JSX.Element|null
             
             
             // classes:
-            className={styleSheet.circleConnection}
+            className={`${styleSheet.circleConnection} ${props.className}`}
         />
     );
 };

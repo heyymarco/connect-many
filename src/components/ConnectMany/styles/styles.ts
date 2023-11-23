@@ -126,10 +126,13 @@ export default () => [
         aspectRatio: '1 / 1',
         padding: 0,
         userSelect: 'none',
-        ...rule(':not(:is([aria-disabled]:not([aria-disabled="false"]), [aria-readonly]:not([aria-readonly="false"])))', {
+        ...rule('.dodrop', {
+            cursor: 'crosshair'
+        }),
+        ...rule(':not(:is(.dodrop, .nodrop, [aria-disabled]:not([aria-disabled="false"]), [aria-readonly]:not([aria-readonly="false"])))', {
             cursor: 'move',
         }),
-        ...rule(':is([aria-disabled]:not([aria-disabled="false"]), [aria-readonly]:not([aria-readonly="false"]))', {
+        ...rule(':is(.nodrop, [aria-disabled]:not([aria-disabled="false"]), [aria-readonly]:not([aria-readonly="false"]))', {
             cursor: 'not-allowed',
         }),
     }, { specificityWeight: 2 }),
