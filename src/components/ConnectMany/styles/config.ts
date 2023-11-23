@@ -28,7 +28,8 @@ export const [conns, connValues, cssConnConfig] = cssConfig(() => {
         cableWidthHoverSm    : '0.3rem'                 as CssKnownProps['strokeWidth'  ],
         cableWidthHoverMd    : '0.4rem'                 as CssKnownProps['strokeWidth'  ],
         cableWidthHoverLg    : '0.45rem'                as CssKnownProps['strokeWidth'  ],
-        cableOpacityDragging : 0.7                      as CssKnownProps['opacity'     ],
+        cableOpacityDragging : 0.7                      as CssKnownProps['opacity'      ],
+        cableOpacityBlur     : 0.4                      as CssKnownProps['opacity'      ],
         
         
         

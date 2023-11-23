@@ -339,8 +339,11 @@ const usesCableStates = () => {
             rule([':hover', ':focus'], {
                 strokeWidth : conns.cableWidthHover,
             }),
-            rule(':focus', {
-                stroke: 'red',
+            // rule(':focus', {
+            //     stroke: 'red',
+            // }),
+            rule('.blur', {
+                opacity : conns.cableOpacityBlur,
             }),
         ]),
     });

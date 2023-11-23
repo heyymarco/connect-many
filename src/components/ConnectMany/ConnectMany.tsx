@@ -141,6 +141,7 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
     
     // states:
     const [cables, setCables] = useState<CableDef[]>([]);
+    const [focusedCable, setFocusedCable] = useState<CableDef|null>(null);
     
     
     
@@ -602,8 +603,13 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                 </div>
             )}
             <svg className='cables' ref={svgRef}>
-                {cables.map(({sideA, headX, headY, sideB, tailX, tailY}) =>
-                    React.cloneElement(cableComponent,
+                {cables.map((cable) => {
+                    const {sideA, headX, headY, sideB, tailX, tailY} = cable;
+                    
+                    
+                    
+                    // jsx:
+                    return React.cloneElement(cableComponent,
                         // props:
                         {
                             // identifiers:
@@ -612,7 +618,7 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                             
                             
                             // classes:
-                            className : !sideB ? 'draft' : undefined,
+                            className : `${!sideB ? 'draft' : ''} ${(!!focusedCable && (focusedCable !== cable)) ? 'blur' : ''}`,
                             
                             
                             
@@ -626,9 +632,19 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                             
                             // behaviors:
                             precisionLevel,
+                            
+                            
+                            
+                            // handlers:
+                            onFocus : () => {
+                                setFocusedCable(cable);
+                            },
+                            onBlur  : () => {
+                                setFocusedCable((current) => (current === cable) ? null : current);
+                            },
                         }
                     )
-                )}
+                })}
             </svg>
         </Basic>
     );
