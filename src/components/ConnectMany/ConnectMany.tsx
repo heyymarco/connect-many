@@ -17,6 +17,7 @@ import {
     // react helper hooks:
     useIsomorphicLayoutEffect,
     useEvent,
+    useScheduleTriggerEvent,
 }                           from '@reusable-ui/core'                // a set of reusable-ui packages which are responsible for building any component
 
 // reusable-ui components:
@@ -80,6 +81,7 @@ export interface ConnectManyProps
     
     // values:
     value ?: Connection[]
+    onValueChange ?: (newValue: Connection[]) => void
     
     
     
@@ -111,6 +113,7 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
         
         // values:
         value,
+        onValueChange,
         
         
         
@@ -152,16 +155,13 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
         
         // setups:
         const newValidCables   : typeof validCables = [];
-        const newInvalidCables : Connection[] = [];
+        const oldInvalidCables : Connection[] = [];
         for (const val of value) {
             const {sideA, sideB} = val;
             const elmA = nodeRefs.get(sideA) ?? null;
             const elmB = nodeRefs.get(sideB) ?? null;
             
-            if (!elmA || !elmB) {
-                newInvalidCables.push(val);
-            }
-            else {
+            if (elmA && elmB) {
                 newValidCables.push({
                     sideA,
                     elmA,
@@ -169,15 +169,19 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                     sideB,
                     elmB,
                 });
+            }
+            else {
+                oldInvalidCables.push(val);
             } // if
         } //
         setValidCables(newValidCables);
         
-        // remove invalid connections, if any:
-        if (newInvalidCables.length) {
-            // TODO: trigger onValueChange
-        } // if
         
+        
+        // trigger onValueChange if there's some invalid cables:
+        if (onValueChange && oldInvalidCables.length) {
+            triggerValueChange(value.filter((val) => !oldInvalidCables.includes(val)));
+        } // if
     }, [value]);
     
     // convert validCables & draftCable => cables:
@@ -304,9 +308,19 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
     
     
     
+    // events:
+    const scheduleTriggerEvent     = useScheduleTriggerEvent();
+    const triggerValueChange       = useEvent((newValue: Connection[]): void => {
+        if (onValueChange) scheduleTriggerEvent(() => { // runs the `onValueChange` event *next after* current macroTask completed
+            onValueChange(newValue);
+        });
+    });
+    
+    
+    
     // handlers:
-    const pointerActiveRef   = useRef<boolean>(false);
-    const pointerPositionRef = useRef<{x: number, y: number}>({x: 0, y: 0});
+    const pointerActiveRef         = useRef<boolean>(false);
+    const pointerPositionRef       = useRef<{x: number, y: number}>({x: 0, y: 0});
     
     const calculatePointerPosition = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
         const viewportRect = event.currentTarget.getBoundingClientRect();
@@ -322,7 +336,7 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
         if (relativeY > (viewportRect.height - borderTopWidth  - borderBottomWidth)) return;
         pointerPositionRef.current = {x: relativeX, y: relativeY};
     });
-    const handleMouseMove = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
+    const handleMouseMove          = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
         if (!pointerActiveRef.current) return;
         calculatePointerPosition(event);
         
@@ -359,7 +373,7 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
         };
     });
     
-    const getNodeFromPoint = useEvent((clientX: number, clientY: number): { id: string, elm: Element }|null => {
+    const getNodeFromPoint         = useEvent((clientX: number, clientY: number): { id: string, elm: Element }|null => {
         const selectedNodeElms = document.elementsFromPoint(clientX, clientY);
         if (!selectedNodeElms.length) return null;
         const selectedNode = Array.from(nodeRefs.entries()).find(([key, elm]) => !!elm && selectedNodeElms.includes(elm));
@@ -368,7 +382,7 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
         if (!elm) return null;
         return { id: `${id}`, elm };
     });
-    const handleMouseDown = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
+    const handleMouseDown          = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
         pointerActiveRef.current = true;
         calculatePointerPosition(event);
         
@@ -388,7 +402,7 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
             lastY      : 0,
         });
     });
-    const handleMouseUp   = useEvent<React.MouseEventHandler<HTMLElement>>(() => {
+    const handleMouseUp            = useEvent<React.MouseEventHandler<HTMLElement>>(() => {
         pointerActiveRef.current = false;
         
         
@@ -405,8 +419,21 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                 ...validCables,
                 newValidCable,
             ]);
+            
+            
+            // trigger onValueChange of a new cable:
+            if (onValueChange) {
+                triggerValueChange([
+                    ...(value ?? []),
+                    
+                    {
+                        sideA : draftCable.sideA,
+                        sideB : draftCable.sideB,
+                    },
+                ]);
+            } // if
         } // if
-        setDraftCable(null);
+        if (draftCable) setDraftCable(null);
     });
     
     
