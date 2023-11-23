@@ -33,7 +33,7 @@ export default function Home() {
                         label : <>Inputs</>,
                         nodes : [
                             { id: 'inp-1', label: '1' , limit: 1         },
-                            { id: 'inp-2', label: '2' , limit: 1, nodeComponent: <CircleConnection theme='dark' /> },
+                            { id: 'inp-2', label: '2' , limit: 1, nodeComponent: <CircleConnection theme='broken' /> },
                             { id: 'inp-3', label: '3' , limit: 1, enabled: false },
                             { id: 'inp-4', label: '4' , limit: 1         },
                             { id: 'inp-5', label: '5' , limit: 1         },
@@ -68,8 +68,8 @@ export default function Home() {
                 
                 
                 // components:
-                defaultNodeComponent={<CircleConnection theme='warning' />}
-                cableComponent={<Cable theme='danger' />}
+                defaultNodeComponent={<CircleConnection theme='gold' />}
+                cableComponent={<Cable theme='cable' />}
             />
             <List theme='primary'>
                 <ListItem mild={false}>Connections:</ListItem>
