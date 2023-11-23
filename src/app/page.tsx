@@ -1,6 +1,7 @@
 'use client'
 
 import { Cable } from '@/components/ConnectMany/Cable'
+import './globals.css'
 import styles from './page.module.css'
 import { ConnectMany, Connection } from '@/components/ConnectMany'
 import { CircleConnection } from '@/components/ConnectMany/CircleConnection'
