@@ -51,6 +51,7 @@ export interface ConnectionNode {
     id             : string|number
     label         ?: React.ReactNode
     limit         ?: number
+    enabled       ?: boolean
     nodeComponent ?: React.ReactComponentElement<any, ControlProps<Element>>
 }
 export interface ConnectionGroup {
@@ -528,7 +529,7 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                 <div key={groupKey} className='group'>
                     {!!groupName && <div className='label'>{groupName}</div>}
                     <div className='nodes'>
-                        {nodes.map(({id: nodeId, label, limit = Infinity, nodeComponent = defaultNodeComponent}, nodeIndex) => {
+                        {nodes.map(({id: nodeId, label, limit = Infinity, enabled = true, nodeComponent = defaultNodeComponent}, nodeIndex) => {
                             
                             
                             
@@ -577,6 +578,7 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                                                         return (connectionLimit > connectedCount);
                                                     })()
                                                 ),
+                                                enabled : enabled,
                                                 
                                                 
                                                 

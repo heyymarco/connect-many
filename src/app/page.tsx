@@ -31,8 +31,8 @@ export default function Home() {
                         label : <>Inputs</>,
                         nodes : [
                             { id: 'inp-1', label: '1' , limit: 1         },
-                            { id: 'inp-2', label: '2' , limit: 1, nodeComponent: <CircleConnection theme='danger' enabled={false} /> },
-                            { id: 'inp-3', label: '3' , limit: 1         },
+                            { id: 'inp-2', label: '2' , limit: 1, nodeComponent: <CircleConnection theme='dark' /> },
+                            { id: 'inp-3', label: '3' , limit: 1, enabled: false },
                             { id: 'inp-4', label: '4' , limit: 1         },
                             { id: 'inp-5', label: '5' , limit: 1         },
                         ],
@@ -43,7 +43,7 @@ export default function Home() {
                             { id: 'out-1', label: '1', limit: Infinity  },
                             { id: 'out-2', label: '2', limit: Infinity  },
                             { id: 'out-3', label: '3', limit: Infinity  },
-                            { id: 'out-4', label: '4', limit: Infinity  },
+                            { id: 'out-4', label: '4', limit: Infinity, enabled: false },
                         ],
                     },
                     // mixed : {
