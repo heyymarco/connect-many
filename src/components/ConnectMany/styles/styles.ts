@@ -87,7 +87,7 @@ export default () => [
                 strokeWidth: '0.3rem',
                 strokeLinecap: 'round',
                 cursor: 'pointer',
-                ...rule(':hover', {
+                ...rule([':hover', '.draft'], {
                     opacity: 0.5,
                 }),
                 filter: [[

@@ -470,10 +470,15 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                 </div>
             )}
             <svg className='cables' ref={svgRef}>
-                {cables.map(({sideA, headX, headY, sideB, tailX, tailY}, cableIndex) =>
+                {cables.map(({sideA, headX, headY, sideB, tailX, tailY}) =>
                     <Cable
                         // identifiers:
                         key={`${sideA}/${sideB}`}
+                        
+                        
+                        
+                        // classes:
+                        className={!sideB ? 'draft' : undefined}
                         
                         
                         
