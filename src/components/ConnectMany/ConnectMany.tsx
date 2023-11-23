@@ -25,6 +25,7 @@ import {
     // base-components:
     BasicProps,
     Basic,
+    ControlProps,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
 // internal components:
@@ -50,7 +51,7 @@ export interface ConnectionNode {
     id             : string|number
     label         ?: React.ReactNode
     limit         ?: number
-    nodeComponent ?: React.ReactComponentElement<any, React.HTMLAttributes<HTMLElement>>
+    nodeComponent ?: React.ReactComponentElement<any, ControlProps<Element>>
 }
 export interface ConnectionGroup {
     label ?: React.ReactNode
@@ -91,7 +92,7 @@ export interface ConnectManyProps
     
     
     // components:
-    defaultNodeComponent ?: React.ReactComponentElement<any, React.HTMLAttributes<HTMLElement>>
+    defaultNodeComponent ?: React.ReactComponentElement<any, ControlProps<Element>>
 }
 type CableDef = Connection & Pick<CableProps, 'headX'|'headY'|'tailX'|'tailY'>
 export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
@@ -123,8 +124,9 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
         
         
         // components:
-        defaultNodeComponent = <CircleConnection /> as React.ReactComponentElement<any, React.HTMLAttributes<HTMLElement>>,
+        defaultNodeComponent = <CircleConnection /> as React.ReactComponentElement<any, ControlProps<Element>>,
     ...restBasicProps} = props;
+    const allNodes = Object.values(connections).flatMap((group) => group.nodes);
     
     
     
@@ -367,10 +369,7 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                     &&
                     // still within connection limit:
                     ((): boolean => {
-                        const allNodes = Object.values(connections).flatMap((group) => group.nodes);
-                        const targetNode = allNodes.find(({id}) => (id === selectedNodeId));
-                        if (!targetNode) return false; // not registered
-                        const connectionLimit = targetNode.limit ?? Infinity;
+                        const connectionLimit = allNodes.find(({id}) => (id === selectedNodeId))?.limit ?? Infinity;
                         if (connectionLimit === Infinity) return true;
                         const connectedCount = (value ?? []).filter(({sideA, sideB}) => (sideA === selectedNodeId) || (sideB === selectedNodeId)).length;
                         return (connectionLimit > connectedCount);
@@ -433,10 +432,7 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
             if (
                 // still within connection limit:
                 ((): boolean => {
-                    const allNodes = Object.values(connections).flatMap((group) => group.nodes);
-                    const targetNode = allNodes.find(({id}) => (id === startingNodeId));
-                    if (!targetNode) return false; // not registered
-                    const connectionLimit = targetNode.limit ?? Infinity;
+                    const connectionLimit = allNodes.find(({id}) => (id === startingNodeId))?.limit ?? Infinity;
                     if (connectionLimit === Infinity) return true;
                     const connectedCount = (value ?? []).filter(({sideA, sideB}) => (sideA === startingNodeId) || (sideB === startingNodeId)).length;
                     return (connectionLimit > connectedCount);
@@ -510,8 +506,7 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                 <div key={groupKey} className='group'>
                     {!!groupName && <div className='label'>{groupName}</div>}
                     <div className='nodes'>
-                        {nodes.map(({id, label, limit, nodeComponent = defaultNodeComponent}, nodeIndex) => {
-                            const nodeId = id;
+                        {nodes.map(({id: nodeId, label, limit = Infinity, nodeComponent = defaultNodeComponent}, nodeIndex) => {
                             
                             
                             
@@ -520,7 +515,7 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                             return (
                                 <ChildWithRef
                                     // identifiers:
-                                    key={id || nodeIndex}
+                                    key={nodeId || nodeIndex}
                                     
                                     
                                     
@@ -535,7 +530,17 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                                         React.cloneElement(nodeComponent,
                                             // props:
                                             {
-                                                key : id || nodeIndex,
+                                                key             : nodeId || nodeIndex,
+                                                'aria-readonly' : nodeComponent.props['aria-readonly'] ?? !(
+                                                    (limit === Infinity)
+                                                    ||
+                                                    ((): boolean => {
+                                                        const connectionLimit = (allNodes.find(({id}) => (id === nodeId))?.limit ?? Infinity);
+                                                        if (connectionLimit === Infinity) return true;
+                                                        const connectedCount = (value ?? []).filter(({sideA, sideB}) => (sideA === nodeId) || (sideB === nodeId)).length;
+                                                        return (connectionLimit > connectedCount);
+                                                    })()
+                                                ),
                                             },
                                             
                                             

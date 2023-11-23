@@ -90,6 +90,9 @@ export default () => [
                 ...rule([':hover', '.draft'], {
                     opacity: 0.5,
                 }),
+                ...rule('.draft', {
+                    pointerEvents: 'none',
+                }),
                 filter: [[
                     'drop-shadow(0 0 2px rgba(0,0,0,0.8))'
                 ]],
@@ -108,5 +111,11 @@ export default () => [
         aspectRatio: '1 / 1',
         padding: 0,
         userSelect: 'none',
+        ...rule(':not([aria-readonly="true"])', {
+            cursor: 'move',
+        }),
+        ...rule('[aria-readonly="true"]', {
+            cursor: 'not-allowed',
+        }),
     }, { specificityWeight: 2 }),
 ];
