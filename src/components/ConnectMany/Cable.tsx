@@ -15,6 +15,12 @@ import {
 import {
     // react helper hooks:
     useIsomorphicLayoutEffect,
+    
+    
+    
+    // color options of UI:
+    ThemeableProps,
+    useThemeable,
 }                           from '@reusable-ui/core'                // a set of reusable-ui packages which are responsible for building any component
 
 // reusable-ui components:
@@ -22,6 +28,11 @@ import type {
     // base-components:
     GenericProps,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
+
+// styles:
+import {
+    useConnectManyStyleSheet,
+}                           from './styles/loader'
 
 // js simulator:
 import * as d3 from 'd3'
@@ -45,12 +56,19 @@ interface SimulatorState {
 
 
 // react components:
-export interface CableProps extends GenericProps<SVGPathElement> {
+export interface CableProps
+    extends
+        // bases:
+        GenericProps<SVGPathElement>,
+        
+        // variants:
+        ThemeableProps
+{
     // positions:
-    headX : number
-    headY : number
-    tailX : number
-    tailY : number
+    headX ?: number
+    headY ?: number
+    tailX ?: number
+    tailY ?: number
     
     
     
@@ -58,12 +76,27 @@ export interface CableProps extends GenericProps<SVGPathElement> {
     precisionLevel ?: number
 }
 export const Cable = (props: CableProps): JSX.Element|null => {
+    // styles:
+    const styleSheet = useConnectManyStyleSheet();
+    
+    
+    
+    // variants:
+    const themeableVariant = useThemeable(props);
+    
+    
+    
     const {
+        // variants:
+        theme : _theme, // remove
+        
+        
+        
         // positions:
-        headX,
-        headY,
-        tailX,
-        tailY,
+        headX = 0,
+        headY = 0,
+        tailX = 0,
+        tailY = 0,
         
         
         
@@ -186,6 +219,7 @@ export const Cable = (props: CableProps): JSX.Element|null => {
         <path
             {...restGenericProps}
             ref={pathRef}
+            className={`${styleSheet.cable} ${themeableVariant.class}`}
         />
     );
 }

@@ -19,6 +19,11 @@ import {
     
     
     
+    // background stuff of UI:
+    usesBackground,
+    
+    
+    
     // border (stroke) stuff of UI:
     usesBorder,
     
@@ -31,6 +36,11 @@ import {
     
     // size options of UI:
     usesResizable,
+    
+    
+    
+    // color options of UI:
+    usesThemeable,
 }                           from '@reusable-ui/core'    // a set of reusable-ui packages which are responsible for building any component
 
 // reusable-ui components:
@@ -146,39 +156,6 @@ const usesConnectManyLayout = () => {
                 
                 // accessibilities:
                 pointerEvents: 'none',
-                
-                
-                
-                // children:
-                ...children('path', {
-                    // appearances:
-                    filter: [[
-                        'drop-shadow(0 0 2px rgba(0,0,0,0.8))'
-                    ]],
-                    
-                    
-                    
-                    // accessibilities:
-                    cursor: 'pointer',
-                    ...rule('.draft', {
-                        pointerEvents: 'none',
-                    }),
-                    
-                    
-                    
-                    // backgrounds:
-                    fill : 'none',
-                    
-                    
-                    
-                    // borders:
-                    stroke          : '#ff0000',
-                    strokeWidth     : conns.cableWidth,
-                    ...rule(':hover', {
-                        strokeWidth : conns.cableWidthHover,
-                    }),
-                    strokeLinecap : 'round',
-                }),
             }),
             
             
@@ -226,6 +203,8 @@ const usesConnectManyVariants = () => {
         ...resizableRule(),
     });
 };
+
+
 
 const usesCircleConnectionLayout = () => {
     return style({
@@ -285,15 +264,84 @@ const usesCircleConnectionLayout = () => {
 const usesCircleConnectionVariants = usesControlVariants;
 const usesCircleConnectionStates   = usesControlStates;
 
+
+
+const usesCableLayout = () => {
+    // dependencies:
+    
+    // features:
+    const {backgroundRule, backgroundVars} = usesBackground();
+    
+    
+    
+    return style({
+        // layouts:
+        ...style({
+            // appearances:
+            filter: [[
+                'drop-shadow(0 0 2px rgba(0,0,0,0.8))'
+            ]],
+            
+            
+            
+            // accessibilities:
+            cursor: 'pointer',
+            ...rule('.draft', {
+                pointerEvents: 'none',
+            }),
+            
+            
+            
+            // backgrounds:
+            fill : 'none',
+            
+            
+            
+            // borders:
+            stroke          : backgroundVars.backgColorFn,
+            strokeWidth     : conns.cableWidth,
+            ...rule(':hover', {
+                strokeWidth : conns.cableWidthHover,
+            }),
+            strokeLinecap : 'round',
+        }),
+        
+        
+        
+        // features:
+        ...backgroundRule(), // must be placed at the last
+    });
+};
+const usesCableVariants = () => {
+    // dependencies:
+    
+    // variants:
+    const {themeableRule} = usesThemeable();
+    
+    
+    
+    return style({
+        // variants:
+        ...themeableRule(),
+    });
+};
+
+
+
 export default () => [
     scope('connectMany', {
         ...usesConnectManyLayout(),
         ...usesConnectManyVariants(),
-    }, { specificityWeight: 2 }),
+    }),
     
     scope('circleConnection', {
         ...usesCircleConnectionLayout(),
         ...usesCircleConnectionVariants(),
         ...usesCircleConnectionStates(),
-    }, { specificityWeight: 2 }),
+    }),
+    
+    scope('cable', {
+        ...usesCableLayout(),
+        ...usesCableVariants(),
+    }),
 ];

@@ -94,6 +94,7 @@ export interface ConnectManyProps
     
     // components:
     defaultNodeComponent ?: React.ReactComponentElement<any, ControlProps<Element>>
+    cableComponent       ?: React.ReactComponentElement<any, CableProps>
 }
 type CableDef = Connection & Pick<CableProps, 'headX'|'headY'|'tailX'|'tailY'>
 export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
@@ -126,6 +127,7 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
         
         // components:
         defaultNodeComponent = <CircleConnection /> as React.ReactComponentElement<any, ControlProps<Element>>,
+        cableComponent       = <Cable />            as React.ReactComponentElement<any, CableProps>,
     ...restBasicProps} = props;
     const allNodes = Object.values(connections).flatMap((group) => group.nodes);
     
@@ -601,28 +603,31 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
             )}
             <svg className='cables' ref={svgRef}>
                 {cables.map(({sideA, headX, headY, sideB, tailX, tailY}) =>
-                    <Cable
-                        // identifiers:
-                        key={`${sideA}/${sideB}`}
-                        
-                        
-                        
-                        // classes:
-                        className={!sideB ? 'draft' : undefined}
-                        
-                        
-                        
-                        // positions:
-                        headX={headX}
-                        headY={headY}
-                        tailX={tailX}
-                        tailY={tailY}
-                        
-                        
-                        
-                        // behaviors:
-                        precisionLevel={precisionLevel}
-                    />
+                    React.cloneElement(cableComponent,
+                        // props:
+                        {
+                            // identifiers:
+                            key : `${sideA}/${sideB}`,
+                            
+                            
+                            
+                            // classes:
+                            className : !sideB ? 'draft' : undefined,
+                            
+                            
+                            
+                            // positions:
+                            headX,
+                            headY,
+                            tailX,
+                            tailY,
+                            
+                            
+                            
+                            // behaviors:
+                            precisionLevel,
+                        }
+                    )
                 )}
             </svg>
         </Basic>

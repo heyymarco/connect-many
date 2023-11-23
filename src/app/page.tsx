@@ -1,5 +1,6 @@
 'use client'
 
+import { Cable } from '@/components/ConnectMany/Cable'
 import styles from './page.module.css'
 import { ConnectMany, Connection } from '@/components/ConnectMany'
 import { CircleConnection } from '@/components/ConnectMany/CircleConnection'
@@ -68,6 +69,7 @@ export default function Home() {
                 
                 // components:
                 defaultNodeComponent={<CircleConnection theme='warning' />}
+                cableComponent={<Cable theme='danger' />}
             />
             <List theme='primary'>
                 <ListItem mild={false}>Connections:</ListItem>
