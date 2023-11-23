@@ -349,7 +349,6 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                         const nodeGroups = Object.values(connections).map((group) => group.nodes.map((node) => node.id));
                         const sideAGroup        = nodeGroups.find((nodeGroup) => nodeGroup.includes(draftCable.sideA));
                         const selectedNodeGroup = nodeGroups.find((nodeGroup) => nodeGroup.includes(selectedNode.id));
-                        console.log({selected: selectedNode.id, sideAGroup, selectedNodeGroup, test: sideAGroup === selectedNodeGroup})
                         return (sideAGroup !== selectedNodeGroup);
                     })()
                     &&
