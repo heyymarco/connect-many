@@ -303,8 +303,8 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
     
     
     // events:
-    const scheduleTriggerEvent     = useScheduleTriggerEvent();
-    const triggerValueChange       = useEvent((newValue: Connection[]): void => {
+    const scheduleTriggerEvent        = useScheduleTriggerEvent();
+    const triggerValueChange          = useEvent((newValue: Connection[]): void => {
         if (onValueChange) scheduleTriggerEvent(() => { // runs the `onValueChange` event *next after* current macroTask completed
             onValueChange(newValue);
         });
@@ -313,10 +313,10 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
     
     
     // handlers:
-    const pointerActiveRef         = useRef<boolean>(false);
-    const pointerPositionRef       = useRef<{x: number, y: number}>({x: 0, y: 0});
+    const [isDragging, setIsDragging] = useState<string|number|false>(false);
+    const pointerPositionRef          = useRef<{x: number, y: number}>({x: 0, y: 0});
     
-    const calculatePointerPosition = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
+    const calculatePointerPosition    = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
         const viewportRect = event.currentTarget.getBoundingClientRect();
         const style = getComputedStyle(event.currentTarget);
         const borderLeftWidth = Number.parseInt(style.borderLeftWidth);
@@ -330,8 +330,8 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
         if (relativeY > (viewportRect.height - borderTopWidth  - borderBottomWidth)) return;
         pointerPositionRef.current = {x: relativeX, y: relativeY};
     });
-    const handleMouseMove          = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
-        if (!pointerActiveRef.current) return;
+    const handleMouseMove             = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
+        if (isDragging === false) return;
         calculatePointerPosition(event);
         
         
@@ -411,7 +411,7 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
         };
     });
     
-    const getNodeFromPoint         = useEvent((clientX: number, clientY: number): { id: string|number, elm: Element }|null => {
+    const getNodeFromPoint            = useEvent((clientX: number, clientY: number): { id: string|number, elm: Element }|null => {
         const selectedNodeElms = document.elementsFromPoint(clientX, clientY);
         if (!selectedNodeElms.length) return null;
         const selectedNode = Array.from(nodeRefs.entries()).find(([key, elm]) => !!elm && selectedNodeElms.includes(elm));
@@ -420,13 +420,12 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
         if (!elm) return null;
         return { id: id as (string|number), elm };
     });
-    const handleMouseDown          = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
+    const handleMouseDown             = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
         // conditions:
         if (!!event.currentTarget.ariaDisabled && (event.currentTarget.ariaDisabled !== 'false')) return; // ignore if disabled
         
         
         
-        pointerActiveRef.current = true;
         calculatePointerPosition(event);
         
         
@@ -437,6 +436,10 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
             selectedNode
         ) {
             const startingNodeId = selectedNode.id;
+            if (isDragging === false) setIsDragging(startingNodeId);
+            
+            
+            
             if (
                 // still within connection limit:
                 ((): boolean => {
@@ -460,8 +463,8 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
             } // if
         } // if
     });
-    const handleMouseUp            = useEvent<React.MouseEventHandler<HTMLElement>>(() => {
-        pointerActiveRef.current = false;
+    const handleMouseUp               = useEvent<React.MouseEventHandler<HTMLElement>>(() => {
+        if (isDragging !== false) setIsDragging(false);
         
         
         
@@ -501,7 +504,7 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
         <Basic
             // other props:
             {...restBasicProps}
-            className={styleSheet.main}
+            className={`${styleSheet.main}${isDragging ? ' dragging' : ''}`}
             
             
             

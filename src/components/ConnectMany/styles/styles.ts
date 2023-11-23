@@ -81,14 +81,13 @@ export default () => [
             pointerEvents: 'none',
             
             ...children('path', {
-                pointerEvents: 'auto',
                 fill: 'none',
                 stroke: '#ff0000',
                 strokeWidth: '0.3rem',
                 strokeLinecap: 'round',
                 cursor: 'pointer',
-                ...rule([':hover', '.draft'], {
-                    opacity: 0.5,
+                ...rule(':hover', {
+                    strokeWidth: '0.4rem',
                 }),
                 ...rule('.draft', {
                     pointerEvents: 'none',
@@ -96,6 +95,22 @@ export default () => [
                 filter: [[
                     'drop-shadow(0 0 2px rgba(0,0,0,0.8))'
                 ]],
+            }),
+        }),
+        ...rule(':not(.dragging)', {
+            ...children('.cables', {
+                ...children('path', {
+                    pointerEvents: 'auto',
+                }),
+            }),
+        }),
+        ...rule('.dragging', {
+            ...children('.cables', {
+                ...children('path', {
+                    ...rule(':not(.draft)', {
+                        opacity: 0.5,
+                    }),
+                }),
             }),
         }),
     }, { specificityWeight: 2 }),
