@@ -1,4 +1,4 @@
-import { defineTheme } from '@reusable-ui/core'
+import { defineTheme, colorValues } from '@reusable-ui/core'
 
 // other libs:
 import Color                from 'color'                // color utilities
@@ -12,6 +12,8 @@ defineTheme('primary', primaryCol);
 
 const goldCol = Color('#D19B3E');
 defineTheme('gold', goldCol);
+// @ts-ignore
+colorValues.goldBold = goldCol.darken(0.8);
 
 const cableCol = Color('#8B4EF0');
 defineTheme('cable', cableCol);
