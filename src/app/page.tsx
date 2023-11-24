@@ -40,7 +40,7 @@ export default function Home() {
                     inputs : {
                         label : <>Inputs</>,
                         nodes : [
-                            { id: 'inp-1', label: '1' , limit: 1         },
+                            { id: 'inp-1', label: <img src='./spongebob.svg' style={{width: '50px'}} /> , limit: 1         },
                             { id: 'inp-2', label: '2' , limit: 3, nodeComponent: <CircleConnection theme='special' size={size} /> },
                             { id: 'inp-3', label: '3' , limit: 1, enabled: false },
                             { id: 'inp-4', label: '4' , limit: 1         },
