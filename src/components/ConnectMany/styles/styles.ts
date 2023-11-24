@@ -16,6 +16,11 @@ import {
 
 // reusable-ui core:
 import {
+    // a color management system:
+    colors,
+    
+    
+    
     // a spacer (gap) management system:
     spacers,
     
@@ -108,6 +113,12 @@ const usesConnectManyLayout = () => {
             ...children('.group', {
                 // layouts:
                 display : 'grid',
+                gridTemplate : [[
+                    '"ledsStart  label ledsEnd" auto',
+                    '"ledsStart  nodes ledsEnd" auto',
+                    '/',
+                    'auto auto auto',
+                ]],
                 
                 
                 
@@ -120,6 +131,11 @@ const usesConnectManyLayout = () => {
                 
                 // children:
                 ...children('.label', {
+                    // positions:
+                    gridArea       : 'label',
+                    
+                    
+                    
                     // layouts:
                     display        : 'grid',
                     justifyContent : 'center',
@@ -131,6 +147,11 @@ const usesConnectManyLayout = () => {
                     padding : spacers.xs,
                 }),
                 ...children('.nodes', {
+                    // positions:
+                    gridArea         : 'nodes',
+                    
+                    
+                    
                     // layouts:
                     display          : 'grid',
                     gridAutoFlow     : 'column',
@@ -144,6 +165,36 @@ const usesConnectManyLayout = () => {
                     gapInline     : paddingVars.paddingInline,
                     gapBlock      : paddingVars.paddingBlock,
                     paddingInline : paddingVars.paddingInline,
+                    paddingBlock  : paddingVars.paddingBlock,
+                }),
+                ...children('.leds', {
+                    // positions:
+                    ...rule('.plc-start', {
+                        gridArea        : 'ledsStart',
+                    }),
+                    ...rule('.plc-end', {
+                        gridArea        : 'ledsEnd',
+                    }),
+                    alignContent    : 'center',
+                    
+                    
+                    
+                    // layouts:
+                    display          : 'grid',
+                    gridAutoFlow     : 'row',
+                    justifyItems     : 'center',
+                    alignItems       : 'center',
+                    
+                    
+                    
+                    // spacings:
+                    gap: spacers.sm,
+                    ...rule('.plc-start', {
+                        paddingInlineStart : paddingVars.paddingInline,
+                    }),
+                    ...rule('.plc-end', {
+                        paddingInlineEnd : paddingVars.paddingInline,
+                    }),
                     paddingBlock  : paddingVars.paddingBlock,
                 }),
             }),
@@ -398,6 +449,55 @@ const usesCableStates = () => {
 
 
 
+const usesLedLayout = () => {
+    
+    // dependencies:
+    
+    // features:
+    const {borderRule , borderVars } = usesBorder(conns as any);
+    
+    
+    
+    return style({
+        // layouts:
+        display      : 'grid',
+        justifyItems : 'center',
+        alignItems   : 'center',
+        
+        
+        
+        // children:
+        ...children('.indicator', {
+            // borders:
+            border       : borderVars.border,
+            borderColor  : colors.dark,
+            borderRadius : '50%',
+            
+            
+            
+            // children:
+            ...children('.led', {
+                // sizes:
+                inlineSize : '1rem',
+                blockSize  : '1rem',
+                
+                
+                
+                // borders:
+                borderWidth  : 0,
+                borderRadius : '50%',
+                
+                
+                
+                // spacings:
+                padding: 0,
+            }),
+        }),
+    });
+};
+
+
+
 export default () => [
     scope('connectMany', {
         ...usesConnectManyLayout(),
@@ -414,5 +514,9 @@ export default () => [
         ...usesCableLayout(),
         ...usesCableVariants(),
         ...usesCableStates(),
+    }),
+    
+    scope('led', {
+        ...usesLedLayout(),
     }),
 ];

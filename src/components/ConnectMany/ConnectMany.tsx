@@ -20,6 +20,11 @@ import {
     useIsomorphicLayoutEffect,
     useEvent,
     useScheduleTriggerEvent,
+    
+    
+    
+    // color options of UI:
+    ThemeName,
 }                           from '@reusable-ui/core'                // a set of reusable-ui packages which are responsible for building any component
 
 // reusable-ui components:
@@ -27,6 +32,8 @@ import {
     // base-components:
     BasicProps,
     Basic,
+    IndicatorProps,
+    Indicator,
     ControlProps,
     
     
@@ -44,6 +51,9 @@ import {
 import {
     Connector,
 }                           from './Connector'
+import {
+    Led,
+}                           from './Led'
 import {
     ChildWithRef,
 }                           from './ChildWithRef'
@@ -72,9 +82,20 @@ export interface ConnectionNode {
     enabled       ?: boolean
     nodeComponent ?: React.ReactComponentElement<any, ControlProps<Element>>
 }
+export interface LedNode {
+    label         ?: React.ReactNode
+    active        ?: boolean
+    theme         ?: ThemeName
+    ledComponent  ?: React.ReactComponentElement<any, IndicatorProps<Element>>
+}
+export interface LedGroup {
+    placement     ?: 'start'|'end'
+    items         ?: LedNode[]
+}
 export interface ConnectionGroup {
-    label ?: React.ReactNode
-    nodes  : ConnectionNode[]
+    label         ?: React.ReactNode
+    nodes          : ConnectionNode[]
+    leds          ?: LedGroup
 }
 export type ConnectionConfig = {
     [key in string] : ConnectionGroup
@@ -113,6 +134,7 @@ export interface ConnectManyProps
     
     // components:
     defaultNodeComponent ?: React.ReactComponentElement<any, ControlProps<Element>>
+    defaultLedComponent  ?: React.ReactComponentElement<any, IndicatorProps<Element>>
     cableComponent       ?: React.ReactComponentElement<any, CableProps>
 }
 type CableDef = Connection & Pick<CableProps, 'headX'|'headY'|'tailX'|'tailY'>
@@ -147,7 +169,8 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
         
         // components:
         defaultNodeComponent = <Connector /> as React.ReactComponentElement<any, ControlProps<Element>>,
-        cableComponent       = <Cable />            as React.ReactComponentElement<any, CableProps>,
+        defaultLedComponent  = <Led />       as React.ReactComponentElement<any, IndicatorProps<Element>>,
+        cableComponent       = <Cable />     as React.ReactComponentElement<any, CableProps>,
     ...restBasicProps} = props;
     const allNodes = Object.values(connections).flatMap((group) => group.nodes);
     
@@ -635,7 +658,7 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
             onMouseUp={handleMouseUp}
             // onDragEnd={handleDragEnd}
         >
-            {Object.entries(connections).map(([groupKey, {label: groupName, nodes}], groupIndex) =>
+            {Object.entries(connections).map(([groupKey, {label: groupName, nodes, leds}], groupIndex) =>
                 <div key={groupKey} className='group'>
                     {!!groupName && <div className='label'>{groupName}</div>}
                     <div className='nodes'>
@@ -740,6 +763,22 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                                 />
                             );
                         })}
+                    </div>
+                    <div className={`leds plc-${leds?.placement ?? 'start'}`}>
+                        {(leds?.items ?? []).map(({label, active, theme, ledComponent = defaultLedComponent}) =>
+                            React.cloneElement(ledComponent,
+                                // props:
+                                {
+                                    active : ledComponent.props.active ?? active,
+                                    theme  : ledComponent.props.theme  ?? theme,
+                                },
+                                
+                                
+                                
+                                // children:
+                                ledComponent.props.children ?? label,
+                            )
+                        )}
                     </div>
                 </div>
             )}
