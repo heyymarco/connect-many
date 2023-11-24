@@ -100,8 +100,7 @@ const usesConnectManyLayout = () => {
             
             
             // spacings:
-            paddingInline : paddingVars.paddingInline,
-            paddingBlock  : paddingVars.paddingBlock,
+            padding       : 0,
             
             
             
@@ -113,9 +112,8 @@ const usesConnectManyLayout = () => {
                 
                 
                 // borders:
-                border : borderVars.border,
                 ...rule(':not(:first-child)', {
-                    borderInlineStartWidth: 0,
+                    borderInlineStart: borderVars.border,
                 }),
                 
                 
@@ -143,8 +141,10 @@ const usesConnectManyLayout = () => {
                     
                     
                     // spacings:
-                    gap     : '0.5em',
-                    padding : '0.5em',
+                    gapInline     : paddingVars.paddingInline,
+                    gapBlock      : paddingVars.paddingBlock,
+                    paddingInline : paddingVars.paddingInline,
+                    paddingBlock  : paddingVars.paddingBlock,
                 }),
             }),
             ...children('.cables', {
@@ -261,7 +261,7 @@ const usesConnectManyVariants = () => {
 
 
 
-const usesCircleConnectionLayout = () => {
+const usesConnectorLayout = () => {
     return style({
         // layouts:
         ...usesControlLayout(),
@@ -278,12 +278,6 @@ const usesCircleConnectionLayout = () => {
             
             
             
-            // sizes:
-            inlineSize  : '2em',
-            aspectRatio : '1 / 1',
-            
-            
-            
             // accessibilities:
             userSelect  : 'none',
             
@@ -291,7 +285,6 @@ const usesCircleConnectionLayout = () => {
             
             // borders:
             borderRadius : '50%',
-            borderWidth  : '2px',
             
             
             
@@ -313,11 +306,16 @@ const usesCircleConnectionLayout = () => {
                 // accessibilities:
                 cursor : 'not-allowed',
             }),
+            
+            
+            
+            // customize:
+            ...usesCssProps(usesPrefixedProps(conns, 'connector')), // apply config's cssProps starting with connector***
         }),
     });
 };
-const usesCircleConnectionVariants = usesControlVariants;
-const usesCircleConnectionStates   = usesControlStates;
+const usesConnectorVariants = usesControlVariants;
+const usesConnectorStates   = usesControlStates;
 
 
 
@@ -406,10 +404,10 @@ export default () => [
         ...usesConnectManyVariants(),
     }),
     
-    scope('circleConnection', {
-        ...usesCircleConnectionLayout(),
-        ...usesCircleConnectionVariants(),
-        ...usesCircleConnectionStates(),
+    scope('connector', {
+        ...usesConnectorLayout(),
+        ...usesConnectorVariants(),
+        ...usesConnectorStates(),
     }),
     
     scope('cable', {

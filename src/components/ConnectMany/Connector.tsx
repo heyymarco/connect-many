@@ -21,8 +21,8 @@ import {
 
 
 // react components:
-export interface CircleConnectionProps extends ControlProps {}
-export const CircleConnection = (props: CircleConnectionProps): JSX.Element|null => {
+export interface ConnectorProps extends ControlProps {}
+export const Connector = (props: ConnectorProps): JSX.Element|null => {
     // styles:
     const styleSheet = useConnectManyStyleSheet();
     
@@ -43,7 +43,7 @@ export const CircleConnection = (props: CircleConnectionProps): JSX.Element|null
             
             
             // classes:
-            mainClass={styleSheet.circleConnection}
+            mainClass={styleSheet.connector}
         />
     );
 };

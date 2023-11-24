@@ -42,8 +42,8 @@ import {
 
 // internal components:
 import {
-    CircleConnection,
-}                           from './CircleConnection'
+    Connector,
+}                           from './Connector'
 import {
     ChildWithRef,
 }                           from './ChildWithRef'
@@ -146,7 +146,7 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
         
         
         // components:
-        defaultNodeComponent = <CircleConnection /> as React.ReactComponentElement<any, ControlProps<Element>>,
+        defaultNodeComponent = <Connector /> as React.ReactComponentElement<any, ControlProps<Element>>,
         cableComponent       = <Cable />            as React.ReactComponentElement<any, CableProps>,
     ...restBasicProps} = props;
     const allNodes = Object.values(connections).flatMap((group) => group.nodes);
