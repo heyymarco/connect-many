@@ -155,9 +155,15 @@ const usesConnectManyLayout = () => {
                 
                 
                 
+                // appearances:
+                overflow : conns.cableOverflow,
+                
+                
+                
                 // sizes:
-                width  : '100%',
-                height : '100%',
+                width   : '100%',
+                height  : '100%',
+                contain : 'size', // do not take up space if the cable(s) overflowing outside the <ConnectMany> component
                 
                 
                 
