@@ -11,6 +11,7 @@ import {
     useRef,
     useState,
     useMemo,
+    useId,
 }                           from 'react'
 
 // reusable-ui core:
@@ -46,6 +47,9 @@ import {
 import {
     ChildWithRef,
 }                           from './ChildWithRef'
+import {
+    ElementWithDraggable,
+}                           from './ElementWithDraggable'
 import {
     Cable,
     CableProps,
@@ -155,7 +159,6 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
     // states:
     const [cables          , setCables          ] = useState<CableDef[]>([]);
     const [selectedCableKey, setSelectedCableKey] = useState<string|null>(null);
-    const selectedCableRef                        = useRef<SVGPathElement|null>(null);
     const selectedCable = useMemo((): CableDef|null => {
         if (!selectedCableKey) return null;
         return cables.find(({sideA, sideB}) => selectedCableKey === `${sideA}/${sideB}`) ?? null;
@@ -332,7 +335,7 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
         };
     }, [draftCable, magnetTransitionInterval]);
     
-    // // auto unselect selected_cable if deleted:
+    // auto unselect selected_cable if deleted:
     useIsomorphicLayoutEffect(() => {
         if (!selectedCableKey) return;
         if (!selectedCable) setSelectedCableKey(null);
@@ -356,19 +359,78 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
     const pointerPositionRef          = useRef<{x: number, y: number}>({x: 0, y: 0});
     
     const calculatePointerPosition    = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
-        const viewportRect = event.currentTarget.getBoundingClientRect();
-        const style = getComputedStyle(event.currentTarget);
+        const svgElm = svgRef.current;
+        if (!svgElm) return;
+        const viewportRect = svgElm.getBoundingClientRect();
+        const style = getComputedStyle(svgElm);
         const borderLeftWidth = Number.parseInt(style.borderLeftWidth);
         const borderTopWidth  = Number.parseInt(style.borderTopWidth);
         const [relativeX, relativeY] = [event.clientX - viewportRect.left - borderLeftWidth, event.clientY - viewportRect.top - borderTopWidth];
-        if (relativeX < 0) return;
-        if (relativeY < 0) return;
-        const borderRightWidth = Number.parseInt(style.borderLeftWidth);
-        const borderBottomWidth  = Number.parseInt(style.borderTopWidth);
-        if (relativeX > (viewportRect.width  - borderLeftWidth - borderRightWidth )) return;
-        if (relativeY > (viewportRect.height - borderTopWidth  - borderBottomWidth)) return;
+        // if (relativeX < 0) return;
+        // if (relativeY < 0) return;
+        // const borderRightWidth = Number.parseInt(style.borderLeftWidth);
+        // const borderBottomWidth  = Number.parseInt(style.borderTopWidth);
+        // if (relativeX > (viewportRect.width  - borderLeftWidth - borderRightWidth )) return;
+        // if (relativeY > (viewportRect.height - borderTopWidth  - borderBottomWidth)) return;
         pointerPositionRef.current = {x: relativeX, y: relativeY};
     });
+    const getNodeFromPoint            = useEvent((clientX: number, clientY: number): { id: string|number, elm: Element }|null => {
+        const selectedNodeElms = document.elementsFromPoint(clientX, clientY);
+        if (!selectedNodeElms.length) return null;
+        const selectedNode = Array.from(nodeRefs.entries()).find(([key, elm]) => !!elm && selectedNodeElms.includes(elm));
+        if (!selectedNode) return null;
+        const [id, elm] = selectedNode;
+        if (!elm) return null;
+        return { id: id as (string|number), elm };
+    });
+    
+    const handleMouseDown             = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
+        // conditions:
+        if (!!event.currentTarget.ariaDisabled && (event.currentTarget.ariaDisabled !== 'false')) return; // ignore if disabled
+        
+        
+        
+        calculatePointerPosition(event);
+        
+        
+        
+        const selectedNode = getNodeFromPoint(event.clientX, event.clientY);
+        if (
+            // has selection node:
+            selectedNode
+        ) {
+            const startingNodeId = selectedNode.id;
+            if (isDragging === false) setIsDragging(startingNodeId);
+            
+            
+            
+            if (
+                // still within connection limit:
+                ((): boolean => {
+                    const connectionLimit = allNodes.find(({id}) => (id === startingNodeId))?.limit ?? Infinity;
+                    if (connectionLimit === Infinity) return true;
+                    const connectedCount = (value ?? []).filter(({sideA, sideB}) => (sideA === startingNodeId) || (sideB === startingNodeId)).length;
+                    return (connectionLimit > connectedCount);
+                })()
+            ) {
+                setDraftCable({
+                    sideA      : selectedNode.id,
+                    elmA       : selectedNode.elm,
+                    
+                    sideB      : '',
+                    elmB       : null,
+                    
+                    transition : 0,
+                    lastX      : 0,
+                    lastY      : 0,
+                });
+            } // if
+        } // if
+    });
+    const handleDragStart             = useEvent<React.DragEventHandler<HTMLElement>>((event) => {
+        handleMouseDown(event);
+    });
+    
     const handleMouseMove             = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
         if (isDragging === false) return;
         calculatePointerPosition(event);
@@ -460,59 +522,10 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
             requestAnimationFrame(refreshCables);
         };
     });
+    const handleDragOver              = useEvent<React.DragEventHandler<HTMLElement>>((event) => {
+        handleMouseMove(event);
+    });
     
-    const getNodeFromPoint            = useEvent((clientX: number, clientY: number): { id: string|number, elm: Element }|null => {
-        const selectedNodeElms = document.elementsFromPoint(clientX, clientY);
-        if (!selectedNodeElms.length) return null;
-        const selectedNode = Array.from(nodeRefs.entries()).find(([key, elm]) => !!elm && selectedNodeElms.includes(elm));
-        if (!selectedNode) return null;
-        const [id, elm] = selectedNode;
-        if (!elm) return null;
-        return { id: id as (string|number), elm };
-    });
-    const handleMouseDown             = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
-        // conditions:
-        if (!!event.currentTarget.ariaDisabled && (event.currentTarget.ariaDisabled !== 'false')) return; // ignore if disabled
-        
-        
-        
-        calculatePointerPosition(event);
-        
-        
-        
-        const selectedNode = getNodeFromPoint(event.clientX, event.clientY);
-        if (
-            // has selection node:
-            selectedNode
-        ) {
-            const startingNodeId = selectedNode.id;
-            if (isDragging === false) setIsDragging(startingNodeId);
-            
-            
-            
-            if (
-                // still within connection limit:
-                ((): boolean => {
-                    const connectionLimit = allNodes.find(({id}) => (id === startingNodeId))?.limit ?? Infinity;
-                    if (connectionLimit === Infinity) return true;
-                    const connectedCount = (value ?? []).filter(({sideA, sideB}) => (sideA === startingNodeId) || (sideB === startingNodeId)).length;
-                    return (connectionLimit > connectedCount);
-                })()
-            ) {
-                setDraftCable({
-                    sideA      : selectedNode.id,
-                    elmA       : selectedNode.elm,
-                    
-                    sideB      : '',
-                    elmB       : null,
-                    
-                    transition : 0,
-                    lastX      : 0,
-                    lastY      : 0,
-                });
-            } // if
-        } // if
-    });
     const handleMouseUp               = useEvent<React.MouseEventHandler<HTMLElement>>(() => {
         if (isDragging !== false) setIsDragging(false);
         
@@ -546,6 +559,47 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
         } // if
         if (draftCable) setDraftCable(null);
     });
+    const handleDragEnd               = useEvent<React.DragEventHandler<HTMLElement>>((event) => {
+        handleMouseUp(event);
+    });
+    
+    
+    
+    // identifiers:
+    const editorId     = useId().toLowerCase();
+    const dragDataType = `application/${editorId}`;
+    
+    
+    
+    // global events:
+    useIsomorphicLayoutEffect(() => {
+        // conditions:
+        if (!isDragging) return; // not in dragging mode => ignore
+        
+        
+        
+        // handlers:
+        const handleGlobalDragOver = (event: DragEvent) => {
+            handleDragOver(event as any);
+        };
+        const handleGlobalDragEnd  = (event: DragEvent) => {
+            handleDragEnd(event as any);
+        };
+        
+        
+        
+        // setups:
+        document.addEventListener('dragover', handleGlobalDragOver);
+        document.addEventListener('dragend' , handleGlobalDragEnd );
+        
+        
+        
+        // cleanups:
+        return () => {
+            document.removeEventListener('dragover', handleGlobalDragOver);
+            document.removeEventListener('dragend' , handleGlobalDragEnd );
+        };
+    }, [isDragging]);
     
     
     
@@ -561,7 +615,10 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
             
             // handlers:
             onMouseMove={handleMouseMove}
+            // onDragOver={handleDragOver}
+            
             onMouseUp={handleMouseUp}
+            // onDragEnd={handleDragEnd}
         >
             {Object.entries(connections).map(([groupKey, {label: groupName, nodes}], groupIndex) =>
                 <div key={groupKey} className='group'>
@@ -574,62 +631,75 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                             // jsx:
                             if (!nodeRefs.has(nodeId)) nodeRefs.delete(nodeId);
                             return (
-                                <ChildWithRef
+                                <ElementWithDraggable
                                     // identifiers:
                                     key={nodeId || nodeIndex}
+                                    nodeId={nodeId}
                                     
                                     
                                     
-                                    // refs:
-                                    childId={nodeId}
-                                    childRefs={nodeRefs}
+                                    // draggable:
+                                    dragDataType={dragDataType}
                                     
                                     
                                     
                                     // components:
                                     elementComponent={
-                                        React.cloneElement(nodeComponent,
-                                            // props:
-                                            {
-                                                // identifiers:
-                                                key             : nodeId || nodeIndex,
-                                                
-                                                
-                                                
-                                                // classes:
-                                                className : (
-                                                    (isDragging !== nodeId)
-                                                    ? ''
-                                                    : (isDroppingAllowed ? 'dodrop' : 'nodrop')
-                                                ),
-                                                
-                                                
-                                                
-                                                // accessibilities:
-                                                'aria-readonly' : nodeComponent.props['aria-readonly'] ?? !(
-                                                    (limit === Infinity)
-                                                    ||
-                                                    ((): boolean => {
-                                                        const connectionLimit = (allNodes.find(({id}) => (id === nodeId))?.limit ?? Infinity);
-                                                        if (connectionLimit === Infinity) return true;
-                                                        const connectedCount = (value ?? []).filter(({sideA, sideB}) => (sideA === nodeId) || (sideB === nodeId)).length;
-                                                        return (connectionLimit > connectedCount);
-                                                    })()
-                                                ),
-                                                enabled : enabled,
-                                                
-                                                
-                                                
-                                                // handlers:
-                                                onMouseDown : handleMouseDown,
-                                            },
+                                        <ChildWithRef
+                                            // refs:
+                                            childId={nodeId}
+                                            childRefs={nodeRefs}
                                             
                                             
                                             
-                                            // children:
-                                            nodeComponent.props.children ?? label,
-                                        )
+                                            // components:
+                                            elementComponent={
+                                                React.cloneElement(nodeComponent,
+                                                    // props:
+                                                    {
+                                                        // identifiers:
+                                                        key             : nodeId || nodeIndex,
+                                                        
+                                                        
+                                                        
+                                                        // classes:
+                                                        className : (
+                                                            (isDragging !== nodeId)
+                                                            ? ''
+                                                            : (isDroppingAllowed ? 'dodrop' : 'nodrop')
+                                                        ),
+                                                        
+                                                        
+                                                        
+                                                        // accessibilities:
+                                                        'aria-readonly' : nodeComponent.props['aria-readonly'] ?? !(
+                                                            (limit === Infinity)
+                                                            ||
+                                                            ((): boolean => {
+                                                                const connectionLimit = (allNodes.find(({id}) => (id === nodeId))?.limit ?? Infinity);
+                                                                if (connectionLimit === Infinity) return true;
+                                                                const connectedCount = (value ?? []).filter(({sideA, sideB}) => (sideA === nodeId) || (sideB === nodeId)).length;
+                                                                return (connectionLimit > connectedCount);
+                                                            })()
+                                                        ),
+                                                        enabled : enabled,
+                                                    },
+                                                    
+                                                    
+                                                    
+                                                    // children:
+                                                    nodeComponent.props.children ?? label,
+                                                )
+                                            }
+                                        />
                                     }
+                                    
+                                    
+                                    
+                                    // handlers:
+                                    onMouseDown={handleMouseDown}
+                                    onDragStart={handleDragStart}
+                                    // onDragOver={(event) => console.log(event.clientX)}
                                 />
                             );
                         })}
@@ -669,11 +739,6 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                         {
                             // identifiers:
                             key : cableKey,
-                            
-                            
-                            
-                            // refs:
-                            elmRef : ((selectedCableKey === cableKey) ? selectedCableRef : undefined),
                             
                             
                             
