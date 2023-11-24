@@ -434,6 +434,93 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
         handleMouseDown(event);
     });
     
+    const verifyIsDroppable           = useEvent((clientX: number, clientY: number): boolean => {
+        if (!draftCable) return false;
+        
+        
+        
+        const selectedNode = getNodeFromPoint(clientX, clientY);
+        if (
+            // has selection node:
+            selectedNode
+            &&
+            // not point to disabled node:
+            !(!!selectedNode.elm.ariaDisabled && (selectedNode.elm.ariaDisabled !== 'false'))
+            &&
+            // not point to the node itself:
+            ((draftCable.sideA !== selectedNode.id) && (draftCable.elmA !== selectedNode.elm))
+        ) {
+            const startingNodeId = draftCable.sideA
+            const selectedNodeId = selectedNode.id;
+            if (
+                // not point to self group:
+                ((): boolean => {
+                    const nodeGroups = Object.values(connections).map((group) => group.nodes.map((node) => node.id));
+                    const sideAGroup        = nodeGroups.find((nodeGroup) => nodeGroup.includes(startingNodeId));
+                    const selectedNodeGroup = nodeGroups.find((nodeGroup) => nodeGroup.includes(selectedNodeId));
+                    return (sideAGroup !== selectedNodeGroup);
+                })()
+                &&
+                // not already having exact connection:
+                ((): boolean => {
+                    if (!value) return true; // passed
+                    if (value.some(({sideA, sideB}) =>
+                        ((startingNodeId === sideA) && (selectedNodeId === sideB))
+                        ||
+                        ((startingNodeId === sideB) && (selectedNodeId === sideA))
+                    )) return false; // failed
+                    return true; // passed
+                })()
+                &&
+                // still within connection limit:
+                ((): boolean => {
+                    const connectionLimit = allNodes.find(({id}) => (id === selectedNodeId))?.limit ?? Infinity;
+                    if (connectionLimit === Infinity) return true;
+                    const connectedCount = (value ?? []).filter(({sideA, sideB}) => (sideA === selectedNodeId) || (sideB === selectedNodeId)).length;
+                    return (connectionLimit > connectedCount);
+                })()
+            ) {
+                if (
+                    // not already previously magnetized:
+                    ((draftCable.sideB !== selectedNodeId) && (draftCable.elmB !== selectedNode.elm))
+                ) {
+                    // magnetize:
+                    setDraftCable({
+                        ...draftCable,
+                        
+                        sideB      : selectedNodeId,
+                        elmB       : selectedNode.elm,
+                        
+                        transition : 0, // restart attach transition from cursor to node
+                    });
+                } // if
+                
+                
+                
+                if (!isDroppingAllowed) setIsDroppingAllowed(true);
+                return true;
+            }
+            else {
+                if (isDroppingAllowed) setIsDroppingAllowed(false);
+                return false;
+            } // if
+        }
+        else {
+            if ((draftCable.sideB !== '') || (draftCable.elmB !== null)) {
+                setDraftCable({
+                    ...draftCable,
+                    
+                    sideB      : '',
+                    elmB       : null,
+                });
+            } // if
+            
+            
+            
+            if (isDroppingAllowed) setIsDroppingAllowed(false);
+            return false;
+        } // if
+    });
     const handleMouseMove             = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
         if (isDragging === false) return;
         calculatePointerPosition(event);
@@ -441,92 +528,17 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
         
         
         if (draftCable) {
-            const selectedNode = getNodeFromPoint(event.clientX, event.clientY);
-            if (
-                // has selection node:
-                selectedNode
-                &&
-                // not point to disabled node:
-                !(!!selectedNode.elm.ariaDisabled && (selectedNode.elm.ariaDisabled !== 'false'))
-                &&
-                // not point to the node itself:
-                ((draftCable.sideA !== selectedNode.id) && (draftCable.elmA !== selectedNode.elm))
-            ) {
-                const startingNodeId = draftCable.sideA
-                const selectedNodeId = selectedNode.id;
-                if (
-                    // not point to self group:
-                    ((): boolean => {
-                        const nodeGroups = Object.values(connections).map((group) => group.nodes.map((node) => node.id));
-                        const sideAGroup        = nodeGroups.find((nodeGroup) => nodeGroup.includes(startingNodeId));
-                        const selectedNodeGroup = nodeGroups.find((nodeGroup) => nodeGroup.includes(selectedNodeId));
-                        return (sideAGroup !== selectedNodeGroup);
-                    })()
-                    &&
-                    // not already having exact connection:
-                    ((): boolean => {
-                        if (!value) return true; // passed
-                        if (value.some(({sideA, sideB}) =>
-                            ((startingNodeId === sideA) && (selectedNodeId === sideB))
-                            ||
-                            ((startingNodeId === sideB) && (selectedNodeId === sideA))
-                        )) return false; // failed
-                        return true; // passed
-                    })()
-                    &&
-                    // still within connection limit:
-                    ((): boolean => {
-                        const connectionLimit = allNodes.find(({id}) => (id === selectedNodeId))?.limit ?? Infinity;
-                        if (connectionLimit === Infinity) return true;
-                        const connectedCount = (value ?? []).filter(({sideA, sideB}) => (sideA === selectedNodeId) || (sideB === selectedNodeId)).length;
-                        return (connectionLimit > connectedCount);
-                    })()
-                ) {
-                    if (!isDroppingAllowed) setIsDroppingAllowed(true);
-                    
-                    
-                    
-                    if (
-                        // not already previously magnetized:
-                        ((draftCable.sideB !== selectedNodeId) && (draftCable.elmB !== selectedNode.elm))
-                    ) {
-                        // magnetize:
-                        setDraftCable({
-                            ...draftCable,
-                            
-                            sideB      : selectedNodeId,
-                            elmB       : selectedNode.elm,
-                            
-                            transition : 0, // restart attach transition from cursor to node
-                        });
-                    } // if
-                }
-                else {
-                    if (isDroppingAllowed) setIsDroppingAllowed(false);
-                } // if
-            }
-            else {
-                if (isDroppingAllowed) setIsDroppingAllowed(false);
-                
-                
-                
-                if ((draftCable.sideB !== '') || (draftCable.elmB !== null)) {
-                    setDraftCable({
-                        ...draftCable,
-                        
-                        sideB      : '',
-                        elmB       : null,
-                    });
-                } // if
-            } // if
-            
-            
-            
+            verifyIsDroppable(event.clientX, event.clientY);
             requestAnimationFrame(refreshCables);
-        };
+        } // if
     });
-    const handleDragOver              = useEvent<React.DragEventHandler<HTMLElement>>((event) => {
+    const handleDragOverDocument      = useEvent<React.DragEventHandler<HTMLElement>>((event) => {
         handleMouseMove(event);
+    });
+    const handleDragOverNode          = useEvent<React.DragEventHandler<HTMLElement>>((event) => {
+        if (!isDroppingAllowed) return;
+        event.dataTransfer.dropEffect = 'move';
+        event.preventDefault(); // prevents the default behavior to *disallow* for dropping here
     });
     
     const handleMouseUp               = useEvent<React.MouseEventHandler<HTMLElement>>(() => {
@@ -583,7 +595,7 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
         
         // handlers:
         const handleGlobalDragOver = (event: DragEvent) => {
-            handleDragOver(event as any);
+            handleDragOverDocument(event as any);
         };
         const handleGlobalDragEnd  = (event: DragEvent) => {
             handleDragEnd(event as any);
@@ -711,6 +723,11 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                                                     }
                                                 />
                                             }
+                                            
+                                            
+                                            
+                                            // droppable:
+                                            onDragOver={handleDragOverNode}
                                         />
                                     }
                                     

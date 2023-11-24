@@ -124,12 +124,6 @@ const ElementWithDroppable = <TElement extends Element = HTMLElement>(props: Ele
         
         
         
-        // events:
-        event.dataTransfer.dropEffect = 'move';
-        event.preventDefault(); // prevents the default behavior to *disallow* for dropping here
-        
-        
-        
         // callback:
         onDragOver?.(event, nodeId);
     });
