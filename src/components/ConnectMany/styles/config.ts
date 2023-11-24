@@ -21,6 +21,11 @@ import {
 // configs:
 export const [conns, connValues, cssConnConfig] = cssConfig(() => {
     const bases = {
+        // backgrounds:
+        backdropBackground   : 'rgba(0,0,0, 0.5)'       as CssKnownProps['background'   ],
+        
+        
+        
         // borders:
         cableWidthSm         : '0.2rem'                 as CssKnownProps['strokeWidth'  ],
         cableWidthMd         : '0.3rem'                 as CssKnownProps['strokeWidth'  ],

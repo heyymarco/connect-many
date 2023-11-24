@@ -11,6 +11,7 @@ import {
     
     // reads/writes css variables configuration:
     usesCssProps,
+    usesPrefixedProps,
 }                           from '@cssfn/core'          // writes css in javascript
 
 // reusable-ui core:
@@ -161,7 +162,17 @@ const usesConnectManyLayout = () => {
                 
                 
                 // accessibilities:
-                pointerEvents: 'none',
+                ...rule(':not(.hasSelection)', {
+                    pointerEvents: 'none',
+                }),
+                ...rule('.hasSelection', {
+                    pointerEvents: 'auto',
+                    
+                    
+                    
+                    // customize:
+                    ...usesCssProps(usesPrefixedProps(conns, 'backdrop')), // apply config's cssProps starting with backdrop***
+                }),
             }),
             
             
@@ -342,7 +353,7 @@ const usesCableStates = () => {
             // rule(':focus', {
             //     stroke: 'red',
             // }),
-            rule('.blur', {
+            rule('.unselect', {
                 opacity : conns.cableOpacityBlur,
             }),
         ]),

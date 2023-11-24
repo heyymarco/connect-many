@@ -140,8 +140,8 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
     
     
     // states:
-    const [cables, setCables] = useState<CableDef[]>([]);
-    const [focusedCable, setFocusedCable] = useState<CableDef|null>(null);
+    const [cables       , setCables       ] = useState<CableDef[]>([]);
+    const [selectedCable, setSelectedCable] = useState<CableDef|null>(null);
     
     
     
@@ -602,7 +602,27 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                     </div>
                 </div>
             )}
-            <svg className='cables' ref={svgRef}>
+            <svg
+                // refs:
+                ref={svgRef}
+                
+                
+                
+                // classes:
+                className={`cables ${!!selectedCable ? 'hasSelection' : ''}`}
+                
+                
+                
+                // handlers:
+                onClick={(event) => {
+                    if (event.target !== event.currentTarget) return; // ignores bubbles from node(s)
+                    setSelectedCable(null);
+                }}
+                onKeyDown={(event) => {
+                    if (event?.code?.toLowerCase() !== 'escape') return;
+                    setSelectedCable(null);
+                }}
+            >
                 {cables.map((cable) => {
                     const {sideA, headX, headY, sideB, tailX, tailY} = cable;
                     
@@ -618,7 +638,7 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                             
                             
                             // classes:
-                            className : `${!sideB ? 'draft' : ''} ${(!!focusedCable && (focusedCable !== cable)) ? 'blur' : ''}`,
+                            className : `${!sideB ? 'draft' : ''} ${(!!selectedCable && (selectedCable !== cable)) ? 'unselect' : ''}`,
                             
                             
                             
@@ -636,11 +656,8 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                             
                             
                             // handlers:
-                            onFocus : () => {
-                                setFocusedCable(cable);
-                            },
-                            onBlur  : () => {
-                                setFocusedCable((current) => (current === cable) ? null : current);
+                            onClick : () => {
+                                setSelectedCable(cable);
                             },
                         }
                     )
