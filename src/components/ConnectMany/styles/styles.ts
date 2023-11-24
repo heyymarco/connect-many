@@ -179,6 +179,21 @@ const usesConnectManyLayout = () => {
                     // customize:
                     ...usesCssProps(usesPrefixedProps(conns, 'backdrop')), // apply config's cssProps starting with backdrop***
                 }),
+                
+                
+                
+                // borders:
+                borderStartStartRadius : `calc(${borderVars.borderStartStartRadius} - ${borderVars.borderWidth})`,
+                borderStartEndRadius   : `calc(${borderVars.borderStartEndRadius  } - ${borderVars.borderWidth})`,
+                borderEndStartRadius   : `calc(${borderVars.borderEndStartRadius  } - ${borderVars.borderWidth})`,
+                borderEndEndRadius     : `calc(${borderVars.borderEndEndRadius    } - ${borderVars.borderWidth})`,
+                
+                
+                
+                // animations:
+                transition : [
+                    ['background', '300ms', 'ease-out'],
+                ],
             }),
             ...children('.menu', {
                 // positions:
