@@ -1,6 +1,6 @@
 .main {
     display: grid;
-    gap: 3rem;
+    gap: 2rem;
     justify-items: center;
     align-content: start;
     justify-content: center;
