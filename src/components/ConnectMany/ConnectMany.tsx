@@ -85,6 +85,7 @@ export interface ConnectManyProps
         Pick<CableProps,
             // behaviors:
             |'precisionLevel'
+            |'gravityStrength'
         >
 {
     // configs:
@@ -122,6 +123,7 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
         
         // behaviors:
         precisionLevel,
+        gravityStrength,
         
         
         
@@ -690,6 +692,7 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                             
                             // behaviors:
                             precisionLevel,
+                            gravityStrength,
                             
                             
                             

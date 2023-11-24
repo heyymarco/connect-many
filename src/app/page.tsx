@@ -5,7 +5,7 @@ import './globals.css'
 import styles from './page.module.css'
 import { ConnectMany, Connection } from '@/components/ConnectMany'
 import { CircleConnection } from '@/components/ConnectMany/CircleConnection'
-import { Button, Group, Label, List, ListItem, Radio, SizeName } from '@reusable-ui/components'
+import { Button, Group, Label, List, ListItem, Radio, SizeName, Range } from '@reusable-ui/components'
 import { useState } from 'react'
 
 
@@ -16,6 +16,7 @@ export default function Home() {
         { sideA: 'inp-4', sideB: 'out-1' },
     ]);
     const [size, setSize] = useState<SizeName>('lg');
+    const [gravity, setGravity] = useState<number>(1);
     
     
     
@@ -26,6 +27,11 @@ export default function Home() {
                 size={size} // sm|md|lg
                 theme='primary'
                 mild={true}
+                
+                
+                
+                // behaviors:
+                gravityStrength={gravity}
                 
                 
                 
@@ -105,6 +111,19 @@ export default function Home() {
                         {sizeOption}
                     </Radio>
                 )}
+            </Group>
+            <Group theme='primary'>
+                <Label>
+                    Gravity:
+                </Label>
+                <Range
+                    min={-2}
+                    max={10}
+                    step={0.25}
+                    value={gravity}
+                    onChange={({target: {valueAsNumber}}) => setGravity(valueAsNumber)}
+                    nude={false}
+                />
             </Group>
         </main>
     )

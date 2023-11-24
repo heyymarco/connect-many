@@ -73,7 +73,8 @@ export interface CableProps
     
     
     // behaviors:
-    precisionLevel ?: number
+    precisionLevel  ?: number
+    gravityStrength ?: number
 }
 export const Cable = (props: CableProps): JSX.Element|null => {
     // styles:
@@ -102,6 +103,7 @@ export const Cable = (props: CableProps): JSX.Element|null => {
         
         // behaviors:
         precisionLevel = 5,
+        gravityStrength = 1,
     ...restGenericProps} = props;
     
     
@@ -157,7 +159,7 @@ export const Cable = (props: CableProps): JSX.Element|null => {
         const simulatorEngine = (
             d3
             .forceSimulation(simulatorState)
-            .force('gravity', d3.forceY(2000).strength(0.001)) // simulate gravity
+            .force('gravity', d3.forceY(2000).strength(gravityStrength * 0.001)) // simulate gravity
             .force('collide', d3.forceCollide(20)) // simulate cable auto disentanglement (cable nodes will push each other away)
             .force('links'  , d3.forceLink(nodeLinks).strength(0.9)) // string the cables nodes together
             .on('tick', () => {
@@ -217,6 +219,16 @@ export const Cable = (props: CableProps): JSX.Element|null => {
         simulatorEngine.alpha(1);
         simulatorEngine.restart();
     }, [headX, headY, tailX, tailY, precisionLevel]);
+    
+    useIsomorphicLayoutEffect(() => {
+        const simulatorEngine = simulatorEngineRef.current;
+        if (!simulatorEngine) return;
+        
+        // update simulator:
+        simulatorEngine.force('gravity', d3.forceY(2000).strength(gravityStrength * 0.001)) // simulate gravity
+        simulatorEngine.alpha(1);
+        simulatorEngine.restart();
+    }, [gravityStrength]);
     
     
     
