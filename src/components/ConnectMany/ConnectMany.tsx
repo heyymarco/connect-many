@@ -10,6 +10,7 @@ import {
     // hooks:
     useRef,
     useState,
+    useMemo,
 }                           from 'react'
 
 // reusable-ui core:
@@ -26,6 +27,16 @@ import {
     BasicProps,
     Basic,
     ControlProps,
+    
+    
+    
+    // simple-components:
+    Button,
+    
+    
+    
+    // status-components:
+    Popup,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
 // internal components:
@@ -140,8 +151,23 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
     
     
     // states:
-    const [cables       , setCables       ] = useState<CableDef[]>([]);
-    const [selectedCable, setSelectedCable] = useState<CableDef|null>(null);
+    const [cables          , setCables          ] = useState<CableDef[]>([]);
+    const [selectedCableKey, setSelectedCableKey] = useState<string|null>(null);
+    const selectedCableRef                        = useRef<SVGPathElement|null>(null);
+    const selectedCable = useMemo((): CableDef|null => {
+        if (!selectedCableKey) return null;
+        return cables.find(({sideA, sideB}) => selectedCableKey === `${sideA}/${sideB}`) ?? null;
+    }, [cables, selectedCableKey]);
+    const selectedCablePos = useMemo((): { x: number, y: number }|null => {
+        if (!selectedCable) return null;
+        const { headX, headY, tailX, tailY } = selectedCable;
+        return {
+            x : ((headX ?? 0) + (tailX ?? 0)) / 2,
+            y : ((headY ?? 0) + (tailY ?? 0)) / 2,
+        };
+    }, [selectedCable]);
+    const lastSelectedCablePos = useRef<{ x: number, y: number }|null>(selectedCablePos);
+    if (selectedCablePos) lastSelectedCablePos.current = selectedCablePos;
     
     
     
@@ -304,11 +330,11 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
         };
     }, [draftCable, magnetTransitionInterval]);
     
-    // auto unselect selected_cable if deleted:
+    // // auto unselect selected_cable if deleted:
     useIsomorphicLayoutEffect(() => {
-        if (!selectedCable) return;
-        if (!cables.includes(selectedCable)) setSelectedCable(null);
-    }, [cables, selectedCable]);
+        if (!selectedCableKey) return;
+        if (!selectedCable) setSelectedCableKey(null);
+    }, [selectedCableKey, selectedCable]);
     
     
     
@@ -615,18 +641,18 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                 
                 
                 // classes:
-                className={`cables ${!!selectedCable ? 'hasSelection' : ''}`}
+                className={`cables ${!!selectedCableKey ? 'hasSelection' : ''}`}
                 
                 
                 
                 // handlers:
                 onClick={(event) => {
                     if (event.target !== event.currentTarget) return; // ignores bubbles from node(s)
-                    setSelectedCable(null);
+                    setSelectedCableKey(null);
                 }}
                 onKeyDown={(event) => {
                     if (event?.code?.toLowerCase() !== 'escape') return;
-                    setSelectedCable(null);
+                    setSelectedCableKey(null);
                 }}
             >
                 {cables.map((cable) => {
@@ -635,16 +661,22 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                     
                     
                     // jsx:
+                    const cableKey = `${sideA}/${sideB}`;
                     return React.cloneElement(cableComponent,
                         // props:
                         {
                             // identifiers:
-                            key : `${sideA}/${sideB}`,
+                            key : cableKey,
+                            
+                            
+                            
+                            // refs:
+                            elmRef : ((selectedCableKey === cableKey) ? selectedCableRef : undefined),
                             
                             
                             
                             // classes:
-                            className : `${!sideB ? 'draft' : ''} ${(!!selectedCable && (selectedCable !== cable)) ? 'unselect' : ''}`,
+                            className : `${!sideB ? 'draft' : ''} ${(!!selectedCableKey && (selectedCableKey !== cableKey)) ? 'unselect' : ''}`,
                             
                             
                             
@@ -663,12 +695,60 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                             
                             // handlers:
                             onClick : () => {
-                                setSelectedCable(cable);
+                                setSelectedCableKey(cableKey);
                             },
                         }
                     )
                 })}
             </svg>
+            <Popup
+                // variants:
+                size='sm'
+                theme='warning'
+                mild={true}
+                
+                
+                
+                // classes:
+                className='menu'
+                
+                
+                
+                // styles:
+                style={lastSelectedCablePos.current ? {
+                    left : `${lastSelectedCablePos.current.x}px`,
+                    top  : `${lastSelectedCablePos.current.y}px`,
+                } : undefined}
+                
+                
+                
+                // states:
+                expanded={!!selectedCableKey}
+            >
+                <Button size='sm' theme='danger' onClick={() => {
+                    // conditions:
+                    if (!value) return;
+                    if (!selectedCable) return;
+                    
+                    
+                    
+                    // actions:
+                    const foundIndex = value.findIndex((val) =>
+                        ((val.sideA === selectedCable.sideA) && (val.sideB === selectedCable.sideB))
+                        ||
+                        ((val.sideA === selectedCable.sideB) && (val.sideB === selectedCable.sideA))
+                    );
+                    if (foundIndex < 0) return;
+                    const clonedValue = value?.slice(0) ?? [];
+                    clonedValue.splice(foundIndex, 1) // remove by index
+                    triggerValueChange(clonedValue);
+                }}>
+                    Delete
+                </Button>
+                <Button size='sm' theme='secondary' onClick={() => setSelectedCableKey(null)}>
+                    Cancel
+                </Button>
+            </Popup>
         </Basic>
     );
 };

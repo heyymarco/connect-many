@@ -150,7 +150,7 @@ const usesConnectManyLayout = () => {
             ...children('.cables', {
                 // positions:
                 position : 'absolute',
-                zIndex   : 99,
+                zIndex   : 98,
                 inset    : 0,
                 
                 
@@ -173,6 +173,23 @@ const usesConnectManyLayout = () => {
                     // customize:
                     ...usesCssProps(usesPrefixedProps(conns, 'backdrop')), // apply config's cssProps starting with backdrop***
                 }),
+            }),
+            ...children('.menu', {
+                // positions:
+                position  : 'absolute',
+                zIndex    : 99,
+                translate : '-50% -50%',
+                
+                
+                
+                // layouts:
+                display      : 'grid',
+                gridAutoFlow : 'column',
+                
+                
+                
+                // spacings:
+                gap          : spacers.sm,
             }),
             
             
