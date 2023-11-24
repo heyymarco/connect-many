@@ -304,6 +304,12 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
         };
     }, [draftCable, magnetTransitionInterval]);
     
+    // auto unselect selected_cable if deleted:
+    useIsomorphicLayoutEffect(() => {
+        if (!selectedCable) return;
+        if (!cables.includes(selectedCable)) setSelectedCable(null);
+    }, [cables, selectedCable]);
+    
     
     
     // events:
