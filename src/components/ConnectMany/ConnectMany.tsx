@@ -625,6 +625,16 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                     {!!groupName && <div className='label'>{groupName}</div>}
                     <div className='nodes'>
                         {nodes.map(({id: nodeId, label, limit = Infinity, enabled = true, nodeComponent = defaultNodeComponent}, nodeIndex) => {
+                            const isMutable = (
+                                (limit === Infinity)
+                                ||
+                                ((): boolean => {
+                                    const connectionLimit = (allNodes.find(({id}) => (id === nodeId))?.limit ?? Infinity);
+                                    if (connectionLimit === Infinity) return true;
+                                    const connectedCount = (value ?? []).filter(({sideA, sideB}) => (sideA === nodeId) || (sideB === nodeId)).length;
+                                    return (connectionLimit > connectedCount);
+                                })()
+                            );
                             
                             
                             
@@ -639,6 +649,7 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                                     
                                     
                                     // draggable:
+                                    draggable={enabled && isMutable}
                                     dragDataType={dragDataType}
                                     
                                     
@@ -672,16 +683,7 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                                                         
                                                         
                                                         // accessibilities:
-                                                        'aria-readonly' : nodeComponent.props['aria-readonly'] ?? !(
-                                                            (limit === Infinity)
-                                                            ||
-                                                            ((): boolean => {
-                                                                const connectionLimit = (allNodes.find(({id}) => (id === nodeId))?.limit ?? Infinity);
-                                                                if (connectionLimit === Infinity) return true;
-                                                                const connectedCount = (value ?? []).filter(({sideA, sideB}) => (sideA === nodeId) || (sideB === nodeId)).length;
-                                                                return (connectionLimit > connectedCount);
-                                                            })()
-                                                        ),
+                                                        'aria-readonly' : nodeComponent.props['aria-readonly'] ?? !isMutable,
                                                         enabled : enabled,
                                                     },
                                                     

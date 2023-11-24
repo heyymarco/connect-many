@@ -34,6 +34,7 @@ export interface ElementWithDraggableProps<TElement extends Element = HTMLElemen
     
     
     // draggable:
+    draggable       ?: boolean // for dynamically enabling/disabling draggable
     dragDataType     : string
     onDragStart     ?: (event: React.DragEvent<TElement>, nodeId: string|number) => void
     onDragEnd       ?: (event: React.DragEvent<TElement>, nodeId: string|number) => void
@@ -57,6 +58,7 @@ const ElementWithDraggable = <TElement extends Element = HTMLElement>(props: Ele
         
         
         // draggable:
+        draggable = true,
         dragDataType,
         onDragStart,
         onDragEnd,
@@ -104,7 +106,7 @@ const ElementWithDraggable = <TElement extends Element = HTMLElement>(props: Ele
             
             
             // draggable:
-            draggable   : true,
+            draggable   : draggable,
             onDragStart : handleDragStart,
             onDragEnd   : handleDragEnd,
         },
