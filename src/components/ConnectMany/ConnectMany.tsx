@@ -51,6 +51,9 @@ import {
     ElementWithDraggable,
 }                           from './ElementWithDraggable'
 import {
+    ElementWithDroppable,
+}                           from './ElementWithDroppable'
+import {
     Cable,
     CableProps,
 }                           from './Cable'
@@ -656,42 +659,57 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                                     
                                     // components:
                                     elementComponent={
-                                        <ChildWithRef
-                                            // refs:
-                                            childId={nodeId}
-                                            childRefs={nodeRefs}
+                                        <ElementWithDroppable
+                                            // identifiers:
+                                            nodeId={nodeId}
+                                            
+                                            
+                                            
+                                            // draggable:
+                                            dragDataType={dragDataType}
                                             
                                             
                                             
                                             // components:
                                             elementComponent={
-                                                React.cloneElement(nodeComponent,
-                                                    // props:
-                                                    {
-                                                        // identifiers:
-                                                        key             : nodeId || nodeIndex,
-                                                        
-                                                        
-                                                        
-                                                        // classes:
-                                                        className : (
-                                                            (isDragging !== nodeId)
-                                                            ? ''
-                                                            : (isDroppingAllowed ? 'dodrop' : 'nodrop')
-                                                        ),
-                                                        
-                                                        
-                                                        
-                                                        // accessibilities:
-                                                        'aria-readonly' : nodeComponent.props['aria-readonly'] ?? !isMutable,
-                                                        enabled : enabled,
-                                                    },
+                                                <ChildWithRef
+                                                    // refs:
+                                                    childId={nodeId}
+                                                    childRefs={nodeRefs}
                                                     
                                                     
                                                     
-                                                    // children:
-                                                    nodeComponent.props.children ?? label,
-                                                )
+                                                    // components:
+                                                    elementComponent={
+                                                        React.cloneElement(nodeComponent,
+                                                            // props:
+                                                            {
+                                                                // identifiers:
+                                                                key             : nodeId || nodeIndex,
+                                                                
+                                                                
+                                                                
+                                                                // classes:
+                                                                className : (
+                                                                    (isDragging !== nodeId)
+                                                                    ? ''
+                                                                    : (isDroppingAllowed ? 'dodrop' : 'nodrop')
+                                                                ),
+                                                                
+                                                                
+                                                                
+                                                                // accessibilities:
+                                                                'aria-readonly' : nodeComponent.props['aria-readonly'] ?? !isMutable,
+                                                                enabled : enabled,
+                                                            },
+                                                            
+                                                            
+                                                            
+                                                            // children:
+                                                            nodeComponent.props.children ?? label,
+                                                        )
+                                                    }
+                                                />
                                             }
                                         />
                                     }
