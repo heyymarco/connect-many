@@ -43,7 +43,7 @@ export default function Home() {
                 // configs:
                 connections={{
                     inputs : {
-                        label : <>Inputs</>,
+                        // label : <>Inputs</>,
                         nodes : [
                             { id: 'inp-1', label: '1' , limit: 1         },
                             { id: 'inp-2', label: '2' , limit: 3, nodeComponent: <Connector theme='special' size={size} /> },
@@ -63,7 +63,7 @@ export default function Home() {
                         },
                     },
                     outputs : {
-                        label : <>Outputs</>,
+                        // label : <>Outputs</>,
                         nodes : [
                             { id: 'out-1', label: '1', limit: Infinity  },
                             { id: 'out-2', label: '2', limit: Infinity  },
