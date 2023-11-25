@@ -765,10 +765,11 @@ export const ConnectMany = (props: ConnectManyProps): JSX.Element|null => {
                         })}
                     </div>
                     <div className={`leds plc-${leds?.placement ?? 'start'}`}>
-                        {(leds?.items ?? []).map(({label, active, theme, ledComponent = defaultLedComponent}) =>
+                        {(leds?.items ?? []).map(({label, active, theme, ledComponent = defaultLedComponent}, itemIndex) =>
                             React.cloneElement(ledComponent,
                                 // props:
                                 {
+                                    key    : itemIndex,
                                     active : ledComponent.props.active ?? active,
                                     theme  : ledComponent.props.theme  ?? theme,
                                 },
