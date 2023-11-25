@@ -1,13 +1,11 @@
 'use client'
 
 import { Cable } from '@/components/ConnectMany/Cable'
-import './globals.css'
 import styles from './page.module.css'
 import { ConnectMany, Connection } from '@/components/ConnectMany'
 import { Connector } from '@/components/ConnectMany/Connector'
 import { Button, Group, Label, List, ListItem, Radio, SizeName, Range, Check } from '@reusable-ui/components'
 import { useState } from 'react'
-import { Led } from '@/components/ConnectMany/Led'
 
 
 

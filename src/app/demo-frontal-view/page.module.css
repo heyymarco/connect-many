@@ -1,0 +1,10 @@
+.main {
+    display: grid;
+    gap: 2rem;
+    justify-items: center;
+    align-content: start;
+    justify-content: stretch;
+    justify-items: stretch;
+    padding: 1rem;
+    background: url('/soft-rainbow.svg');
+}
