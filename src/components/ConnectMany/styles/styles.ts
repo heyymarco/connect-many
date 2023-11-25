@@ -454,7 +454,7 @@ const usesLedLayout = () => {
     // dependencies:
     
     // features:
-    const {borderRule , borderVars } = usesBorder(conns as any);
+    const {borderVars} = usesBorder(conns as any);
     
     
     

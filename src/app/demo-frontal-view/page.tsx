@@ -4,7 +4,6 @@ import { Cable } from '@/components/ConnectMany/Cable'
 import styles from './page.module.css'
 import { ConnectMany, Connection } from '@/components/ConnectMany'
 import { Connector } from '@/components/ConnectMany/Connector'
-import { Button, Group, Label, List, ListItem, Radio, SizeName, Range, Check } from '@reusable-ui/components'
 import { useState } from 'react'
 import { FrontalView, Header, Identifier, ActionButton } from '@/components/FrontalView'
 import Image from 'next/image'
@@ -109,7 +108,7 @@ export default function DemoFrontalView() {
                 <ConnectMany
                     // variants:
                     size='md' // sm|md|lg
-                    theme='chocolate'
+                    theme='success'
                     // mild={true}
                     
                     
@@ -172,7 +171,7 @@ export default function DemoFrontalView() {
                 <ConnectMany
                     // variants:
                     size='md' // sm|md|lg
-                    theme='chocolate'
+                    theme='mint'
                     // mild={true}
                     
                     
@@ -235,7 +234,7 @@ export default function DemoFrontalView() {
                 <ConnectMany
                     // variants:
                     size='md' // sm|md|lg
-                    theme='chocolate'
+                    theme='purple'
                     // mild={true}
                     
                     

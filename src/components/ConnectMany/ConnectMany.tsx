@@ -33,7 +33,6 @@ import {
     BasicProps,
     Basic,
     IndicatorProps,
-    Indicator,
     ControlProps,
     
     

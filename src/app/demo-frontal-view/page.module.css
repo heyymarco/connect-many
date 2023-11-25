@@ -2,7 +2,7 @@
     display: grid;
     gap: 2rem;
     justify-items: center;
-    align-content: start;
+    align-content: center;
     justify-content: stretch;
     justify-items: stretch;
     padding: 1rem;

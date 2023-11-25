@@ -2,16 +2,9 @@
 import {
     // writes css in javascript:
     rule,
-    states,
     children,
     style,
     scope,
-    
-    
-    
-    // reads/writes css variables configuration:
-    usesCssProps,
-    usesPrefixedProps,
 }                           from '@cssfn/core'          // writes css in javascript
 
 // reusable-ui core:
@@ -32,13 +25,10 @@ import {
     
     
     
-    // removes browser's default stylesheet:
-    stripoutFocusableElement,
-    
-    
-    
-    // background stuff of UI:
-    usesBackground,
+    // a responsive management system:
+    BreakpointName,
+    ifScreenWidthAtLeast,
+    ifScreenWidthSmallerThan,
     
     
     
@@ -52,13 +42,17 @@ import {
     
     
     
+    // groups a list of UIs into a single UI:
+    usesGroupable,
+    
+    
+    
     // size options of UI:
     usesResizable,
     
     
     
     // color options of UI:
-    usesThemeable,
     defineThemeRule,
 }                           from '@reusable-ui/core'    // a set of reusable-ui packages which are responsible for building any component
 
@@ -83,39 +77,82 @@ import {
 
 // defaults:
 const minPanelSize   = 500; // 500px
+const breakpoint : BreakpointName = 'xxl';
 
 
 
 const usesFrontalViewLayout = () => {
+    // dependencies:
+    
+    // capabilities:
+    const {groupableRule} = usesGroupable({
+        orientationInlineSelector : null,
+        orientationBlockSelector  : null,
+        itemsSelector             : null,
+    });
+    
+    // features:
+    const {paddingRule} = usesPadding({
+        paddingInline : '4rem',
+        paddingBlock  : '4rem',
+    });
+    
+    
+    
     return style({
+        // capabilities:
+        ...groupableRule(),
+        
+        
+        
         // layouts:
         ...usesBasicLayout(),
         ...style({
             display: 'grid',
             gridTemplate: [[
-                '"label  identifier" auto',
-                '"panels identifier" auto',
+                '"header" auto',
+                '"identifier" auto',
+                '"panels" auto',
                 '/',
-                '1fr min-content',
+                '1fr',
             ]],
+            ...ifScreenWidthAtLeast(breakpoint, {
+                gridTemplate: [[
+                    '"header identifier" auto',
+                    '"panels identifier" auto',
+                    '/',
+                    '1fr min-content',
+                ]],
+            }),
+            
+            
+            
+            // borders:
+            ...ifScreenWidthAtLeast(breakpoint, {
+                borderColor : (colors as any).greyBold,
+                borderRadius : '3rem',
+                boxShadow : [
+                    `inset 0 0 0 1rem ${(colors as any).grey}`,
+                    `inset 0 0 0 2rem ${(colors as any).darkBlue}`,
+                ],
+            }),
             
             
             
             // spacings:
             gapInline : spacers.lg,
-            gapBlock  : spacers.xl,
+            gapBlock  : spacers.lg,
             
             
             
             // children:
-            ...children('.label', {
+            ...children('.header', {
                 // positions:
-                gridArea: 'label',
+                gridArea: 'header',
             }),
             ...children('.panels', {
                 // positions:
                 gridArea: 'panels',
-                background: 'blue',
                 
                 
                 
@@ -131,8 +168,17 @@ const usesFrontalViewLayout = () => {
             ...children('.identifier', {
                 // positions:
                 gridArea: 'identifier',
+                justifySelf : 'center',
+                ...ifScreenWidthAtLeast(breakpoint, {
+                    justifySelf : 'stretch',
+                }),
             }),
         }),
+        
+        
+        
+        // features:
+        ...paddingRule(), // must be placed at the last
     });
 };
 const usesFrontalViewVariants = () => {
@@ -166,6 +212,11 @@ const usesIdentifierLayout = () => {
             
             
             
+            // sizes:
+            minInlineSize : '12rem',
+            
+            
+            
             // spacings:
             gap: spacers.md,
             
@@ -174,14 +225,14 @@ const usesIdentifierLayout = () => {
             // children:
             ...children(['.pid', '.usb'], {
                 // accessibilities:
-                    ...rule(['&::selection', '& ::selection'], { // ::selection on self and descendants
+                ...rule(['&::selection', '& ::selection'], { // ::selection on self and descendants
                         // backgrounds:
-                    backg     : colors.warning,
+                    backgroundColor : colors.warning,
                     
                     
                     
                     // foregrounds:
-                    color     : colors.warningText,
+                    color           : colors.warningText,
                 }),
                 
                 
@@ -201,6 +252,11 @@ const usesIdentifierLayout = () => {
                 justifyContent : 'inherit',
                 alignItems: 'stretch', // stretch horizontally
                 flexWrap: 'inherit',
+                
+                
+                
+                // sizes:
+                alignSelf: 'stretch',
                 
                 
                 
@@ -259,6 +315,13 @@ const usesActionButtonStates   = usesButtonStates;
 
 
 const usesHeaderLayout = () => {
+    // dependencies:
+    
+    // capabilities:
+    const {groupableVars} = usesGroupable();
+    
+    
+    
     return style({
         // layouts:
         display: 'grid',
@@ -272,9 +335,42 @@ const usesHeaderLayout = () => {
         
         
         
+        // backgrounds & foregrounds:
+        ...ifScreenWidthSmallerThan(breakpoint, {
+            // accessibilities:
+            ...rule(['&::selection', '& ::selection'], { // ::selection on self and descendants
+                // backgrounds:
+                backgroundColor : (colors as any).darkBlueText,
+                
+                
+                
+                // foregrounds:
+                color           : (colors as any).darkBlue,
+            }),
+            
+            
+            
+            // backgrounds:
+            backgroundColor : (colors as any).darkBlue,
+            
+            
+            
+            // foregrounds:
+            color           : (colors as any).darkBlueText,
+        }),
+        
+        
+        
         // spacings:
         gapInline : spacers.sm,
         gapBlock  : spacers.xs,
+        ...ifScreenWidthSmallerThan(breakpoint, {
+            // cancel-out <FrontalView>'s padding with negative margin:
+            marginInline     : `calc(0px - ${groupableVars.paddingInline})`, // cancel out <TabBody>'s padding with negative margin
+            marginBlockStart : `calc(0px - ${groupableVars.paddingBlock })`, // cancel out <TabBody>'s padding with negative margin
+            
+            padding          : spacers.default,
+        }),
         
         
         
