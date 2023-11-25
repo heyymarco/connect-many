@@ -51,6 +51,12 @@ import {
 import {
     ConnectManyProps,
 }                           from '@/components/ConnectMany'
+import type {
+    HeaderProps,
+}                           from './Header'
+import type {
+    IdentifierProps,
+}                           from './Identifier'
 
 // styles:
 import {
@@ -62,7 +68,8 @@ import {
 // react components:
 export interface FrontalViewProps extends Omit<BasicProps, 'children'> {
     // components:
-    identifier ?: React.ReactComponentElement<any, any>
+    header     ?: React.ReactComponentElement<any, HeaderProps>
+    identifier ?: React.ReactComponentElement<any, IdentifierProps>
     
     
     
@@ -77,6 +84,7 @@ export const FrontalView = (props: FrontalViewProps) => {
     
     const {
         // components:
+        header,
         identifier,
         
         
@@ -94,6 +102,13 @@ export const FrontalView = (props: FrontalViewProps) => {
             {...restBasicProps}
             mainClass={styleSheet.frontalView}
         >
+            
+            {!!header && React.cloneElement(header,
+                // props:
+                {
+                    className : `header ${header.props.className}`,
+                },
+            )}
             <div className='panels'>
                 {panels}
             </div>

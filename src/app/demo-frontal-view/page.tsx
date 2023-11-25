@@ -6,7 +6,8 @@ import { ConnectMany, Connection } from '@/components/ConnectMany'
 import { Connector } from '@/components/ConnectMany/Connector'
 import { Button, Group, Label, List, ListItem, Radio, SizeName, Range, Check } from '@reusable-ui/components'
 import { useState } from 'react'
-import { FrontalView, Identifier, ActionButton } from '@/components/FrontalView'
+import { FrontalView, Header, Identifier, ActionButton } from '@/components/FrontalView'
+import Image from 'next/image'
 
 
 
@@ -21,6 +22,14 @@ export default function DemoFrontalView() {
     return (
         <main className={styles.main}>
             <FrontalView theme='danger'
+                header={
+                    <Header
+                        logo={<Image src='/spongebob.svg' alt='spongebob' width={40} height={40} style={{borderRadius: '10rem'}} />}
+                        title='CAEN'
+                        description='Four Fold Programmable Logic Unit'
+                        serial='DT1081'
+                    />
+                }
                 identifier={
                     <Identifier theme='dark'
                         title='N1081B'

@@ -257,6 +257,74 @@ const usesActionButtonStates   = usesButtonStates;
 
 
 
+const usesHeaderLayout = () => {
+    return style({
+        // layouts:
+        display: 'grid',
+        gridTemplate: [[
+            '"logo title serial" auto',
+            '"logo  horz   horz" auto',
+            '"logo  desc   desc" auto',
+            '/',
+            'min-content 1fr max-content',
+        ]],
+        
+        
+        
+        // spacings:
+        gapInline : spacers.sm,
+        gapBlock  : spacers.xs,
+        
+        
+        
+        // children:
+        ...children('.logo', {
+            // positions:
+            gridArea    : 'logo',
+            justifySelf : 'center',
+            alignSelf   : 'center',
+        }),
+        ...children('.title', {
+            // positions:
+            gridArea: 'title',
+            justifySelf : 'start',
+            alignSelf   : 'end',
+            
+            
+            
+            // spacings:
+            margin: 0,
+        }),
+        ...children('.serial', {
+            // positions:
+            gridArea: 'serial',
+            justifySelf : 'end',
+            alignSelf   : 'end',
+        }),
+        ...children('.horz', {
+            gridArea: 'horz',
+            
+            
+            
+            // appearances:
+            opacity: 1,
+            
+            
+            
+            // spacings:
+            margin: 0,
+        }),
+        ...children('.description', {
+            // positions:
+            gridArea: 'desc',
+            justifySelf : 'end',
+            alignSelf   : 'start',
+        }),
+    });
+};
+
+
+
 export default () => [
     scope('frontalView', {
         ...usesFrontalViewLayout(),
@@ -270,5 +338,8 @@ export default () => [
         ...usesActionButtonLayout(),
         ...usesActionButtonVariants(),
         ...usesActionButtonStates(),
+    }),
+    scope('header', {
+        ...usesHeaderLayout(),
     }),
 ];
