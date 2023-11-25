@@ -102,7 +102,8 @@ const usesFrontalViewLayout = () => {
             
             
             // spacings:
-            gap: spacers.lg, 
+            gapInline : spacers.lg,
+            gapBlock  : spacers.xl,
             
             
             
