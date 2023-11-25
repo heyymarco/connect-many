@@ -6,7 +6,7 @@ import { ConnectMany, Connection } from '@/components/ConnectMany'
 import { Connector } from '@/components/ConnectMany/Connector'
 import { Button, Group, Label, List, ListItem, Radio, SizeName, Range, Check } from '@reusable-ui/components'
 import { useState } from 'react'
-import { FrontalView } from '@/components/FrontalView'
+import { FrontalView, Identifier, ActionButton } from '@/components/FrontalView'
 
 
 
@@ -20,7 +20,20 @@ export default function DemoFrontalView() {
     
     return (
         <main className={styles.main}>
-            <FrontalView>
+            <FrontalView theme='danger'
+                identifier={
+                    <Identifier theme='dark'
+                        title='N1081B'
+                        pid='13158'
+                        ip='192.168.50.246'
+                        usb='172.16.51.102'
+                    >
+                        <ActionButton theme='altDark' onClick={undefined}>VIEW</ActionButton>
+                        <ActionButton theme='altDark' onClick={undefined}>CONFIGURE</ActionButton>
+                        <ActionButton theme='altDark' onClick={undefined}>SETTINGS</ActionButton>
+                    </Identifier>
+                }
+            >
                 <ConnectMany
                     // variants:
                     size='md' // sm|md|lg

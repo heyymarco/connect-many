@@ -27,6 +27,16 @@ defineTheme('chocolate', chocolateCol);
 // @ts-ignore
 colorValues.chocolateBold = chocolateCol.lighten(1.8);
 
+const darkCol = Color('#000000');
+defineTheme('dark', darkCol);
+// @ts-ignore
+colorValues.darkBold = Color('#000000');;
+
+const altDarkCol = Color('#000000');
+defineTheme('altDark', altDarkCol);
+// @ts-ignore
+colorValues.altDarkBold = Color('#3E7BAA');;
+
 
 
 // Borders:
