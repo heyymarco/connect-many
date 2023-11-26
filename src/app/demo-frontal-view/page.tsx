@@ -11,9 +11,21 @@ import Image from 'next/image'
 
 
 export default function DemoFrontalView() {
-    const [cables, setCables] = useState<Connection[]>(() => [
+    const [cables1, setCables1] = useState<Connection[]>(() => [
         { sideA: 'inp-1', sideB: 'out-3' },
         { sideA: 'inp-4', sideB: 'out-1' },
+    ]);
+    const [cables2, setCables2] = useState<Connection[]>(() => [
+        { sideA: 'inp-1', sideB: 'out-4' },
+        { sideA: 'inp-3', sideB: 'out-2' },
+    ]);
+    const [cables3, setCables3] = useState<Connection[]>(() => [
+        { sideA: 'inp-2', sideB: 'out-4' },
+        { sideA: 'inp-6', sideB: 'out-2' },
+    ]);
+    const [cables4, setCables4] = useState<Connection[]>(() => [
+        { sideA: 'inp-1', sideB: 'out-3' },
+        { sideA: 'inp-5', sideB: 'out-4' },
     ]);
     
     
@@ -96,8 +108,8 @@ export default function DemoFrontalView() {
                     
                     
                     // values:
-                    value={cables}
-                    onValueChange={setCables}
+                    value={cables1}
+                    onValueChange={setCables1}
                     
                     
                     
@@ -108,7 +120,7 @@ export default function DemoFrontalView() {
                 <ConnectMany
                     // variants:
                     size='md' // sm|md|lg
-                    theme='success'
+                    theme='leaf'
                     // mild={true}
                     
                     
@@ -159,8 +171,8 @@ export default function DemoFrontalView() {
                     
                     
                     // values:
-                    value={cables}
-                    onValueChange={setCables}
+                    value={cables2}
+                    onValueChange={setCables2}
                     
                     
                     
@@ -222,8 +234,8 @@ export default function DemoFrontalView() {
                     
                     
                     // values:
-                    value={cables}
-                    onValueChange={setCables}
+                    value={cables3}
+                    onValueChange={setCables3}
                     
                     
                     
@@ -285,8 +297,8 @@ export default function DemoFrontalView() {
                     
                     
                     // values:
-                    value={cables}
-                    onValueChange={setCables}
+                    value={cables4}
+                    onValueChange={setCables4}
                     
                     
                     

@@ -63,27 +63,30 @@ export const FrontalView = (props: FrontalViewProps) => {
     
     // jsx:
     return (
-        <Basic
-            // other props:
-            {...restBasicProps}
-            mainClass={styleSheet.frontalView}
+        <div
+            className={styleSheet.frontalView}
         >
-            
-            {!!header && React.cloneElement(header,
-                // props:
-                {
-                    className : `header ${header.props.className}`,
-                },
-            )}
-            <div className='panels'>
-                {panels}
-            </div>
-            {!!identifier && React.cloneElement(identifier,
-                // props:
-                {
-                    className : `identifier ${identifier.props.className}`,
-                },
-            )}
-        </Basic>
+            <Basic
+                // other props:
+                {...restBasicProps}
+                className='wrapper'
+            >
+                {!!header && React.cloneElement(header,
+                    // props:
+                    {
+                        className : `header ${header.props.className}`,
+                    },
+                )}
+                <div className='panels'>
+                    {panels}
+                </div>
+                {!!identifier && React.cloneElement(identifier,
+                    // props:
+                    {
+                        className : `identifier ${identifier.props.className}`,
+                    },
+                )}
+            </Basic>
+        </div>
     );
 }

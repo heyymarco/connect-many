@@ -27,8 +27,6 @@ import {
     
     // a responsive management system:
     BreakpointName,
-    ifScreenWidthAtLeast,
-    ifScreenWidthSmallerThan,
     
     
     
@@ -76,8 +74,7 @@ import {
 
 
 // defaults:
-const minPanelSize   = 500; // 500px
-const breakpoint : BreakpointName = 'xxl';
+const containerBrakpoint = '86rem';
 
 
 
@@ -100,85 +97,116 @@ const usesFrontalViewLayout = () => {
     
     
     return style({
-        // capabilities:
-        ...groupableRule(),
-        
-        
-        
-        // layouts:
-        ...usesBasicLayout(),
         ...style({
+            // layout:
+            containerType : 'inline-size',
             display: 'grid',
-            gridTemplate: [[
-                '"header" auto',
-                '"identifier" auto',
-                '"panels" auto',
-                '/',
-                '1fr',
-            ]],
-            ...ifScreenWidthAtLeast(breakpoint, {
-                gridTemplate: [[
-                    '"header identifier" auto',
-                    '"panels identifier" auto',
-                    '/',
-                    '1fr min-content',
-                ]],
-            }),
-            
-            
-            
-            // borders:
-            ...ifScreenWidthAtLeast(breakpoint, {
-                borderColor : (colors as any).greyBold,
-                borderRadius : '3rem',
-                boxShadow : [
-                    `inset 0 0 0 1rem ${(colors as any).grey}`,
-                    `inset 0 0 0 2rem ${(colors as any).darkBlue}`,
-                ],
-            }),
-            
-            
-            
-            // spacings:
-            gapInline : spacers.lg,
-            gapBlock  : spacers.lg,
             
             
             
             // children:
-            ...children('.header', {
-                // positions:
-                gridArea: 'header',
-            }),
-            ...children('.panels', {
-                // positions:
-                gridArea: 'panels',
+            ...children('.wrapper', {
+                // capabilities:
+                ...groupableRule(),
                 
                 
                 
                 // layouts:
-                display             : 'grid',
-                gridTemplateColumns : `repeat(auto-fill, minmax(${minPanelSize}px, 1fr))`,
-                
-                
-                
-                // spacings:
-                gap: spacers.lg, 
-            }),
-            ...children('.identifier', {
-                // positions:
-                gridArea: 'identifier',
-                justifySelf : 'center',
-                ...ifScreenWidthAtLeast(breakpoint, {
-                    justifySelf : 'stretch',
+                ...usesBasicLayout(),
+                ...style({
+                    display: 'grid',
+                    gridTemplate: [[
+                        '"header" auto',
+                        '"identifier" auto',
+                        '"panels" auto',
+                        '/',
+                        '1fr',
+                    ]],
+                    ...rule(`@container (min-width: ${containerBrakpoint})`, {
+                        gridTemplate: [[
+                            '"header identifier" auto',
+                            '"panels identifier" auto',
+                            '/',
+                            '1fr min-content',
+                        ]],
+                    }),
+                    
+                    
+                    
+                    // borders:
+                    ...rule(`@container (min-width: ${containerBrakpoint})`, {
+                        borderColor : (colors as any).greyBold,
+                        borderRadius : '3rem',
+                        boxShadow : [
+                            `inset 0 0 0 1rem ${(colors as any).grey}`,
+                            `inset 0 0 0 2rem ${(colors as any).darkBlue}`,
+                        ],
+                    }),
+                    
+                    
+                    
+                    // spacings:
+                    gapInline : spacers.lg,
+                    gapBlock  : spacers.lg,
+                    
+                    
+                    
+                    // children:
+                    ...children('.header', {
+                        // positions:
+                        gridArea: 'header',
+                    }),
+                    ...children('.panels', {
+                        // positions:
+                        gridArea: 'panels',
+                        
+                        
+                        
+                        // layouts:
+                        display             : 'grid',
+                        ...rule(`@container (min-width: ${containerBrakpoint})`, {
+                            gridTemplateColumns : 'min-content min-content',
+                        }),
+                        // gridTemplateColumns : `repeat(auto-fill, minmax(${minPanelSize}px, 1fr))`,
+                        justifyContent : 'center',
+                        alignContent : 'center',
+                        
+                        
+                        
+                        // spacings:
+                        gapInline: spacers.lg,
+                        gapBlock : 0,
+                        ...rule(`@container (min-width: ${containerBrakpoint})`, {
+                            gapBlock : spacers.lg,
+                        }),
+                        
+                        
+                        // children:
+                        ...children('*', {
+                            borderRadius: 0,
+                            ...rule(`@container (max-width: ${containerBrakpoint})`, {
+                                ...rule(':not(:first-child)', {
+                                    borderBlockStartWidth : 0,
+                                }),
+                            }),
+                        }),
+                    }),
+                    ...children('.identifier', {
+                        // positions:
+                        gridArea: 'identifier',
+                        justifySelf : 'center',
+                        ...rule(`@container (min-width: ${containerBrakpoint})`, {
+                            justifySelf : 'stretch',
+                        }),
+                    }),
                 }),
+                
+                
+                
+                // features:
+                ...paddingRule(), // must be placed at the last
             }),
         }),
-        
-        
-        
-        // features:
-        ...paddingRule(), // must be placed at the last
     });
 };
 const usesFrontalViewVariants = () => {
@@ -336,7 +364,7 @@ const usesHeaderLayout = () => {
         
         
         // backgrounds & foregrounds:
-        ...ifScreenWidthSmallerThan(breakpoint, {
+        ...rule(`@container (max-width: ${containerBrakpoint})`, {
             // accessibilities:
             ...rule(['&::selection', '& ::selection'], { // ::selection on self and descendants
                 // backgrounds:
@@ -364,7 +392,7 @@ const usesHeaderLayout = () => {
         // spacings:
         gapInline : spacers.sm,
         gapBlock  : spacers.xs,
-        ...ifScreenWidthSmallerThan(breakpoint, {
+        ...rule(`@container (max-width: ${containerBrakpoint})`, {
             // cancel-out <FrontalView>'s padding with negative margin:
             marginInline     : `calc(0px - ${groupableVars.paddingInline})`, // cancel out <TabBody>'s padding with negative margin
             marginBlockStart : `calc(0px - ${groupableVars.paddingBlock })`, // cancel out <TabBody>'s padding with negative margin

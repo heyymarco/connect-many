@@ -22,16 +22,25 @@ defineTheme('cable', cableCol);
 const specialCol = Color('#FFD43F');
 defineTheme('special', specialCol);
 
+const leafCol = Color('#22974F');
+defineTheme('leaf', leafCol);
+// @ts-ignore
+colorValues.leafBold = Color('#ffffff');
+
 const mintCol = Color('#9FA741');
 defineTheme('mint', mintCol);
+// @ts-ignore
+colorValues.mintBold = Color('#ffffff');
 
 const purpleCol = Color('#6C3180');
 defineTheme('purple', purpleCol);
+// @ts-ignore
+colorValues.purpleBold = Color('#ffffff');
 
 const chocolateCol = Color('#752329');
 defineTheme('chocolate', chocolateCol);
 // @ts-ignore
-colorValues.chocolateBold = chocolateCol.lighten(1.8);
+colorValues.chocolateBold = Color('#ffffff');
 
 const darkCol = Color('#000000');
 defineTheme('dark', darkCol);
