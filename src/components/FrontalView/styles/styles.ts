@@ -97,115 +97,113 @@ const usesFrontalViewLayout = () => {
     
     
     return style({
-        ...style({
-            // layout:
-            containerType : 'inline-size',
-            display: 'grid',
+        // layout:
+        containerType : 'inline-size',
+        display: 'grid',
+        
+        
+        
+        // children:
+        ...children('.wrapper', {
+            // capabilities:
+            ...groupableRule(),
             
             
             
-            // children:
-            ...children('.wrapper', {
-                // capabilities:
-                ...groupableRule(),
-                
-                
-                
-                // layouts:
-                ...usesBasicLayout(),
-                ...style({
-                    display: 'grid',
+            // layouts:
+            ...usesBasicLayout(),
+            ...style({
+                display: 'grid',
+                gridTemplate: [[
+                    '"header" auto',
+                    '"identifier" auto',
+                    '"panels" auto',
+                    '/',
+                    '1fr',
+                ]],
+                ...rule(`@container (min-width: ${containerBrakpoint})`, {
                     gridTemplate: [[
-                        '"header" auto',
-                        '"identifier" auto',
-                        '"panels" auto',
+                        '"header identifier" auto',
+                        '"panels identifier" auto',
                         '/',
-                        '1fr',
+                        '1fr min-content',
                     ]],
-                    ...rule(`@container (min-width: ${containerBrakpoint})`, {
-                        gridTemplate: [[
-                            '"header identifier" auto',
-                            '"panels identifier" auto',
-                            '/',
-                            '1fr min-content',
-                        ]],
-                    }),
-                    
-                    
-                    
-                    // borders:
-                    ...rule(`@container (min-width: ${containerBrakpoint})`, {
-                        borderColor : (colors as any).greyBold,
-                        borderRadius : '3rem',
-                        boxShadow : [
-                            `inset 0 0 0 1rem ${(colors as any).grey}`,
-                            `inset 0 0 0 2rem ${(colors as any).darkBlue}`,
-                        ],
-                    }),
-                    
-                    
-                    
-                    // spacings:
-                    gapInline : spacers.lg,
-                    gapBlock  : spacers.lg,
-                    
-                    
-                    
-                    // children:
-                    ...children('.header', {
-                        // positions:
-                        gridArea: 'header',
-                    }),
-                    ...children('.panels', {
-                        // positions:
-                        gridArea: 'panels',
-                        
-                        
-                        
-                        // layouts:
-                        display             : 'grid',
-                        ...rule(`@container (min-width: ${containerBrakpoint})`, {
-                            gridTemplateColumns : 'min-content min-content',
-                        }),
-                        // gridTemplateColumns : `repeat(auto-fill, minmax(${minPanelSize}px, 1fr))`,
-                        justifyContent : 'center',
-                        alignContent : 'center',
-                        
-                        
-                        
-                        // spacings:
-                        gapInline: spacers.lg,
-                        gapBlock : 0,
-                        ...rule(`@container (min-width: ${containerBrakpoint})`, {
-                            gapBlock : spacers.lg,
-                        }),
-                        
-                        
-                        // children:
-                        ...children('*', {
-                            borderRadius: 0,
-                            ...rule(`@container (max-width: ${containerBrakpoint})`, {
-                                ...rule(':not(:first-child)', {
-                                    borderBlockStartWidth : 0,
-                                }),
-                            }),
-                        }),
-                    }),
-                    ...children('.identifier', {
-                        // positions:
-                        gridArea: 'identifier',
-                        justifySelf : 'center',
-                        ...rule(`@container (min-width: ${containerBrakpoint})`, {
-                            justifySelf : 'stretch',
-                        }),
-                    }),
                 }),
                 
                 
                 
-                // features:
-                ...paddingRule(), // must be placed at the last
+                // borders:
+                ...rule(`@container (min-width: ${containerBrakpoint})`, {
+                    borderColor : (colors as any).greyBold,
+                    borderRadius : '3rem',
+                    boxShadow : [
+                        `inset 0 0 0 1rem ${(colors as any).grey}`,
+                        `inset 0 0 0 2rem ${(colors as any).darkBlue}`,
+                    ],
+                }),
+                
+                
+                
+                // spacings:
+                gapInline : spacers.lg,
+                gapBlock  : spacers.lg,
+                
+                
+                
+                // children:
+                ...children('.header', {
+                    // positions:
+                    gridArea: 'header',
+                }),
+                ...children('.panels', {
+                    // positions:
+                    gridArea: 'panels',
+                    
+                    
+                    
+                    // layouts:
+                    display             : 'grid',
+                    ...rule(`@container (min-width: ${containerBrakpoint})`, {
+                        gridTemplateColumns : 'min-content min-content',
+                    }),
+                    // gridTemplateColumns : `repeat(auto-fill, minmax(${minPanelSize}px, 1fr))`,
+                    justifyContent : 'center',
+                    alignContent : 'center',
+                    
+                    
+                    
+                    // spacings:
+                    gapInline: spacers.lg,
+                    gapBlock : 0,
+                    ...rule(`@container (min-width: ${containerBrakpoint})`, {
+                        gapBlock : spacers.lg,
+                    }),
+                    
+                    
+                    // children:
+                    ...children('*', {
+                        borderRadius: 0,
+                        ...rule(`@container (max-width: ${containerBrakpoint})`, {
+                            ...rule(':not(:first-child)', {
+                                borderBlockStartWidth : 0,
+                            }),
+                        }),
+                    }),
+                }),
+                ...children('.identifier', {
+                    // positions:
+                    gridArea: 'identifier',
+                    justifySelf : 'center',
+                    ...rule(`@container (min-width: ${containerBrakpoint})`, {
+                        justifySelf : 'stretch',
+                    }),
+                }),
             }),
+            
+            
+            
+            // features:
+            ...paddingRule(), // must be placed at the last
         }),
     });
 };
