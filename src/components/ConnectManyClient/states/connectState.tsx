@@ -251,8 +251,7 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
     
     
     // refs:
-    const [mergedNodeRefs] = useState<Map<React.Key, Element|null>>(() => new Map<React.Key, Element|null>());
-    const svgRef           = useRef<SVGSVGElement|null>(null);
+    const svgRef = useRef<SVGSVGElement|null>(null);
     
     
     
@@ -269,18 +268,28 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
     // effects:
     
     // watchdog for merging nodeRefs:
-    const _allNodeRefs    = clients.map(({nodeRefs}) => nodeRefs);
-    useIsomorphicLayoutEffect(() => {
-        mergedNodeRefs.clear();
-        for (const nodeRefs of _allNodeRefs) {
-            for (const [nodeKey, nodeElm] of nodeRefs) {
-                mergedNodeRefs.set(nodeKey, nodeElm);
-            } // for
-        } // for
-    }, _allNodeRefs);
+    const mergedNodeRefs   = useMemo(() => {
+        return new Map<React.Key, Element|null>(
+            clients
+            .flatMap(({nodeRefs}) =>
+                Array.from(nodeRefs.entries())
+            )
+        );
+    }, [clients]);
     
-    const mergedNodeGroups = clients.flatMap(({connections}) => Object.values(connections));
-    const mergedNodes      = mergedNodeGroups.flatMap((group) => group.nodes);
+    const mergedNodeGroups = useMemo(() => {
+        return (
+            clients
+            .flatMap(({connections}) => Object.values(connections))
+        );
+    }, [clients]);
+    
+    const mergedNodes      = useMemo(() => {
+        return (
+            mergedNodeGroups
+            .flatMap((group) => group.nodes)
+        );
+    }, [mergedNodeGroups]);
     
     // watchdog for value => validCables:
     useIsomorphicLayoutEffect(() => {
@@ -309,11 +318,12 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
         
         
         
-        // trigger onValueChange if there's some invalid cables:
-        if (onValueChange && oldInvalidCables.length) {
-            triggerValueChange((value ?? []).filter((val) => !oldInvalidCables.includes(val)));
-        } // if
-    }, [value]);
+        // TODO: reactivate code below:
+        // // trigger onValueChange if there's some invalid cables:
+        // if (onValueChange && oldInvalidCables.length) {
+        //     triggerValueChange((value ?? []).filter((val) => !oldInvalidCables.includes(val)));
+        // } // if
+    }, [value, mergedNodeRefs]);
     
     // convert validCables & draftCable => cables:
     const refreshCables = useEvent((): void => {
@@ -448,7 +458,9 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
     // registrations:
     const registerConnectManyClient   = useEvent((clientData: ConnectManyClientData): (() => void) => {
         // setups:
-        setClients((current) => [...current, clientData]);
+        setClients((current) => {
+            return [...current, clientData];
+        });
         
         
         

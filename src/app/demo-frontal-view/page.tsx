@@ -10,8 +10,9 @@ import Image from 'next/image'
 
 export default function DemoFrontalView() {
     const [cables, setCables] = useState<Connection[]>(() => [
-        { sideA: 'inp-1', sideB: 'out-3' },
-        { sideA: 'inp-4', sideB: 'out-1' },
+        { sideA: 'inp-a1', sideB: 'out-c3' },
+        { sideA: 'inp-b4', sideB: 'out-c1' },
+        { sideA: 'inp-c3', sideB: 'out-b4' },
     ]);
     const [cables2, setCables2] = useState<Connection[]>(() => [
         { sideA: 'inp-1', sideB: 'out-4' },
@@ -75,12 +76,12 @@ export default function DemoFrontalView() {
                             inputs : {
                                 // label : <>Inputs</>,
                                 nodes : [
-                                    { id: 'inp-1', label: '1' , limit: 1 },
-                                    { id: 'inp-2', label: '2' , limit: 3 },
-                                    { id: 'inp-3', label: '3' , limit: 1 },
-                                    { id: 'inp-4', label: '4' , limit: 1 },
-                                    { id: 'inp-5', label: '5' , limit: 1 },
-                                    { id: 'inp-6', label: '6' , limit: 1 },
+                                    { id: 'inp-a1', label: '1' , limit: 1 },
+                                    { id: 'inp-a2', label: '2' , limit: 3 },
+                                    { id: 'inp-a3', label: '3' , limit: 1 },
+                                    { id: 'inp-a4', label: '4' , limit: 1 },
+                                    { id: 'inp-a5', label: '5' , limit: 1 },
+                                    { id: 'inp-a6', label: '6' , limit: 1 },
                                 ],
                                 leds : {
                                     placement: 'start',
@@ -93,10 +94,10 @@ export default function DemoFrontalView() {
                             outputs : {
                                 // label : <>Outputs</>,
                                 nodes : [
-                                    { id: 'out-1', label: '1', limit: Infinity  },
-                                    { id: 'out-2', label: '2', limit: Infinity  },
-                                    { id: 'out-3', label: '3', limit: Infinity  },
-                                    { id: 'out-4', label: '4', limit: Infinity },
+                                    { id: 'out-a1', label: '1', limit: Infinity  },
+                                    { id: 'out-a2', label: '2', limit: Infinity  },
+                                    { id: 'out-a3', label: '3', limit: Infinity  },
+                                    { id: 'out-a4', label: '4', limit: Infinity },
                                 ],
                                 leds : {
                                     placement: 'end',
@@ -126,12 +127,12 @@ export default function DemoFrontalView() {
                             inputs : {
                                 // label : <>Inputs</>,
                                 nodes : [
-                                    { id: 'inp-1', label: '1' , limit: 1 },
-                                    { id: 'inp-2', label: '2' , limit: 3 },
-                                    { id: 'inp-3', label: '3' , limit: 1 },
-                                    { id: 'inp-4', label: '4' , limit: 1 },
-                                    { id: 'inp-5', label: '5' , limit: 1 },
-                                    { id: 'inp-6', label: '6' , limit: 1 },
+                                    { id: 'inp-b1', label: '1' , limit: 1 },
+                                    { id: 'inp-b2', label: '2' , limit: 3 },
+                                    { id: 'inp-b3', label: '3' , limit: 1 },
+                                    { id: 'inp-b4', label: '4' , limit: 1 },
+                                    { id: 'inp-b5', label: '5' , limit: 1 },
+                                    { id: 'inp-b6', label: '6' , limit: 1 },
                                 ],
                                 leds : {
                                     placement: 'start',
@@ -144,10 +145,10 @@ export default function DemoFrontalView() {
                             outputs : {
                                 // label : <>Outputs</>,
                                 nodes : [
-                                    { id: 'out-1', label: '1', limit: Infinity  },
-                                    { id: 'out-2', label: '2', limit: Infinity  },
-                                    { id: 'out-3', label: '3', limit: Infinity  },
-                                    { id: 'out-4', label: '4', limit: Infinity },
+                                    { id: 'out-b1', label: '1', limit: Infinity  },
+                                    { id: 'out-b2', label: '2', limit: Infinity  },
+                                    { id: 'out-b3', label: '3', limit: Infinity  },
+                                    { id: 'out-b4', label: '4', limit: Infinity },
                                 ],
                                 leds : {
                                     placement: 'end',
@@ -177,12 +178,12 @@ export default function DemoFrontalView() {
                             inputs : {
                                 // label : <>Inputs</>,
                                 nodes : [
-                                    { id: 'inp-1', label: '1' , limit: 1 },
-                                    { id: 'inp-2', label: '2' , limit: 3 },
-                                    { id: 'inp-3', label: '3' , limit: 1 },
-                                    { id: 'inp-4', label: '4' , limit: 1 },
-                                    { id: 'inp-5', label: '5' , limit: 1 },
-                                    { id: 'inp-6', label: '6' , limit: 1 },
+                                    { id: 'inp-c1', label: '1' , limit: 1 },
+                                    { id: 'inp-c2', label: '2' , limit: 3 },
+                                    { id: 'inp-c3', label: '3' , limit: 1 },
+                                    { id: 'inp-c4', label: '4' , limit: 1 },
+                                    { id: 'inp-c5', label: '5' , limit: 1 },
+                                    { id: 'inp-c6', label: '6' , limit: 1 },
                                 ],
                                 leds : {
                                     placement: 'start',
@@ -195,10 +196,10 @@ export default function DemoFrontalView() {
                             outputs : {
                                 // label : <>Outputs</>,
                                 nodes : [
-                                    { id: 'out-1', label: '1', limit: Infinity  },
-                                    { id: 'out-2', label: '2', limit: Infinity  },
-                                    { id: 'out-3', label: '3', limit: Infinity  },
-                                    { id: 'out-4', label: '4', limit: Infinity },
+                                    { id: 'out-c1', label: '1', limit: Infinity  },
+                                    { id: 'out-c2', label: '2', limit: Infinity  },
+                                    { id: 'out-c3', label: '3', limit: Infinity  },
+                                    { id: 'out-c4', label: '4', limit: Infinity },
                                 ],
                                 leds : {
                                     placement: 'end',
@@ -228,12 +229,12 @@ export default function DemoFrontalView() {
                             inputs : {
                                 // label : <>Inputs</>,
                                 nodes : [
-                                    { id: 'inp-1', label: '1' , limit: 1 },
-                                    { id: 'inp-2', label: '2' , limit: 3 },
-                                    { id: 'inp-3', label: '3' , limit: 1 },
-                                    { id: 'inp-4', label: '4' , limit: 1 },
-                                    { id: 'inp-5', label: '5' , limit: 1 },
-                                    { id: 'inp-6', label: '6' , limit: 1 },
+                                    { id: 'inp-d1', label: '1' , limit: 1 },
+                                    { id: 'inp-d2', label: '2' , limit: 3 },
+                                    { id: 'inp-d3', label: '3' , limit: 1 },
+                                    { id: 'inp-d4', label: '4' , limit: 1 },
+                                    { id: 'inp-d5', label: '5' , limit: 1 },
+                                    { id: 'inp-d6', label: '6' , limit: 1 },
                                 ],
                                 leds : {
                                     placement: 'start',
@@ -246,10 +247,10 @@ export default function DemoFrontalView() {
                             outputs : {
                                 // label : <>Outputs</>,
                                 nodes : [
-                                    { id: 'out-1', label: '1', limit: Infinity  },
-                                    { id: 'out-2', label: '2', limit: Infinity  },
-                                    { id: 'out-3', label: '3', limit: Infinity  },
-                                    { id: 'out-4', label: '4', limit: Infinity },
+                                    { id: 'out-d1', label: '1', limit: Infinity  },
+                                    { id: 'out-d2', label: '2', limit: Infinity  },
+                                    { id: 'out-d3', label: '3', limit: Infinity  },
+                                    { id: 'out-d4', label: '4', limit: Infinity },
                                 ],
                                 leds : {
                                     placement: 'end',
