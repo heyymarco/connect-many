@@ -533,12 +533,15 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
             const startingNodeId = draftCable.sideA
             const selectedNodeId = selectedNode.id;
             if (
-                // not point to self group:
+                // gender & interested to are match:
                 ((): boolean => {
-                    const nodeGroupIds      = mergedNodeGroups.map((group) => group.nodes.map((node) => node.id));
-                    const sideAGroup        = nodeGroupIds.find((nodeGroup) => nodeGroup.includes(startingNodeId));
-                    const selectedNodeGroup = nodeGroupIds.find((nodeGroup) => nodeGroup.includes(selectedNodeId));
-                    return (sideAGroup !== selectedNodeGroup);
+                    const searchingNodeGroup = mergedNodeGroups.find(({nodes}) => nodes.map((node) => node.id).includes(startingNodeId));
+                    const selectedNodeGroup  = mergedNodeGroups.find(({nodes}) => nodes.map((node) => node.id).includes(selectedNodeId));
+                    return (
+                        (!searchingNodeGroup?.interestedTo || (!!selectedNodeGroup?.gender && searchingNodeGroup.interestedTo.includes(selectedNodeGroup.gender)))
+                        &&
+                        (!selectedNodeGroup?.interestedTo  || (!!searchingNodeGroup?.gender && selectedNodeGroup.interestedTo.includes(searchingNodeGroup.gender)))
+                    );
                 })()
                 &&
                 // not already having exact connection:

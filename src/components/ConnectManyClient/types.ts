@@ -39,6 +39,8 @@ export interface LedGroup {
 export interface ConnectionGroup {
     label         ?: React.ReactNode
     nodes          : ConnectionNode[]
+    gender        ?: string
+    interestedTo  ?: string[]
     leds          ?: LedGroup
 }
 export type ConnectionConfig = {

@@ -201,7 +201,7 @@ export const ConnectManyClient = (props: ConnectManyClientProps): JSX.Element|nu
                 <div key={groupKey} className='group'>
                     {!!groupName && <div className='label'>{groupName}</div>}
                     <div className='nodes'>
-                        {nodes.map(({id: nodeId, label, limit = Infinity, enabled = true, nodeComponent = defaultNodeComponent}, nodeIndex) => {
+                        {nodes.map(({id: nodeId, label, enabled = true, nodeComponent = defaultNodeComponent}, nodeIndex) => {
                             const isDraggable = verifyIsDraggable(nodeId);
                             
                             

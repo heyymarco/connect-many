@@ -63,15 +63,19 @@ export default function DemoFrontalView() {
                         connections={{
                             inputs : {
                                 // label : <>Inputs</>,
-                                nodes : [
+                                nodes        : [
                                     { id: 'inp-a1', label: '1' , limit: 1 },
-                                    { id: 'inp-a2', label: '2' , limit: 3 },
+                                    { id: 'inp-a2', label: '2' , limit: 1 },
                                     { id: 'inp-a3', label: '3' , limit: 1 },
                                     { id: 'inp-a4', label: '4' , limit: 1 },
                                     { id: 'inp-a5', label: '5' , limit: 1 },
                                     { id: 'inp-a6', label: '6' , limit: 1 },
                                 ],
-                                leds : {
+                                
+                                gender       : 'inputs',
+                                interestedTo : ['outputs'],
+                                
+                                leds         : {
                                     placement: 'start',
                                     items : [
                                         { label: 'NIM', active: true, theme: 'danger'  },
@@ -81,13 +85,17 @@ export default function DemoFrontalView() {
                             },
                             outputs : {
                                 // label : <>Outputs</>,
-                                nodes : [
+                                nodes        : [
                                     { id: 'out-a1', label: '1', limit: Infinity  },
                                     { id: 'out-a2', label: '2', limit: Infinity  },
                                     { id: 'out-a3', label: '3', limit: Infinity  },
                                     { id: 'out-a4', label: '4', limit: Infinity },
                                 ],
-                                leds : {
+                                
+                                gender       : 'outputs',
+                                interestedTo : ['inputs'],
+                                
+                                leds         : {
                                     placement: 'end',
                                     items : [
                                         { label: 'NIM', active: true, theme: 'warning' },
@@ -114,15 +122,19 @@ export default function DemoFrontalView() {
                         connections={{
                             inputs : {
                                 // label : <>Inputs</>,
-                                nodes : [
+                                nodes        : [
                                     { id: 'inp-b1', label: '1' , limit: 1 },
-                                    { id: 'inp-b2', label: '2' , limit: 3 },
+                                    { id: 'inp-b2', label: '2' , limit: 1 },
                                     { id: 'inp-b3', label: '3' , limit: 1 },
                                     { id: 'inp-b4', label: '4' , limit: 1 },
                                     { id: 'inp-b5', label: '5' , limit: 1 },
                                     { id: 'inp-b6', label: '6' , limit: 1 },
                                 ],
-                                leds : {
+                                
+                                gender       : 'inputs',
+                                interestedTo : ['outputs'],
+                                
+                                leds         : {
                                     placement: 'start',
                                     items : [
                                         { label: 'NIM', active: true, theme: 'danger'  },
@@ -132,13 +144,17 @@ export default function DemoFrontalView() {
                             },
                             outputs : {
                                 // label : <>Outputs</>,
-                                nodes : [
+                                nodes        : [
                                     { id: 'out-b1', label: '1', limit: Infinity  },
                                     { id: 'out-b2', label: '2', limit: Infinity  },
                                     { id: 'out-b3', label: '3', limit: Infinity  },
                                     { id: 'out-b4', label: '4', limit: Infinity },
                                 ],
-                                leds : {
+                                
+                                gender       : 'outputs',
+                                interestedTo : ['inputs'],
+                                
+                                leds         : {
                                     placement: 'end',
                                     items : [
                                         { label: 'NIM', active: true, theme: 'warning' },
@@ -165,15 +181,19 @@ export default function DemoFrontalView() {
                         connections={{
                             inputs : {
                                 // label : <>Inputs</>,
-                                nodes : [
+                                nodes        : [
                                     { id: 'inp-c1', label: '1' , limit: 1 },
-                                    { id: 'inp-c2', label: '2' , limit: 3 },
+                                    { id: 'inp-c2', label: '2' , limit: 1 },
                                     { id: 'inp-c3', label: '3' , limit: 1 },
                                     { id: 'inp-c4', label: '4' , limit: 1 },
                                     { id: 'inp-c5', label: '5' , limit: 1 },
                                     { id: 'inp-c6', label: '6' , limit: 1 },
                                 ],
-                                leds : {
+                                
+                                gender       : 'inputs',
+                                interestedTo : ['outputs'],
+                                
+                                leds         : {
                                     placement: 'start',
                                     items : [
                                         { label: 'NIM', active: true, theme: 'danger'  },
@@ -183,13 +203,17 @@ export default function DemoFrontalView() {
                             },
                             outputs : {
                                 // label : <>Outputs</>,
-                                nodes : [
+                                nodes        : [
                                     { id: 'out-c1', label: '1', limit: Infinity  },
                                     { id: 'out-c2', label: '2', limit: Infinity  },
                                     { id: 'out-c3', label: '3', limit: Infinity  },
                                     { id: 'out-c4', label: '4', limit: Infinity },
                                 ],
-                                leds : {
+                                
+                                gender       : 'outputs',
+                                interestedTo : ['inputs'],
+                                
+                                leds         : {
                                     placement: 'end',
                                     items : [
                                         { label: 'NIM', active: true, theme: 'warning' },
@@ -216,15 +240,19 @@ export default function DemoFrontalView() {
                         connections={{
                             inputs : {
                                 // label : <>Inputs</>,
-                                nodes : [
+                                nodes        : [
                                     { id: 'inp-d1', label: '1' , limit: 1 },
-                                    { id: 'inp-d2', label: '2' , limit: 3 },
+                                    { id: 'inp-d2', label: '2' , limit: 1 },
                                     { id: 'inp-d3', label: '3' , limit: 1 },
                                     { id: 'inp-d4', label: '4' , limit: 1 },
                                     { id: 'inp-d5', label: '5' , limit: 1 },
                                     { id: 'inp-d6', label: '6' , limit: 1 },
                                 ],
-                                leds : {
+                                
+                                gender       : 'inputs',
+                                interestedTo : ['outputs'],
+                                
+                                leds         : {
                                     placement: 'start',
                                     items : [
                                         { label: 'NIM', active: true, theme: 'danger'  },
@@ -234,13 +262,17 @@ export default function DemoFrontalView() {
                             },
                             outputs : {
                                 // label : <>Outputs</>,
-                                nodes : [
+                                nodes        : [
                                     { id: 'out-d1', label: '1', limit: Infinity  },
                                     { id: 'out-d2', label: '2', limit: Infinity  },
                                     { id: 'out-d3', label: '3', limit: Infinity  },
                                     { id: 'out-d4', label: '4', limit: Infinity },
                                 ],
-                                leds : {
+                                
+                                gender       : 'outputs',
+                                interestedTo : ['inputs'],
+                                
+                                leds         : {
                                     placement: 'end',
                                     items : [
                                         { label: 'NIM', active: true, theme: 'warning' },
