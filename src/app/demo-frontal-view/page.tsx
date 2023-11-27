@@ -14,18 +14,6 @@ export default function DemoFrontalView() {
         { sideA: 'inp-b4', sideB: 'out-c1' },
         { sideA: 'inp-c3', sideB: 'out-b4' },
     ]);
-    const [cables2, setCables2] = useState<Connection[]>(() => [
-        { sideA: 'inp-1', sideB: 'out-4' },
-        { sideA: 'inp-3', sideB: 'out-2' },
-    ]);
-    const [cables3, setCables3] = useState<Connection[]>(() => [
-        { sideA: 'inp-2', sideB: 'out-4' },
-        { sideA: 'inp-6', sideB: 'out-2' },
-    ]);
-    const [cables4, setCables4] = useState<Connection[]>(() => [
-        { sideA: 'inp-1', sideB: 'out-3' },
-        { sideA: 'inp-5', sideB: 'out-4' },
-    ]);
     
     
     
