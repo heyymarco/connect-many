@@ -1,9 +1,9 @@
 'use client'
 
-import { Cable } from '@/components/ConnectMany/Cable'
+import { Cable } from '@/components/ConnectManyClient/Cable'
 import styles from './page.module.css'
-import { ConnectMany, Connection } from '@/components/ConnectMany'
-import { Connector } from '@/components/ConnectMany/Connector'
+import { ConnectManyClient, Connection } from '@/components/ConnectManyClient'
+import { Connector } from '@/components/ConnectManyClient/Connector'
 import { useState } from 'react'
 import { FrontalView, Header, Identifier, ActionButton } from '@/components/FrontalView'
 import Image from 'next/image'
@@ -54,7 +54,7 @@ export default function DemoFrontalView() {
                     </Identifier>
                 }
             >
-                <ConnectMany
+                <ConnectManyClient
                     // variants:
                     size='md' // sm|md|lg
                     theme='chocolate'
@@ -117,7 +117,7 @@ export default function DemoFrontalView() {
                     defaultNodeComponent={<Connector theme='gold' />}
                     cableComponent={<Cable theme='cable' />}
                 />
-                <ConnectMany
+                <ConnectManyClient
                     // variants:
                     size='md' // sm|md|lg
                     theme='leaf'
@@ -180,7 +180,7 @@ export default function DemoFrontalView() {
                     defaultNodeComponent={<Connector theme='gold' />}
                     cableComponent={<Cable theme='cable' />}
                 />
-                <ConnectMany
+                <ConnectManyClient
                     // variants:
                     size='md' // sm|md|lg
                     theme='mint'
@@ -243,7 +243,7 @@ export default function DemoFrontalView() {
                     defaultNodeComponent={<Connector theme='gold' />}
                     cableComponent={<Cable theme='cable' />}
                 />
-                <ConnectMany
+                <ConnectManyClient
                     // variants:
                     size='md' // sm|md|lg
                     theme='purple'
