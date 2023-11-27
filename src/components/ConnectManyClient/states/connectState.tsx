@@ -110,6 +110,11 @@ export interface ConnectState {
     
     
     
+    // utilities:
+    verifyIsDraggable         : (nodeId: string | number) => boolean
+    
+    
+    
     // handlers:
     handleDragStart           : React.MouseEventHandler<HTMLElement>
     handleDragOver            : React.DragEventHandler<HTMLElement>
@@ -133,6 +138,11 @@ const ConnectStateContext = createContext<ConnectState>({
     
     
     
+    // utilities:
+    verifyIsDraggable         : () => false,
+    
+    
+    
     // handlers:
     handleDragStart           : () => {},
     handleDragOver            : () => {},
@@ -147,7 +157,7 @@ export const useConnectState = (): ConnectState => {
 
 
 // react components:
-export interface ConnectStateProps
+export interface ConnectManyProviderProps
     extends
         // components:
         Pick<CableProps,
@@ -170,7 +180,7 @@ export interface ConnectStateProps
     // components:
     cableComponent       ?: React.ReactComponentElement<any, CableProps>
 }
-const ConnectStateProvider = (props: React.PropsWithChildren<ConnectStateProps>): JSX.Element|null => {
+const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderProps>): JSX.Element|null => {
     // styles:
     const styleSheet = useConnectManyClientStyleSheet();
     
@@ -487,6 +497,12 @@ const ConnectStateProvider = (props: React.PropsWithChildren<ConnectStateProps>)
         return { id: id as (string|number), elm };
     });
     
+    const verifyIsDraggable        = useEvent((nodeId: string|number): boolean => {
+        const connectionLimit = mergedNodes.find(({id}) => (id === nodeId))?.limit ?? Infinity;
+        if (connectionLimit === Infinity) return true;
+        const connectedCount = (value ?? []).filter(({sideA, sideB}) => (sideA === nodeId) || (sideB === nodeId)).length;
+        return (connectionLimit > connectedCount);
+    });
     const verifyIsDroppable        = useEvent((clientX: number, clientY: number): boolean => {
         if (!draftCable) return false;
         
@@ -526,12 +542,7 @@ const ConnectStateProvider = (props: React.PropsWithChildren<ConnectStateProps>)
                 })()
                 &&
                 // still within connection limit:
-                ((): boolean => {
-                    const connectionLimit = mergedNodes.find(({id}) => (id === selectedNodeId))?.limit ?? Infinity;
-                    if (connectionLimit === Infinity) return true;
-                    const connectedCount = (value ?? []).filter(({sideA, sideB}) => (sideA === selectedNodeId) || (sideB === selectedNodeId)).length;
-                    return (connectionLimit > connectedCount);
-                })()
+                verifyIsDraggable(selectedNodeId)
             ) {
                 if (
                     // not already previously magnetized:
@@ -617,19 +628,8 @@ const ConnectStateProvider = (props: React.PropsWithChildren<ConnectStateProps>)
             selectedNode
         ) {
             const startingNodeId = selectedNode.id;
-            if (isDragging === false) setIsDragging(startingNodeId);
-            
-            
-            
-            if (
-                // still within connection limit:
-                ((): boolean => {
-                    const connectionLimit = mergedNodes.find(({id}) => (id === startingNodeId))?.limit ?? Infinity;
-                    if (connectionLimit === Infinity) return true;
-                    const connectedCount = (value ?? []).filter(({sideA, sideB}) => (sideA === startingNodeId) || (sideB === startingNodeId)).length;
-                    return (connectionLimit > connectedCount);
-                })()
-            ) {
+            if (verifyIsDraggable(startingNodeId)) {
+                if (isDragging === false) setIsDragging(startingNodeId);
                 setDraftCable({
                     sideA      : selectedNode.id,
                     elmA       : selectedNode.elm,
@@ -725,6 +725,11 @@ const ConnectStateProvider = (props: React.PropsWithChildren<ConnectStateProps>)
         
         
         
+        // utilities:
+        verifyIsDraggable,            // stable ref
+        
+        
+        
         // handlers:
         handleDragStart,              // stable ref
         handleDragOver,               // stable ref
@@ -743,6 +748,11 @@ const ConnectStateProvider = (props: React.PropsWithChildren<ConnectStateProps>)
         // states:
         isDragging,
         isDroppingAllowed,
+        
+        
+        
+        // utilities:
+        // verifyIsDraggable,         // stable ref
         
         
         
@@ -767,7 +777,7 @@ const ConnectStateProvider = (props: React.PropsWithChildren<ConnectStateProps>)
                 
                 
                 // classes:
-                className={`cables ${!!selectedCableKey ? 'hasSelection' : ''} ${isDragging ? ' dragging' : ''}`}
+                className={`${styleSheet.cables} ${!!selectedCableKey ? 'hasSelection' : ''} ${isDragging ? ' dragging' : ''}`}
                 
                 
                 
@@ -870,7 +880,7 @@ const ConnectStateProvider = (props: React.PropsWithChildren<ConnectStateProps>)
     );
 };
 export {
-    ConnectStateProvider,
-    ConnectStateProvider as default,
+    ConnectManyProvider,
+    ConnectManyProvider as default,
 }
 //#endregion connectState

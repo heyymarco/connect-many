@@ -305,8 +305,7 @@ const usesCablesLayout = () => {
     // dependencies:
     
     // features:
-    const {borderRule , borderVars } = usesBorder(conncs as any);
-    const {paddingRule, paddingVars} = usesPadding(conncs);
+    const { borderVars } = usesBorder(conncs as any);
     
     
     

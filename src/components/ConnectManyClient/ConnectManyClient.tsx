@@ -96,12 +96,6 @@ export interface ConnectManyClientProps
     
     
     
-    // values:
-    value ?: Connection[]
-    onValueChange ?: (newValue: Connection[]) => void
-    
-    
-    
     // components:
     defaultNodeComponent ?: React.ReactComponentElement<any, ControlProps<Element>>
     defaultLedComponent  ?: React.ReactComponentElement<any, IndicatorProps<Element>>
@@ -115,12 +109,6 @@ export const ConnectManyClient = (props: ConnectManyClientProps): JSX.Element|nu
     const {
         // configs:
         connections,
-        
-        
-        
-        // values:
-        value,
-        onValueChange,
         
         
         
@@ -152,6 +140,11 @@ export const ConnectManyClient = (props: ConnectManyClientProps): JSX.Element|nu
         // states:
         isDragging,
         isDroppingAllowed,
+        
+        
+        
+        // utilities:
+        verifyIsDraggable,
         
         
         
@@ -209,16 +202,7 @@ export const ConnectManyClient = (props: ConnectManyClientProps): JSX.Element|nu
                     {!!groupName && <div className='label'>{groupName}</div>}
                     <div className='nodes'>
                         {nodes.map(({id: nodeId, label, limit = Infinity, enabled = true, nodeComponent = defaultNodeComponent}, nodeIndex) => {
-                            const isMutable = (
-                                (limit === Infinity)
-                                ||
-                                ((): boolean => {
-                                    const connectionLimit = (allNodes.find(({id}) => (id === nodeId))?.limit ?? Infinity);
-                                    if (connectionLimit === Infinity) return true;
-                                    const connectedCount = (value ?? []).filter(({sideA, sideB}) => (sideA === nodeId) || (sideB === nodeId)).length;
-                                    return (connectionLimit > connectedCount);
-                                })()
-                            );
+                            const isDraggable = verifyIsDraggable(nodeId);
                             
                             
                             
@@ -233,7 +217,7 @@ export const ConnectManyClient = (props: ConnectManyClientProps): JSX.Element|nu
                                     
                                     
                                     // draggable:
-                                    draggable={enabled && isMutable}
+                                    draggable={enabled && isDraggable}
                                     dragDataType={connectDragDataType}
                                     
                                     
@@ -280,7 +264,7 @@ export const ConnectManyClient = (props: ConnectManyClientProps): JSX.Element|nu
                                                                 
                                                                 
                                                                 // accessibilities:
-                                                                'aria-readonly' : nodeComponent.props['aria-readonly'] ?? !isMutable,
+                                                                'aria-readonly' : nodeComponent.props['aria-readonly'] ?? !isDraggable,
                                                                 enabled : enabled,
                                                             },
                                                             

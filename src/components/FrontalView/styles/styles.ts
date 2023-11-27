@@ -105,6 +105,11 @@ const usesFrontalViewLayout = () => {
         
         // children:
         ...children('.wrapper', {
+            // positions:
+            position: 'relative', // supports for svg position absolute
+            
+            
+            
             // capabilities:
             ...groupableRule(),
             
