@@ -221,8 +221,8 @@ const ConnectStateProvider = (props: React.PropsWithChildren<ConnectStateProps>)
     const [isDragging       , setIsDragging       ] = useState<string|number|false>(false);
     const [isDroppingAllowed, setIsDroppingAllowed] = useState<boolean>(true);
     
-    const [cables          , setCables          ] = useState<CableDef[]>([]);
-    const [selectedCableKey, setSelectedCableKey] = useState<string|null>(null);
+    const [cables          , setCables            ] = useState<CableDef[]>([]);
+    const [selectedCableKey, setSelectedCableKey  ] = useState<string|null>(null);
     const selectedCable = useMemo((): CableDef|null => {
         if (!selectedCableKey) return null;
         return cables.find(({sideA, sideB}) => selectedCableKey === `${sideA}/${sideB}`) ?? null;
