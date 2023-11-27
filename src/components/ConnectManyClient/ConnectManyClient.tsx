@@ -67,6 +67,12 @@ import {
     CableProps,
 }                           from './Cable'
 
+// types:
+import type {
+    ConnectionConfig,
+    Connection,
+}                           from './types'
+
 // styles:
 import {
     useConnectManyClientStyleSheet,
@@ -74,35 +80,6 @@ import {
 
 
 
-export interface ConnectionNode {
-    id             : string|number
-    label         ?: React.ReactNode
-    limit         ?: number
-    enabled       ?: boolean
-    nodeComponent ?: React.ReactComponentElement<any, ControlProps<Element>>
-}
-export interface LedNode {
-    label         ?: React.ReactNode
-    active        ?: boolean
-    theme         ?: ThemeName
-    ledComponent  ?: React.ReactComponentElement<any, IndicatorProps<Element>>
-}
-export interface LedGroup {
-    placement     ?: 'start'|'end'
-    items         ?: LedNode[]
-}
-export interface ConnectionGroup {
-    label         ?: React.ReactNode
-    nodes          : ConnectionNode[]
-    leds          ?: LedGroup
-}
-export type ConnectionConfig = {
-    [key in string] : ConnectionGroup
-}
-export interface Connection {
-    sideA : string|number
-    sideB : string|number
-}
 export interface ConnectManyClientProps
     extends
         // bases:
