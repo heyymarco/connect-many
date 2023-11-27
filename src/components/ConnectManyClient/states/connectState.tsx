@@ -295,7 +295,7 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
     useIsomorphicLayoutEffect(() => {
         // setups:
         const newValidCables   : typeof validCables = [];
-        const oldInvalidCables : Connection[] = [];
+        // // const oldInvalidCables : Connection[] = [];
         for (const val of (value ?? [])) {
             const {sideA, sideB} = val;
             const elmA = mergedNodeRefs.get(sideA) ?? null;
@@ -310,19 +310,18 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
                     elmB,
                 });
             }
-            else {
-                oldInvalidCables.push(val);
-            } // if
+            // // else {
+            // //     oldInvalidCables.push(val);
+            // // } // if
         } //
         setValidCables(newValidCables);
         
         
         
-        // TODO: reactivate code below:
-        // // trigger onValueChange if there's some invalid cables:
-        // if (onValueChange && oldInvalidCables.length) {
-        //     triggerValueChange((value ?? []).filter((val) => !oldInvalidCables.includes(val)));
-        // } // if
+        // // // trigger onValueChange if there's some invalid cables:
+        // // if (onValueChange && oldInvalidCables.length) {
+        // //     triggerValueChange((value ?? []).filter((val) => !oldInvalidCables.includes(val)));
+        // // } // if
     }, [value, mergedNodeRefs]);
     
     // convert validCables & draftCable => cables:
