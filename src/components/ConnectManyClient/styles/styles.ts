@@ -198,23 +198,6 @@ const usesConnectManyClientLayout = () => {
                     paddingBlock  : paddingVars.paddingBlock,
                 }),
             }),
-            ...children('.menu', {
-                // positions:
-                position  : 'absolute',
-                zIndex    : 99,
-                translate : '-50% -50%',
-                
-                
-                
-                // layouts:
-                display      : 'grid',
-                gridAutoFlow : 'column',
-                
-                
-                
-                // spacings:
-                gap          : spacers.sm,
-            }),
         }),
         
         
@@ -378,6 +361,8 @@ const usesCablesStates = () => {
     });
 };
 
+
+
 const usesCableLayout = () => {
     // dependencies:
     
@@ -457,6 +442,28 @@ const usesCableStates = () => {
 
 
 
+const usesMenuLayout = () => {
+    return style({
+        // positions:
+        position  : 'absolute',
+        zIndex    : 99,
+        translate : '-50% -50%',
+        
+        
+        
+        // layouts:
+        display      : 'grid',
+        gridAutoFlow : 'column',
+        
+        
+        
+        // spacings:
+        gap          : spacers.sm,
+    });
+};
+
+
+
 const usesLedLayout = () => {
     
     // dependencies:
@@ -526,6 +533,9 @@ export default () => [
         ...usesCableLayout(),
         ...usesCableVariants(),
         ...usesCableStates(),
+    }),
+    scope('menu', {
+        ...usesMenuLayout(),
     }),
     
     scope('led', {

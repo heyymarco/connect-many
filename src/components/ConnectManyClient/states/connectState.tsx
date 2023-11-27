@@ -848,7 +848,7 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
                 
                 
                 // classes:
-                className='menu'
+                className={styleSheet.menu}
                 
                 
                 
