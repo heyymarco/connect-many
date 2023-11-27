@@ -198,54 +198,6 @@ const usesConnectManyClientLayout = () => {
                     paddingBlock  : paddingVars.paddingBlock,
                 }),
             }),
-            ...children('.cables', {
-                // positions:
-                position : 'absolute',
-                zIndex   : 98,
-                inset    : 0,
-                
-                
-                
-                // appearances:
-                overflow : conncs.cableOverflow,
-                
-                
-                
-                // sizes:
-                width   : '100%',
-                height  : '100%',
-                contain : 'size', // do not take up space if the cable(s) overflowing outside the <ConnectManyClient> component
-                
-                
-                
-                // accessibilities:
-                ...rule(':not(.hasSelection)', {
-                    pointerEvents: 'none',
-                }),
-                ...rule('.hasSelection', {
-                    pointerEvents: 'auto',
-                    
-                    
-                    
-                    // customize:
-                    ...usesCssProps(usesPrefixedProps(conncs, 'backdrop')), // apply config's cssProps starting with backdrop***
-                }),
-                
-                
-                
-                // borders:
-                borderStartStartRadius : `calc(${borderVars.borderStartStartRadius} - ${borderVars.borderWidth})`,
-                borderStartEndRadius   : `calc(${borderVars.borderStartEndRadius  } - ${borderVars.borderWidth})`,
-                borderEndStartRadius   : `calc(${borderVars.borderEndStartRadius  } - ${borderVars.borderWidth})`,
-                borderEndEndRadius     : `calc(${borderVars.borderEndEndRadius    } - ${borderVars.borderWidth})`,
-                
-                
-                
-                // animations:
-                transition : [
-                    ['background', '300ms', 'ease-out'],
-                ],
-            }),
             ...children('.menu', {
                 // positions:
                 position  : 'absolute',
@@ -262,28 +214,6 @@ const usesConnectManyClientLayout = () => {
                 
                 // spacings:
                 gap          : spacers.sm,
-            }),
-            
-            
-            
-            // rules:
-            ...rule(':not(.dragging)', {
-                ...children('.cables', {
-                    ...children('path', {
-                        // accessibilities:
-                        pointerEvents: 'auto',
-                    }),
-                }),
-            }),
-            ...rule('.dragging', {
-                ...children('.cables', {
-                    ...children('path', {
-                        ...rule(':not(.draft)', {
-                            // appearances:
-                            opacity: conncs.cableOpacityDragging,
-                        }),
-                    }),
-                }),
             }),
         }),
         
@@ -369,6 +299,85 @@ const usesConnectorVariants = usesControlVariants;
 const usesConnectorStates   = usesControlStates;
 
 
+
+const usesCablesLayout = () => {
+    
+    // dependencies:
+    
+    // features:
+    const {borderRule , borderVars } = usesBorder(conncs as any);
+    const {paddingRule, paddingVars} = usesPadding(conncs);
+    
+    
+    
+    return style({
+        // positions:
+        position : 'absolute',
+        zIndex   : 98,
+        inset    : 0,
+        
+        
+        
+        // appearances:
+        overflow : conncs.cableOverflow,
+        
+        
+        
+        // sizes:
+        width   : '100%',
+        height  : '100%',
+        contain : 'size', // do not take up space if the cable(s) overflowing outside the <ConnectManyClient> component
+        
+        
+        
+        // accessibilities:
+        ...rule(':not(.hasSelection)', {
+            pointerEvents: 'none',
+        }),
+        ...rule('.hasSelection', {
+            pointerEvents: 'auto',
+            
+            
+            
+            // customize:
+            ...usesCssProps(usesPrefixedProps(conncs, 'backdrop')), // apply config's cssProps starting with backdrop***
+        }),
+        
+        
+        
+        // borders:
+        borderStartStartRadius : `calc(${borderVars.borderStartStartRadius} - ${borderVars.borderWidth})`,
+        borderStartEndRadius   : `calc(${borderVars.borderStartEndRadius  } - ${borderVars.borderWidth})`,
+        borderEndStartRadius   : `calc(${borderVars.borderEndStartRadius  } - ${borderVars.borderWidth})`,
+        borderEndEndRadius     : `calc(${borderVars.borderEndEndRadius    } - ${borderVars.borderWidth})`,
+        
+        
+        
+        // animations:
+        transition : [
+            ['background', '300ms', 'ease-out'],
+        ],
+    });
+};
+const usesCablesStates = () => {
+    return style({
+        // rules:
+        ...rule(':not(.dragging)', {
+            ...children('path', {
+                // accessibilities:
+                pointerEvents: 'auto',
+            }),
+        }),
+        ...rule('.dragging', {
+            ...children('path', {
+                ...rule(':not(.draft)', {
+                    // appearances:
+                    opacity: conncs.cableOpacityDragging,
+                }),
+            }),
+        }),
+    });
+};
 
 const usesCableLayout = () => {
     // dependencies:
@@ -510,6 +519,10 @@ export default () => [
         ...usesConnectorStates(),
     }),
     
+    scope('cables', {
+        ...usesCablesLayout(),
+        ...usesCablesStates(),
+    }),
     scope('cable', {
         ...usesCableLayout(),
         ...usesCableVariants(),
