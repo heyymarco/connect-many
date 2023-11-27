@@ -225,7 +225,7 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
     // states:
     const [clients          , setClients          ] = useState<ConnectManyClientData[]>([]);
     
-    const [validCables      , setValidCables      ] = useState<(Connection & { elmA : Element, elmB: Element })[]>([]);
+    const [virtualCables    , setVirtualCables    ] = useState<(Connection & { elmA : Element, elmB: Element })[]>([]);
     const [draftCable       , setDraftCable       ] = useState<(Connection & { elmA : Element, elmB: Element|null, transition: number, lastX: number, lastY: number })|null>(null);
     
     const [isDragging       , setIsDragging       ] = useState<string|number|false>(false);
@@ -291,10 +291,10 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
         );
     }, [mergedNodeGroups]);
     
-    // watchdog for value => validCables:
+    // watchdog for value => virtualCables:
     useIsomorphicLayoutEffect(() => {
         // setups:
-        const newValidCables   : typeof validCables = [];
+        const newVirtualCables   : typeof virtualCables = [];
         // // const oldInvalidCables : Connection[] = [];
         for (const val of (value ?? [])) {
             const {sideA, sideB} = val;
@@ -302,7 +302,7 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
             const elmB = mergedNodeRefs.get(sideB) ?? null;
             
             if (elmA && elmB) {
-                newValidCables.push({
+                newVirtualCables.push({
                     sideA,
                     elmA,
                     
@@ -314,7 +314,7 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
             // //     oldInvalidCables.push(val);
             // // } // if
         } //
-        setValidCables(newValidCables);
+        setVirtualCables(newVirtualCables);
         
         
         
@@ -324,7 +324,7 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
         // // } // if
     }, [value, mergedNodeRefs]);
     
-    // convert validCables & draftCable => cables:
+    // convert virtualCables & draftCable => cables:
     const refreshCables = useEvent((): void => {
         // conditions:
         const svgElm = svgRef.current;
@@ -334,7 +334,7 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
         
         const newCables : typeof cables = [];
         const {left: svgLeft, top: svgTop } = svgElm.getBoundingClientRect();
-        for (const cable of [...validCables, ...(draftCable ? [draftCable] : [])]) {
+        for (const cable of [...virtualCables, ...(draftCable ? [draftCable] : [])]) {
             const {sideA, elmA, sideB, elmB} = cable;
             
             const rectA = elmA.getBoundingClientRect();
@@ -377,7 +377,7 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
         
         const resizeObserver = new ResizeObserver(refreshCables);
         resizeObserver.observe(svgElm, { box: 'content-box' });
-        for (const uniqueElm of new Set<Element>(validCables.map(({elmA, elmB}) => [elmA, elmB]).flat())) {
+        for (const uniqueElm of new Set<Element>(virtualCables.map(({elmA, elmB}) => [elmA, elmB]).flat())) {
             resizeObserver.observe(uniqueElm, { box: 'border-box' });
         } // for
         
@@ -387,7 +387,7 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
         return () => {
             resizeObserver.disconnect();
         };
-    }, [validCables, draftCable]);
+    }, [virtualCables, draftCable]);
     
     // draft cable magnetic transition:
     useIsomorphicLayoutEffect(() => {
@@ -669,16 +669,16 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
         
         
         if (draftCable && draftCable.sideB && draftCable.elmB) {
-            const newValidCable : typeof validCables[number] = {
+            const newVirtualCable : typeof virtualCables[number] = {
                 sideA : draftCable.sideA,
                 elmA  : draftCable.elmA,
                 
                 sideB : draftCable.sideB,
                 elmB  : draftCable.elmB,
             };
-            setValidCables([
-                ...validCables,
-                newValidCable,
+            setVirtualCables([
+                ...virtualCables,
+                newVirtualCable,
             ]);
             
             
@@ -774,6 +774,10 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
         // handleDragStart,           // stable ref
         // handleDragOverNode,        // stable ref
         // handleDragEnd,             // stable ref
+        
+        
+        
+        virtualCables, // require to *refresh* isDraggable of <Connector>(s) in the <ConnectManyClient>
     ]);
     
     
