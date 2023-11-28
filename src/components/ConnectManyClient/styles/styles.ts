@@ -519,6 +519,8 @@ const usesDraggingIconLayout = () => {
             // positions:
             alignSelf   : 'start',
             justifySelf : 'end',
+            position    : 'relative',
+            translate   : '25% -25%',
         }),
     });
 };

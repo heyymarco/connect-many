@@ -51,6 +51,7 @@ import {
     
     // status-components:
     Popup,
+    Badge,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
 // internal components:
@@ -889,21 +890,34 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
                             // children:
                             mergedNodes.find((node) => (node.id === isDragging))?.label
                         )}
-                        <Icon
-                            // appearances:
-                            icon={isDroppingAllowed ? 'done_outline' : 'not_interested'}
-                            
-                            
-                            
+                        <Badge
                             // variants:
+                            size='sm'
                             theme={isDroppingAllowed ? 'success' : 'danger'}
                             mild={true}
+                            badgeStyle='circle'
                             
                             
                             
                             // classes:
                             className='indicator'
-                        />
+                            
+                            
+                            
+                            // states:
+                            expanded={true}
+                        >
+                            <Icon
+                                // appearances:
+                                icon={isDroppingAllowed ? 'done_outline' : 'not_interested'}
+                                
+                                
+                                
+                                // variants:
+                                theme='inherit'
+                                mild={false}
+                            />
+                        </Badge>
                     </div>
                 );
             })()}
