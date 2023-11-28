@@ -501,8 +501,25 @@ const usesDraggingIconLayout = () => {
         
         
         
-        // customize:
-        ...usesCssProps(usesPrefixedProps(conncs, 'dragging')), // apply config's cssProps starting with dragging***
+        // children:
+        ...children(['.icon', '.indicator'], {
+            gridArea : '1 / 1 / -1 / -1',
+        }),
+        ...children('.icon', {
+            // positions:
+            alignSelf   : 'center',
+            justifySelf : 'center',
+            
+            
+            
+            // customize:
+            ...usesCssProps(usesPrefixedProps(conncs, 'dragging')), // apply config's cssProps starting with dragging***
+        }),
+        ...children('.indicator', {
+            // positions:
+            alignSelf   : 'start',
+            justifySelf : 'end',
+        }),
     });
 };
 

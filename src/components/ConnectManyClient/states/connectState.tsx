@@ -44,6 +44,7 @@ import {
     
     
     // simple-components:
+    Icon,
     Button,
     
     
@@ -879,13 +880,30 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
                     >
                         {React.cloneElement(draggingNode.nodeComponent ?? draggedNodeClient.defaultNodeComponent,
                             // props:
-                            undefined,
+                            {
+                                className : 'icon',
+                            },
                             
                             
                             
                             // children:
                             mergedNodes.find((node) => (node.id === isDragging))?.label
                         )}
+                        <Icon
+                            // appearances:
+                            icon={isDroppingAllowed ? 'done_outline' : 'not_interested'}
+                            
+                            
+                            
+                            // variants:
+                            theme={isDroppingAllowed ? 'success' : 'danger'}
+                            mild={true}
+                            
+                            
+                            
+                            // classes:
+                            className='indicator'
+                        />
                     </div>
                 );
             })()}
