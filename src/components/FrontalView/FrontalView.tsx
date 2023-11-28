@@ -15,8 +15,8 @@ import {
 
 // internal components:
 import {
-    ConnectManyProps,
-}                           from '@/components/ConnectMany'
+    ConnectManyClientProps,
+}                           from '@/components/ConnectManyClient'
 import type {
     HeaderProps,
 }                           from './Header'
@@ -40,7 +40,7 @@ export interface FrontalViewProps extends Omit<BasicProps, 'children'> {
     
     
     // children:
-    children    : React.ReactComponentElement<any, ConnectManyProps>|Iterable<React.ReactComponentElement<any, ConnectManyProps>>
+    children    : React.ReactComponentElement<any, ConnectManyClientProps>|Iterable<React.ReactComponentElement<any, ConnectManyClientProps>>
 }
 export const FrontalView = (props: FrontalViewProps) => {
     // styles:
