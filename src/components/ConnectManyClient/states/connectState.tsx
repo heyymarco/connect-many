@@ -795,7 +795,7 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
                 
                 
                 // classes:
-                className={`${styleSheet.cables} ${!!selectedCableKey ? 'hasSelection' : ''} ${isDragging ? ' dragging' : ''}`}
+                className={`${styleSheet.cables} backdrop ${!!selectedCableKey ? 'hasSelection' : ''} ${isDragging ? ' dragging' : ''}`}
                 
                 
                 

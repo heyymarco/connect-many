@@ -5,6 +5,7 @@ import {
     states,
     children,
     style,
+    vars,
     scope,
     
     
@@ -43,6 +44,11 @@ import {
     
     // padding (inner spacing) stuff of UI:
     usesPadding,
+    
+    
+    
+    // groups a list of UIs into a single UI:
+    usesGroupable,
     
     
     
@@ -288,57 +294,79 @@ const usesCablesLayout = () => {
     // dependencies:
     
     // features:
-    const { borderVars } = usesBorder(conncs as any);
+    const {borderRule, borderVars} = usesBorder({
+        borderRadius : 'inherit',
+    });
+    
+    // capabilities:
+    const {groupableVars} = usesGroupable();
     
     
     
     return style({
-        // positions:
-        position : 'absolute',
-        zIndex   : 98,
-        inset    : 0,
-        
-        
-        
-        // appearances:
-        overflow : conncs.cableOverflow,
-        
-        
-        
-        // sizes:
-        width   : '100%',
-        height  : '100%',
-        contain : 'size', // do not take up space if the cable(s) overflowing outside the <ConnectManyClient> component
-        
-        
-        
-        // accessibilities:
-        ...rule(':not(.hasSelection)', {
-            pointerEvents: 'none',
+        // layouts:
+        ...style({
+            // positions:
+            position : 'absolute',
+            zIndex   : 98,
+            inset    : 0,
+            
+            
+            
+            // appearances:
+            overflow : conncs.cableOverflow,
+            
+            
+            
+            // sizes:
+            width   : '100%',
+            height  : '100%',
+            contain : 'size', // do not take up space if the cable(s) overflowing outside the <ConnectManyClient> component
+            
+            
+            
+            // accessibilities:
+            ...rule(':not(.hasSelection)', {
+                pointerEvents: 'none',
+            }),
+            ...rule('.hasSelection', {
+                pointerEvents: 'auto',
+                
+                
+                
+                // customize:
+                ...usesCssProps(usesPrefixedProps(conncs, 'backdrop')), // apply config's cssProps starting with backdrop***
+            }),
+            
+            
+            
+            // configs:
+            ...vars({
+                // borders:
+                // makes the backdrop as a <group> by calculating <parent>'s border & borderRadius:
+                [groupableVars.borderStartStartRadius] : `calc(${borderVars.borderStartStartRadius} - ${borderVars.borderWidth} - min(${borderVars.borderWidth}, 0.5px))`,
+                [groupableVars.borderStartEndRadius  ] : `calc(${borderVars.borderStartEndRadius  } - ${borderVars.borderWidth} - min(${borderVars.borderWidth}, 0.5px))`,
+                [groupableVars.borderEndStartRadius  ] : `calc(${borderVars.borderEndStartRadius  } - ${borderVars.borderWidth} - min(${borderVars.borderWidth}, 0.5px))`,
+                [groupableVars.borderEndEndRadius    ] : `calc(${borderVars.borderEndEndRadius    } - ${borderVars.borderWidth} - min(${borderVars.borderWidth}, 0.5px))`,
+            }),
+            // borders:
+            borderStartStartRadius : groupableVars.borderStartStartRadius,
+            borderStartEndRadius   : groupableVars.borderStartEndRadius,
+            borderEndStartRadius   : groupableVars.borderEndStartRadius,
+            borderEndEndRadius     : groupableVars.borderEndEndRadius,
+            
+            
+            
+            // animations:
+            transition : [
+                ['background', '300ms', 'ease-out'],
+            ],
         }),
-        ...rule('.hasSelection', {
-            pointerEvents: 'auto',
-            
-            
-            
-            // customize:
-            ...usesCssProps(usesPrefixedProps(conncs, 'backdrop')), // apply config's cssProps starting with backdrop***
-        }),
         
         
         
-        // borders:
-        borderStartStartRadius : `calc(${borderVars.borderStartStartRadius} - ${borderVars.borderWidth})`,
-        borderStartEndRadius   : `calc(${borderVars.borderStartEndRadius  } - ${borderVars.borderWidth})`,
-        borderEndStartRadius   : `calc(${borderVars.borderEndStartRadius  } - ${borderVars.borderWidth})`,
-        borderEndEndRadius     : `calc(${borderVars.borderEndEndRadius    } - ${borderVars.borderWidth})`,
-        
-        
-        
-        // animations:
-        transition : [
-            ['background', '300ms', 'ease-out'],
-        ],
+        // features:
+        ...borderRule(), // must be placed at the last
     });
 };
 const usesCablesStates = () => {

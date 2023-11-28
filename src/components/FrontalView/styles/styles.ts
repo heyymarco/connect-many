@@ -89,6 +89,7 @@ const usesFrontalViewLayout = () => {
     });
     
     // features:
+    const {borderVars} = usesBorder();
     const {paddingRule} = usesPadding({
         paddingInline : '4rem',
         paddingBlock  : '4rem',
@@ -140,7 +141,12 @@ const usesFrontalViewLayout = () => {
                 // borders:
                 ...rule(`@container (min-width: ${containerBrakpoint})`, {
                     borderColor : (colors as any).greyBold,
-                    borderRadius : '3rem',
+                    
+                    [borderVars.borderStartStartRadius] : '3rem',
+                    [borderVars.borderStartEndRadius  ] : '3rem',
+                    [borderVars.borderEndStartRadius  ] : '3rem',
+                    [borderVars.borderEndEndRadius    ] : '3rem',
+                    
                     boxShadow : [
                         `inset 0 0 0 1rem ${(colors as any).grey}`,
                         `inset 0 0 0 2rem ${(colors as any).darkBlue}`,
@@ -186,7 +192,7 @@ const usesFrontalViewLayout = () => {
                     
                     
                     // children:
-                    ...children('*', {
+                    ...children(':not(.backdrop)', {
                         borderRadius: 0,
                         ...rule(`@container (max-width: ${containerBrakpoint})`, {
                             ...rule(':not(:first-child)', {
