@@ -64,6 +64,7 @@ export default function DemoFrontalView() {
                     value={cables}
                     onValueChange={setCables}
                     colorOptions={colorOptions}
+                    defaultColor={colorOptions[5]}
                     
                     
                     

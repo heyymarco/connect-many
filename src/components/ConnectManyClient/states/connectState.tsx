@@ -679,6 +679,8 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
                     transition : 0,
                     lastX      : 0,
                     lastY      : 0,
+                    
+                    color      : defaultColor ?? undefined, // use default color
                 });
             } // if
         } // if
@@ -715,7 +717,7 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
                 sideB : draftCable.sideB,
                 elmB  : draftCable.elmB,
                 
-                color : defaultColor ?? undefined, // use default color
+                color : draftCable.color,
             };
             setVirtualCables([
                 ...virtualCables,
@@ -731,6 +733,8 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
                     {
                         sideA : draftCable.sideA,
                         sideB : draftCable.sideB,
+                        
+                        color : draftCable.color,
                     },
                 ]);
             } // if
