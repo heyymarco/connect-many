@@ -23,22 +23,12 @@ import {
     // react helper hooks:
     useIsomorphicLayoutEffect,
     useEvent,
-    EventHandler,
-    useMergeEvents,
     useScheduleTriggerEvent,
-    
-    
-    
-    // color options of UI:
-    ThemeName,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 // reusable-ui components:
 import {
     // base-components:
-    BasicProps,
-    Basic,
-    IndicatorProps,
     ControlProps,
     
     
@@ -49,19 +39,9 @@ import {
     
     
     
-    // layout-components:
-    ListItem,
-    
-    
-    
     // status-components:
     Popup,
     Badge,
-    
-    
-    
-    // menu-components:
-    DropdownButton,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
 // internal components:
@@ -78,6 +58,9 @@ import type {
     ConnectionConfig,
     Connection,
 }                           from '../types'
+
+// other libs:
+import type Color           from 'color'                        // color utilities
 
 // styles:
 import {
@@ -200,6 +183,9 @@ export interface ConnectManyProviderProps
     value                    ?: Connection[]
     onValueChange            ?: (newValue: Connection[]) => void
     
+    colorOptions             ?: Color[]
+    defaultColor             ?: Color
+    
     
     
     // animations:
@@ -227,6 +213,9 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
         // values:
         value,
         onValueChange,
+        
+        colorOptions = [],
+        defaultColor = undefined,
         
         
         
@@ -726,7 +715,7 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
                 sideB : draftCable.sideB,
                 elmB  : draftCable.elmB,
                 
-                color : undefined, // use default color
+                color : defaultColor ?? undefined, // use default color
             };
             setVirtualCables([
                 ...virtualCables,
@@ -1080,7 +1069,7 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
                 
                 
                 // classes:
-                className={styleSheet.menu}
+                className={`${styleSheet.menu} overlay`}
                 
                 
                 
@@ -1117,9 +1106,6 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
                 }}>
                     Delete
                 </Button>
-                <Button size='sm' theme='secondary' onClick={() => setSelectedCableKey(null)}>
-                    Cancel
-                </Button>
                 <ColorPicker
                     // values:
                     value={selectedCable?.color}
@@ -1141,7 +1127,11 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
                         clonedValue[foundIndex].color = newColor;
                         triggerValueChange(clonedValue);
                     }}
+                    valueOptions={colorOptions}
                 />
+                <Button size='sm' theme='secondary' onClick={() => setSelectedCableKey(null)}>
+                    Close
+                </Button>
             </Popup>
         </ConnectStateContext.Provider>
     );

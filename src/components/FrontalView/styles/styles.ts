@@ -25,11 +25,6 @@ import {
     
     
     
-    // a responsive management system:
-    BreakpointName,
-    
-    
-    
     // border (stroke) stuff of UI:
     usesBorder,
     

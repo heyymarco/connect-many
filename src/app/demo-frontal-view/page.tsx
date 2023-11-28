@@ -9,11 +9,28 @@ import Color from 'color'
 
 
 
+const colorOptions = [
+    Color('#FF0101'),
+    Color('#CC01AF'),
+    Color('#BA01FF'),
+    Color('#7409A5'),
+    Color('#0101FF'),
+    Color('#01AEAE'),
+    Color('#017A01'),
+    Color('#01FF01'),
+    Color('#FFFF01'),
+    Color('#FEB301'),
+    Color('#FF7F01'),
+    Color('#FF4701'),
+];
+
+
+
 export default function DemoFrontalView() {
     const [cables, setCables] = useState<Connection[]>(() => [
         { sideA: 'inp-a1', sideB: 'out-c3' },
-        { sideA: 'inp-b4', sideB: 'out-c1', color: Color('#7409A5FF') },
-        { sideA: 'inp-c3', sideB: 'out-b4', color: Color('#0101FFFF') },
+        { sideA: 'inp-b4', sideB: 'out-c1', color: Color('#01FF01') },
+        { sideA: 'inp-c3', sideB: 'out-b4', color: Color('#FEB301') },
     ]);
     
     
@@ -46,6 +63,7 @@ export default function DemoFrontalView() {
                     // values:
                     value={cables}
                     onValueChange={setCables}
+                    colorOptions={colorOptions}
                     
                     
                     

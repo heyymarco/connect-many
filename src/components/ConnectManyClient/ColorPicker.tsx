@@ -8,21 +8,12 @@ import {
     
     
     // hooks:
-    useRef,
     useState,
     useMemo,
-    useId,
 }                           from 'react'
 
 // reusable-ui core:
 import {
-    // react helper hooks:
-    useIsomorphicLayoutEffect,
-    useEvent,
-    useScheduleTriggerEvent,
-    
-    
-    
     // color options of UI:
     usesThemeable,
 }                           from '@reusable-ui/core'                // a set of reusable-ui packages which are responsible for building any component
@@ -30,27 +21,12 @@ import {
 // reusable-ui components:
 import {
     // base-components:
-    BasicProps,
     Basic,
-    IndicatorProps,
-    ControlProps,
     
     
     
     // simple-components:
-    Icon,
     Button,
-    
-    
-    
-    // layout-components:
-    ListItem,
-    
-    
-    
-    // status-components:
-    Popup,
-    Badge,
     
     
     
@@ -58,29 +34,6 @@ import {
     DropdownButtonProps,
     DropdownButton,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
-
-// internal components:
-import {
-    Connector,
-}                           from './Connector'
-import {
-    Led,
-}                           from './Led'
-import {
-    ChildWithRef,
-}                           from './ChildWithRef'
-
-// types:
-import type {
-    ConnectionConfig,
-    Connection,
-}                           from './types'
-
-// internals:
-import {
-    // states:
-    useConnectState,
-}                           from './states/connectState'
 
 // other libs:
 import type Color           from 'color'                        // color utilities
@@ -96,19 +49,33 @@ export interface ColorPickerProps extends Omit<DropdownButtonProps, 'value'|'chi
     // value:
     value         ?: Color
     onValueChange ?: (newValue: Color) => void
+    
+    valueOptions  ?: Color[]
 }
 export const ColorPicker = (props: ColorPickerProps): JSX.Element|null => {
+    // styles:
+    const styleSheet = useConnectManyClientStyleSheet();
+    
+    
+    
     const {
         // value:
         value,
         onValueChange,
+        
+        valueOptions = [],
     ...restDropdownButtonProps} = props;
     
     
     
+    // states:
+    const [expanded, setExpanded] = useState<boolean>(false);
+    
+    
+    
     // styles:
+    const {themeableVars} = usesThemeable();
     const style = useMemo<React.CSSProperties>(() => {
-        const {themeableVars} = usesThemeable();
         return {
             [
                 themeableVars.backg
@@ -127,11 +94,34 @@ export const ColorPicker = (props: ColorPickerProps): JSX.Element|null => {
             
             
             
-            // styles:
-            style={style}
+            // variants:
+            theme='secondary'
+            
+            
+            
+            // states:
+            expanded={expanded}
+            onExpandedChange={({expanded}) => setExpanded(expanded)}
+            
+            
+            
+            // children:
+            buttonChildren={
+                <Basic style={style} />
+            }
         >
-            <Basic style={style}>
-                test
+            <Basic theme='secondary' className={styleSheet.colorPickerBody}>
+                {valueOptions.map((valueOption, index) =>
+                    <Button key={index} style={{
+                        [
+                            themeableVars.backg
+                            .slice(4, -1) // fix: var(--customProp) => --customProp
+                        ] : valueOption?.hexa(),
+                    }} onClick={() => {
+                        setExpanded(false);
+                        onValueChange?.(valueOption);
+                    }}/>
+                )}
             </Basic>
         </DropdownButton>
     );

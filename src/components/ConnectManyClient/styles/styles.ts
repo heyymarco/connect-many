@@ -581,6 +581,22 @@ const usesDraggingIconLayout = () => {
 
 
 
+const usesColorPickerBodyLayout = () => {
+    return style({
+        // layouts:
+        display             : 'grid',
+        gridTemplateColumns : 'repeat(3, 1fr)',
+        gridAutoFlow        : 'row',
+        
+        
+        
+        // spacings:
+        gap                 : spacers.xs,
+    });
+};
+
+
+
 const usesMenuLayout = () => {
     return style({
         // positions:
@@ -676,14 +692,21 @@ export default () => [
         ...usesCablesLayout(),
         ...usesCablesStates(),
     }),
+    
     scope('cable', {
         ...usesCableLayout(),
         ...usesCableVariants(),
         ...usesCableStates(),
     }),
+    
     scope('draggingIcon', {
         ...usesDraggingIconLayout(),
     }),
+    
+    scope('colorPickerBody', {
+        ...usesColorPickerBodyLayout(),
+    }, { specificityWeight: 2 }),
+    
     scope('menu', {
         ...usesMenuLayout(),
     }),
