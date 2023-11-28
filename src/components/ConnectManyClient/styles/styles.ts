@@ -521,6 +521,22 @@ const usesDraggingIconLayout = () => {
             justifySelf : 'end',
             position    : 'relative',
             translate   : '25% -25%',
+            
+            
+            
+            // layout:
+            display      : 'grid',
+            justifyItems : 'center',
+            alignItems   : 'center',
+            
+            
+            
+            // children:
+            ...children('*', {
+                // positions:
+                position: 'relative',
+                insetBlockStart : '-1px',
+            }),
         }),
     });
 };
