@@ -632,11 +632,11 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
     
     
     // handlers:
-    const handleSvgClick           = useEvent<React.MouseEventHandler<SVGSVGElement>>((event) => {
+    const handleBackdropClick      = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
         if (event.target !== event.currentTarget) return; // ignores bubbles from node(s)
         setSelectedCableKey(null);
     });
-    const handleSvgKeyDown         = useEvent<React.KeyboardEventHandler<SVGSVGElement>>((event) => {
+    const handleModalKeyDown       = useEvent<React.KeyboardEventHandler<Element>>((event) => {
         if (event?.code?.toLowerCase() !== 'escape') return;
         setSelectedCableKey(null);
     });
@@ -882,6 +882,7 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
                         {React.cloneElement(draggingNode.nodeComponent ?? draggedNodeClient.defaultNodeComponent,
                             // props:
                             {
+                                // classes:
                                 className : 'icon',
                             },
                             
@@ -922,6 +923,70 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
                 );
             })()}
             
+            <div className={`${styleSheet.backdrop} ${!!selectedCable ? 'active' : ''} overlay`}
+                // handlers:
+                onClick={handleBackdropClick}
+            />
+            
+            {!!selectedCable && ((): JSX.Element|null => {
+                const sideANode       = mergedNodes.find((node) => (node.id === selectedCable.sideA));
+                const sideBNode       = mergedNodes.find((node) => (node.id === selectedCable.sideB));
+                const sideANodeClient = !sideANode ? undefined : clients.find((client) => Object.values(client.connections).find((connection) => connection.nodes.includes(sideANode)));
+                const sideBNodeClient = !sideBNode ? undefined : clients.find((client) => Object.values(client.connections).find((connection) => connection.nodes.includes(sideBNode)));
+                
+                
+                
+                // jsx:
+                if (!sideANode) return null;
+                if (!sideBNode) return null;
+                if (!sideANodeClient) return null;
+                if (!sideBNodeClient) return null;
+                return (
+                    <>
+                        {React.cloneElement(sideANode.nodeComponent ?? sideANodeClient.defaultNodeComponent,
+                            // props:
+                            {
+                                // classes:
+                                className : `${styleSheet.overlaySelectionNode} overlay`,
+                                
+                                
+                                
+                                // styles:
+                                style     : {
+                                    left : `${selectedCable.headX}px`,
+                                    top  : `${selectedCable.headY}px`,
+                                },
+                            },
+                            
+                            
+                            
+                            // children:
+                            sideANode.label
+                        )}
+                        {React.cloneElement(sideBNode.nodeComponent ?? sideBNodeClient.defaultNodeComponent,
+                            // props:
+                            {
+                                // classes:
+                                className : `${styleSheet.overlaySelectionNode} overlay`,
+                                
+                                
+                                
+                                // styles:
+                                style     : {
+                                    left : `${selectedCable.tailX}px`,
+                                    top  : `${selectedCable.tailY}px`,
+                                },
+                            },
+                            
+                            
+                            
+                            // children:
+                            sideBNode.label
+                        )}
+                    </>
+                );
+            })()}
+            
             <svg
                 // refs:
                 ref={svgRef}
@@ -929,13 +994,12 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
                 
                 
                 // classes:
-                className={`${styleSheet.cables} backdrop ${!!selectedCableKey ? 'hasSelection' : ''} ${isDragging ? ' dragging' : ''}`}
+                className={`${styleSheet.cables} ${!!selectedCableKey ? 'hasSelection' : ''} ${isDragging ? ' dragging' : ''}`}
                 
                 
                 
                 // handlers:
-                onClick={handleSvgClick}
-                onKeyDown={handleSvgKeyDown}
+                onKeyDown={handleModalKeyDown}
             >
                 {cables.map((cable) => {
                     const {sideA, headX, headY, sideB, tailX, tailY} = cable;
@@ -999,7 +1063,12 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
                 
                 
                 // states:
-                expanded={!!selectedCableKey}
+                expanded={!!selectedCable}
+                
+                
+                
+                // handlers:
+                onKeyDown={handleModalKeyDown}
             >
                 <Button size='sm' theme='danger' onClick={() => {
                     // conditions:

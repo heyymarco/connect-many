@@ -192,7 +192,7 @@ const usesFrontalViewLayout = () => {
                     
                     
                     // children:
-                    ...children(':not(.backdrop)', {
+                    ...children(':not(.overlay)', {
                         borderRadius: 0,
                         ...rule(`@container (max-width: ${containerBrakpoint})`, {
                             ...rule(':not(:first-child)', {

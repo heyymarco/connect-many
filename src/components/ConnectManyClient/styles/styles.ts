@@ -81,9 +81,11 @@ import {
 
 
 // global stacks:
-const globalStackDraggingIcon = 97;
-const globalStackCables       = 98;
-const globalStackMenu         = 99;
+const globalStackBackdrop             = 95;
+const globalStackOverlaySelectionNode = 96;
+const globalStackDraggingIcon         = 97;
+const globalStackCables               = 98;
+const globalStackMenu                 = 99;
 
 
 
@@ -301,7 +303,7 @@ const usesConnectorStates   = usesControlStates;
 
 
 
-const usesCablesLayout = () => {
+const usesBackdropLayout = () => {
     
     // dependencies:
     
@@ -320,34 +322,21 @@ const usesCablesLayout = () => {
         ...style({
             // positions:
             position : 'absolute',
-            zIndex   : globalStackCables,
+            zIndex   : globalStackBackdrop,
             inset    : 0,
             
             
             
-            // appearances:
-            overflow : conncs.cableOverflow,
-            
-            
-            
-            // sizes:
-            width   : '100%',
-            height  : '100%',
-            contain : 'size', // do not take up space if the cable(s) overflowing outside the <ConnectManyClient> component
+            // layouts:
+            ...rule(':not(.active)', {
+                opacity: 0,
+            }),
             
             
             
             // accessibilities:
-            ...rule(':not(.hasSelection)', {
-                pointerEvents: 'none',
-            }),
-            ...rule('.hasSelection', {
-                pointerEvents: 'auto',
-                
-                
-                
-                // customize:
-                ...usesCssProps(usesPrefixedProps(conncs, 'backdrop')), // apply config's cssProps starting with backdrop***
+            ...rule(':not(.active)', {
+                pointerEvents : 'none',
             }),
             
             
@@ -371,14 +360,63 @@ const usesCablesLayout = () => {
             
             // animations:
             transition : [
-                ['background', '300ms', 'ease-out'],
+                ['opacity', '300ms', 'ease-out'],
             ],
+            
+            
+            
+            // customize:
+            ...usesCssProps(usesPrefixedProps(conncs, 'backdrop')), // apply config's cssProps starting with backdrop***
         }),
         
         
         
         // features:
         ...borderRule(), // must be placed at the last
+    });
+};
+
+
+
+const usesOverlaySelectionNodeLayout = () => {
+    return style({
+        // positions:
+        position  : 'absolute',
+        translate : '-50% -50%',
+        zIndex    : globalStackOverlaySelectionNode,
+        
+        
+        
+        // accessibilities:
+        pointerEvents : 'none',
+    });
+};
+
+
+
+const usesCablesLayout = () => {
+    return style({
+        // positions:
+        position : 'absolute',
+        zIndex   : globalStackCables,
+        inset    : 0,
+        
+        
+        
+        // appearances:
+        overflow : conncs.cableOverflow,
+        
+        
+        
+        // sizes:
+        width   : '100%',
+        height  : '100%',
+        contain : 'size', // do not take up space if the cable(s) overflowing outside the <ConnectManyClient> component
+        
+        
+        
+        // accessibilities:
+        pointerEvents: 'none',
     });
 };
 const usesCablesStates = () => {
@@ -624,6 +662,14 @@ export default () => [
         ...usesConnectorLayout(),
         ...usesConnectorVariants(),
         ...usesConnectorStates(),
+    }),
+    
+    scope('backdrop', {
+        ...usesBackdropLayout(),
+    }),
+    
+    scope('overlaySelectionNode', {
+        ...usesOverlaySelectionNodeLayout(),
     }),
     
     scope('cables', {
