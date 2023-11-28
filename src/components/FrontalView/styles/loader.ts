@@ -7,7 +7,7 @@ import {
 
 
 // styles:
+import './styles';
 export const useFrontalViewStyleSheet = dynamicStyleSheets(
     () => import(/* webpackPrefetch: true */'./styles')
 , { id: 'frontalViewStyles' });
-import './styles';

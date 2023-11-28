@@ -7,7 +7,7 @@ import {
 
 
 // styles:
+import './styles';
 export const useConnectManyStyleSheet = dynamicStyleSheets(
     () => import(/* webpackPrefetch: true */'./styles')
 , { id: 'connectManyStyles' });
-import './styles';
