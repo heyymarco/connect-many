@@ -117,8 +117,13 @@ export interface ConnectState {
     
     // handlers:
     handleDragStart           : React.MouseEventHandler<HTMLElement>
+    handleTouchStart          : React.TouchEventHandler<HTMLElement>
+    
     handleDragOver            : React.DragEventHandler<HTMLElement>
-    handleDragEnd             : React.MouseEventHandler<HTMLElement>
+    handleTouchMove           : React.TouchEventHandler<HTMLElement>
+    
+    // handleDragEnd             : React.MouseEventHandler<HTMLElement>
+    // handleTouchEnd            : React.TouchEventHandler<HTMLElement>
 }
 
 const ConnectStateContext = createContext<ConnectState>({
@@ -145,8 +150,13 @@ const ConnectStateContext = createContext<ConnectState>({
     
     // handlers:
     handleDragStart           : () => {},
+    handleTouchStart          : () => {},
+    
     handleDragOver            : () => {},
-    handleDragEnd             : () => {},
+    handleTouchMove           : () => {},
+    
+    // handleDragEnd             : () => {},
+    // handleTouchEnd            : () => {},
 });
 ConnectStateContext.displayName  = 'ConnectState';
 
@@ -481,14 +491,16 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
     
     // utilities:
     const pointerPositionRef       = useRef<{x: number, y: number}>({x: 0, y: 0});
-    const calculatePointerPosition = useEvent<React.MouseEventHandler<HTMLOrSVGElement>>((event) => {
+    const calculatePointerPosition = useEvent((event: React.MouseEvent<HTMLElement> & Partial<React.TouchEvent<HTMLElement>>) => {
         const svgElm = svgRef.current;
         if (!svgElm) return;
         const viewportRect = svgElm.getBoundingClientRect();
         const style = getComputedStyle(svgElm);
         const borderLeftWidth = Number.parseInt(style.borderLeftWidth);
         const borderTopWidth  = Number.parseInt(style.borderTopWidth);
-        const [relativeX, relativeY] = [event.clientX - viewportRect.left - borderLeftWidth, event.clientY - viewportRect.top - borderTopWidth];
+        const clientX = event.touches?.[0]?.clientX ?? event.clientX;
+        const clientY = event.touches?.[0]?.clientY ?? event.clientY;
+        const [relativeX, relativeY] = [clientX - viewportRect.left - borderLeftWidth, clientY - viewportRect.top - borderTopWidth];
         // if (relativeX < 0) return;
         // if (relativeY < 0) return;
         // const borderRightWidth = Number.parseInt(style.borderLeftWidth);
@@ -612,21 +624,7 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
         setSelectedCableKey(null);
     });
     
-    const handleDocumentDragOver   = useEvent((event: DragEvent) => {
-        calculatePointerPosition(event as any);
-        
-        
-        
-        if (draftCable) {
-            verifyIsDroppable(event.clientX, event.clientY);
-            requestAnimationFrame(refreshCables);
-        } // if
-    });
-    const handleDocumentDragEnd    = useEvent((event: DragEvent) => {
-        handleDragEnd(event as any);
-    });
-    
-    const handleDragStart          = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
+    const handleDragStart          = useEvent((event: React.MouseEvent<HTMLElement> & Partial<React.TouchEvent<HTMLElement>>) => {
         // conditions:
         if (!!event.currentTarget.ariaDisabled && (event.currentTarget.ariaDisabled !== 'false')) return; // ignore if disabled
         
@@ -635,8 +633,9 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
         calculatePointerPosition(event);
         
         
-        
-        const selectedNode = getNodeFromPoint(event.clientX, event.clientY);
+        const clientX = event.touches?.[0]?.clientX ?? event.clientX;
+        const clientY = event.touches?.[0]?.clientY ?? event.clientY;
+        const selectedNode = getNodeFromPoint(clientX, clientY);
         if (
             // has selection node:
             selectedNode
@@ -658,11 +657,25 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
             } // if
         } // if
     });
-    const handleDragOver           = useEvent<React.DragEventHandler<HTMLElement>>((event) => {
-        if (!isDroppingAllowed) return;
-        event.dataTransfer.dropEffect = 'move';
-        event.preventDefault(); // prevents the default behavior to *disallow* for dropping here
+    const handleTouchStart         = useEvent<React.TouchEventHandler<HTMLElement>>((event) => {
+        handleDragStart(event as any);
     });
+    
+    const handleDragOver           = useEvent<React.DragEventHandler<HTMLElement>>((event) => {
+        // conditions:
+        if (!isDroppingAllowed) return;
+        
+        
+        
+        if ('dataTransfer' in event) {
+            event.dataTransfer.dropEffect = 'move';
+            event.preventDefault(); // prevents the default behavior to *disallow* for dropping here
+        } // if
+    });
+    const handleTouchMove          = useEvent<React.TouchEventHandler<HTMLElement>>((event) => {
+        handleDragOver(event as any);
+    });
+    
     const handleDragEnd            = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
         if (isDragging !== false) setIsDragging(false);
         
@@ -696,6 +709,32 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
         } // if
         if (draftCable) setDraftCable(null);
     });
+    // const handleTouchEnd           = useEvent<React.TouchEventHandler<HTMLElement>>((event) => {
+    //     handleDragEnd(event as any);
+    // });
+    
+    const handleDocumentDragOver   = useEvent((event: DragEvent & Partial<TouchEvent>) => {
+        calculatePointerPosition(event as any);
+        
+        
+        
+        if (draftCable) {
+            const clientX = event.touches?.[0]?.clientX ?? event.clientX;
+            const clientY = event.touches?.[0]?.clientY ?? event.clientY;
+            verifyIsDroppable(clientX, clientY);
+            requestAnimationFrame(refreshCables);
+        } // if
+    });
+    const handleDocumentTouchMove  = useEvent((event: TouchEvent) => {
+        handleDocumentDragOver(event as any);
+    });
+    
+    const handleDocumentDragEnd    = useEvent((event: DragEvent & Partial<TouchEvent>) => {
+        handleDragEnd(event as any);
+    });
+    const handleDocumentTouchEnd   = useEvent((event: TouchEvent) => {
+        handleDocumentDragEnd(event as any);
+    });
     
     
     
@@ -707,15 +746,23 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
         
         
         // setups:
-        document.addEventListener('dragover', handleDocumentDragOver);
-        document.addEventListener('dragend' , handleDocumentDragEnd );
+        document.addEventListener('dragover'   , handleDocumentDragOver );
+        document.addEventListener('touchmove'  , handleDocumentTouchMove);
+        
+        document.addEventListener('dragend'    , handleDocumentDragEnd  );
+        document.addEventListener('touchend'   , handleDocumentTouchEnd );
+        document.addEventListener('touchcancel', handleDocumentTouchEnd );
         
         
         
         // cleanups:
         return () => {
-            document.removeEventListener('dragover', handleDocumentDragOver);
-            document.removeEventListener('dragend' , handleDocumentDragEnd );
+            document.removeEventListener('dragover'   , handleDocumentDragOver );
+            document.removeEventListener('touchmove'  , handleDocumentTouchMove);
+            
+            document.removeEventListener('dragend'    , handleDocumentDragEnd  );
+            document.removeEventListener('touchend'   , handleDocumentTouchEnd );
+            document.removeEventListener('touchcancel', handleDocumentTouchEnd );
         };
     }, [isDragging]);
     
@@ -746,8 +793,13 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
         
         // handlers:
         handleDragStart,              // stable ref
+        handleTouchStart,             // stable ref
+        
         handleDragOver,               // stable ref
-        handleDragEnd,                // stable ref
+        handleTouchMove,              // stable ref
+        
+        // handleDragEnd,                // stable ref
+        // handleTouchEnd,               // stable ref
     }), [
         // registrations:
         // registerConnectManyClient, // stable ref
@@ -772,8 +824,13 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
         
         // handlers:
         // handleDragStart,           // stable ref
+        // handleTouchStart,          // stable ref
+        
         // handleDragOverNode,        // stable ref
-        // handleDragEnd,             // stable ref
+        // handleTouchMove,           // stable ref
+        
+        // // handleDragEnd,             // stable ref
+        // // handleTouchEnd,            // stable ref
         
         
         

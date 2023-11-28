@@ -167,6 +167,11 @@ const usesConnectManyClientLayout = () => {
                     
                     
                     
+                    // accessibilities:
+                    touchAction   : 'none', // no page scroll, no page zoom
+                    
+                    
+                    
                     // spacings:
                     gapInline     : paddingVars.paddingInline,
                     gapBlock      : paddingVars.paddingBlock,

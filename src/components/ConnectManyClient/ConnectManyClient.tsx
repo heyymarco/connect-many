@@ -150,8 +150,10 @@ export const ConnectManyClient = (props: ConnectManyClientProps): JSX.Element|nu
         
         // handlers:
         handleDragStart,
+        handleTouchStart,
+        
         handleDragOver,
-        handleDragEnd,
+        handleTouchMove,
     } = useConnectState();
     
     
@@ -187,15 +189,6 @@ export const ConnectManyClient = (props: ConnectManyClientProps): JSX.Element|nu
             // other props:
             {...restBasicProps}
             mainClass={styleSheet.connectManyClient}
-            
-            
-            
-            // handlers:
-            // onMouseMove={handleMouseMove}
-            // onDragOver={handleDragOver}
-            
-            // onMouseUp={handleDragEnd}
-            // onDragEnd={handleDragEnd}
         >
             {Object.entries(connections).map(([groupKey, {label: groupName, nodes, leds}], groupIndex) =>
                 <div key={groupKey} className='group'>
@@ -281,15 +274,15 @@ export const ConnectManyClient = (props: ConnectManyClientProps): JSX.Element|nu
                                             
                                             // droppable:
                                             onDragOver={handleDragOver}
+                                            onTouchMove={handleTouchMove}
                                         />
                                     }
                                     
                                     
                                     
                                     // handlers:
-                                    onMouseDown={handleDragStart}
                                     onDragStart={handleDragStart}
-                                    // onDragOver={(event) => console.log(event.clientX)}
+                                    onTouchStart={handleTouchStart}
                                 />
                             );
                         })}
