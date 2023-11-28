@@ -56,16 +56,6 @@ import {
 import {
     ChildWithRef,
 }                           from './ChildWithRef'
-import {
-    ElementWithDraggable,
-}                           from './ElementWithDraggable'
-import {
-    ElementWithDroppable,
-}                           from './ElementWithDroppable'
-import {
-    Cable,
-    CableProps,
-}                           from './Cable'
 
 // types:
 import type {
@@ -149,10 +139,10 @@ export const ConnectManyClient = (props: ConnectManyClientProps): JSX.Element|nu
         
         
         // handlers:
-        handleDragStart,
+        handleMouseDown,
         handleTouchStart,
         
-        handleDragOver,
+        handleMouseMove,
         handleTouchMove,
     } = useConnectState();
     
@@ -171,6 +161,11 @@ export const ConnectManyClient = (props: ConnectManyClientProps): JSX.Element|nu
             
             // configs:
             connections,
+            
+            
+            
+            // components:
+            defaultNodeComponent,
         });
         
         
@@ -202,88 +197,102 @@ export const ConnectManyClient = (props: ConnectManyClientProps): JSX.Element|nu
                             // jsx:
                             if (!nodeRefs.has(nodeId)) nodeRefs.delete(nodeId);
                             return (
-                                <ElementWithDraggable
+                                <ChildWithRef
                                     // identifiers:
                                     key={nodeId || nodeIndex}
-                                    nodeId={nodeId}
                                     
                                     
                                     
-                                    // draggable:
-                                    draggable={enabled && isDraggable}
-                                    dragDataType={connectDragDataType}
+                                    // refs:
+                                    childId={nodeId}
+                                    childRefs={nodeRefs}
                                     
                                     
                                     
                                     // components:
                                     elementComponent={
-                                        <ElementWithDroppable
-                                            // identifiers:
-                                            nodeId={nodeId}
+                                        React.cloneElement(nodeComponent,
+                                            // props:
+                                            {
+                                                // identifiers:
+                                                key             : nodeId || nodeIndex,
+                                                
+                                                
+                                                
+                                                // classes:
+                                                className : (
+                                                    (isDragging !== nodeId)
+                                                    ? ''
+                                                    : (isDroppingAllowed ? 'dodrop' : 'nodrop')
+                                                ),
+                                                
+                                                
+                                                
+                                                // accessibilities:
+                                                'aria-readonly' : nodeComponent.props['aria-readonly'] ?? !isDraggable,
+                                                enabled : enabled,
+                                                
+                                                
+                                                
+                                                // handlers:
+                                                onMouseDown  : handleMouseDown,
+                                                onTouchStart : handleTouchStart,
+                                                
+                                                onMouseMove  : handleMouseMove,
+                                                onTouchMove  : handleTouchMove,
+                                            },
                                             
                                             
                                             
-                                            // draggable:
-                                            dragDataType={connectDragDataType}
-                                            
-                                            
-                                            
-                                            // components:
-                                            elementComponent={
-                                                <ChildWithRef
-                                                    // refs:
-                                                    childId={nodeId}
-                                                    childRefs={nodeRefs}
-                                                    
-                                                    
-                                                    
-                                                    // components:
-                                                    elementComponent={
-                                                        React.cloneElement(nodeComponent,
-                                                            // props:
-                                                            {
-                                                                // identifiers:
-                                                                key             : nodeId || nodeIndex,
-                                                                
-                                                                
-                                                                
-                                                                // classes:
-                                                                className : (
-                                                                    (isDragging !== nodeId)
-                                                                    ? ''
-                                                                    : (isDroppingAllowed ? 'dodrop' : 'nodrop')
-                                                                ),
-                                                                
-                                                                
-                                                                
-                                                                // accessibilities:
-                                                                'aria-readonly' : nodeComponent.props['aria-readonly'] ?? !isDraggable,
-                                                                enabled : enabled,
-                                                            },
-                                                            
-                                                            
-                                                            
-                                                            // children:
-                                                            nodeComponent.props.children ?? label,
-                                                        )
-                                                    }
-                                                />
-                                            }
-                                            
-                                            
-                                            
-                                            // droppable:
-                                            onDragOver={handleDragOver}
-                                            onTouchMove={handleTouchMove}
-                                        />
+                                            // children:
+                                            nodeComponent.props.children ?? label,
+                                        )
                                     }
-                                    
-                                    
-                                    
-                                    // handlers:
-                                    onDragStart={handleDragStart}
-                                    onTouchStart={handleTouchStart}
                                 />
+                                // // <ElementWithDraggable
+                                // //     // identifiers:
+                                // //     key={nodeId || nodeIndex}
+                                // //     nodeId={nodeId}
+                                // //     
+                                // //     
+                                // //     
+                                // //     // draggable:
+                                // //     draggable={enabled && isDraggable}
+                                // //     dragDataType={connectDragDataType}
+                                // //     
+                                // //     
+                                // //     
+                                // //     // components:
+                                // //     elementComponent={
+                                // //         <ElementWithDroppable
+                                // //             // identifiers:
+                                // //             nodeId={nodeId}
+                                // //             
+                                // //             
+                                // //             
+                                // //             // draggable:
+                                // //             dragDataType={connectDragDataType}
+                                // //             
+                                // //             
+                                // //             
+                                // //             // components:
+                                // //             elementComponent={
+                                // //             }
+                                // //             
+                                // //             
+                                // //             
+                                // //             // droppable:
+                                // //             onMouseMove={handleMouseMove}
+                                // //             onTouchMove={handleTouchMove}
+                                // //         />
+                                // //     }
+                                // //     
+                                // //     
+                                // //     
+                                // //     // handlers:
+                                // //     onMouseDown={handleMouseDown}
+                                // //     onTouchStart={handleTouchStart}
+                                // // />
                             );
                         })}
                     </div>

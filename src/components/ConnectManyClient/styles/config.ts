@@ -21,6 +21,11 @@ import {
 // configs:
 export const [conncs, conncValues, cssConncConfig] = cssConfig(() => {
     const bases = {
+        // appearances:
+        draggingOpacity       : 0.5                         as CssKnownProps['opacity'      ],
+        
+        
+        
         // sizes:
         connectorInlineSizeSm : '2rem'                      as CssKnownProps['inlineSize'   ],
         connectorBlockSizeSm  : '2rem'                      as CssKnownProps['inlineSize'   ],

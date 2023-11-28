@@ -80,6 +80,13 @@ import {
 
 
 
+// global stacks:
+const globalStackDraggingIcon = 97;
+const globalStackCables       = 98;
+const globalStackMenu         = 99;
+
+
+
 const usesConnectManyClientLayout = () => {
     
     // dependencies:
@@ -313,7 +320,7 @@ const usesCablesLayout = () => {
         ...style({
             // positions:
             position : 'absolute',
-            zIndex   : 98,
+            zIndex   : globalStackCables,
             inset    : 0,
             
             
@@ -475,11 +482,37 @@ const usesCableStates = () => {
 
 
 
+const usesDraggingIconLayout = () => {
+    return style({
+        // positions:
+        position  : 'absolute',
+        zIndex    : globalStackDraggingIcon,
+        translate : '-50% -50%',
+        
+        
+        
+        // layouts:
+        display      : 'grid',
+        
+        
+        
+        // accessibilities:
+        pointerEvents : 'none', // do not distract dragging target elm
+        
+        
+        
+        // customize:
+        ...usesCssProps(usesPrefixedProps(conncs, 'dragging')), // apply config's cssProps starting with dragging***
+    });
+};
+
+
+
 const usesMenuLayout = () => {
     return style({
         // positions:
         position  : 'absolute',
-        zIndex    : 99,
+        zIndex    : globalStackMenu,
         translate : '-50% -50%',
         
         
@@ -566,6 +599,9 @@ export default () => [
         ...usesCableLayout(),
         ...usesCableVariants(),
         ...usesCableStates(),
+    }),
+    scope('draggingIcon', {
+        ...usesDraggingIconLayout(),
     }),
     scope('menu', {
         ...usesMenuLayout(),
