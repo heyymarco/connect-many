@@ -147,7 +147,7 @@ export const ConnectManyClient = (props: ConnectManyClientProps): JSX.Element|nu
         return () => {
             unregisterConnectManyClient();
         };
-    }, []);
+    }, [nodeRefs, connections, defaultNodeComponent]);
     
     
     
