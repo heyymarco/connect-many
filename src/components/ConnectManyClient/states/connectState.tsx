@@ -646,8 +646,11 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
         if (!!event.currentTarget.ariaDisabled && (event.currentTarget.ariaDisabled !== 'false')) return; // ignore if disabled
         
         
+        
         calculatePointerPosition(event);
         updateDraggingIconPos(event as any);
+        setIsDroppingAllowed(false); // reset
+        
         
         
         const clientX = event.touches?.[0]?.clientX ?? event.clientX;
