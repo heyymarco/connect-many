@@ -583,17 +583,15 @@ const usesDraggingIconLayout = () => {
 
 const usesColorPickerBodyLayout = () => {
     return style({
-        ...rule(':nth-child(n)', { // a hack to increase specificityWeight
-            // layouts:
-            display             : 'grid',
-            gridTemplateColumns : 'repeat(3, 1fr)',
-            gridAutoFlow        : 'row',
-            
-            
-            
-            // spacings:
-            gap                 : spacers.xs,
-        }),
+        // layouts:
+        display             : 'grid',
+        gridTemplateColumns : 'repeat(3, 1fr)',
+        gridAutoFlow        : 'row',
+        
+        
+        
+        // spacings:
+        gap                 : spacers.xs,
     });
 };
 
@@ -711,7 +709,7 @@ export default () => [
     
     scope('menu', {
         ...usesMenuLayout(),
-    }),
+    }, { specificityWeight: 2 }),
     
     scope('led', {
         ...usesLedLayout(),
