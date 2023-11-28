@@ -9,6 +9,7 @@ import {
     
     // hooks:
     useRef,
+    useMemo,
 }                           from 'react'
 
 // reusable-ui core:
@@ -19,6 +20,7 @@ import {
     
     
     // color options of UI:
+    usesThemeable,
     ThemeableProps,
     useThemeable,
 }                           from '@reusable-ui/core'                // a set of reusable-ui packages which are responsible for building any component
@@ -29,13 +31,14 @@ import type {
     GenericProps,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
 
+// other libs:
+import * as d3 from 'd3'
+import type Color           from 'color'                            // color utilities
+
 // styles:
 import {
     useConnectManyClientStyleSheet,
 }                           from './styles/loader'
-
-// js simulator:
-import * as d3 from 'd3'
 
 
 
@@ -72,6 +75,11 @@ export interface CableProps
     
     
     
+    // variants:
+    color           ?: Color
+    
+    
+    
     // behaviors:
     precisionLevel  ?: number
     gravityStrength ?: number
@@ -90,6 +98,7 @@ export const Cable = (props: CableProps): JSX.Element|null => {
     const {
         // variants:
         theme : _theme, // remove
+        color,
         
         
         
@@ -232,12 +241,43 @@ export const Cable = (props: CableProps): JSX.Element|null => {
     
     
     
+    // styles:
+    const style = useMemo<React.CSSProperties>(() => {
+        const {themeableVars} = usesThemeable();
+        return {
+            [
+                themeableVars.backg
+                .slice(4, -1) // fix: var(--customProp) => --customProp
+            ] : color?.hexa(),
+        };
+    }, [color]);
+    
+    
+    
     // jsx:
     return (
         <path
+            // other props:
             {...restGenericProps}
+            
+            
+            
+            // refs:
             ref={pathRef}
+            
+            
+            
+            // classes:
             className={`${styleSheet.cable} ${themeableVariant.class} ${props.className}`}
+            
+            
+            
+            // styles:
+            style={style}
+            
+            
+            
+            // accessibilities:
             tabIndex={0}
         />
     );

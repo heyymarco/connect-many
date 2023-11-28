@@ -5,14 +5,15 @@ import styles from './page.module.css'
 import { ConnectManyProvider, ConnectManyClient, Connection, Cable, Connector } from '@/components/ConnectManyClient'
 import { FrontalView, Header, Identifier, ActionButton } from '@/components/FrontalView'
 import Image from 'next/image'
+import Color from 'color'
 
 
 
 export default function DemoFrontalView() {
     const [cables, setCables] = useState<Connection[]>(() => [
         { sideA: 'inp-a1', sideB: 'out-c3' },
-        { sideA: 'inp-b4', sideB: 'out-c1' },
-        { sideA: 'inp-c3', sideB: 'out-b4' },
+        { sideA: 'inp-b4', sideB: 'out-c1', color: Color('#FF4701') },
+        { sideA: 'inp-c3', sideB: 'out-b4', color: Color('#BA01FF') },
     ]);
     
     

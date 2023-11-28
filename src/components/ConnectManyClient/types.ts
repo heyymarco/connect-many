@@ -8,7 +8,7 @@ import {
 import {
     // color options of UI:
     ThemeName,
-}                           from '@reusable-ui/core'                // a set of reusable-ui packages which are responsible for building any component
+}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 // reusable-ui components:
 import {
@@ -16,6 +16,9 @@ import {
     IndicatorProps,
     ControlProps,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
+
+// other libs:
+import type Color           from 'color'                        // color utilities
 
 
 
@@ -47,6 +50,7 @@ export type ConnectionConfig = {
     [key in string] : ConnectionGroup
 }
 export interface Connection {
-    sideA : string|number
-    sideB : string|number
+    sideA  : string|number
+    sideB  : string|number
+    color ?: Color
 }

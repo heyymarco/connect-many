@@ -49,9 +49,19 @@ import {
     
     
     
+    // layout-components:
+    ListItem,
+    
+    
+    
     // status-components:
     Popup,
     Badge,
+    
+    
+    
+    // menu-components:
+    DropdownButton,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
 // internal components:
@@ -59,6 +69,9 @@ import {
     CableProps,
     Cable,
 }                           from '../Cable'
+import {
+    ColorPicker,
+}                           from '../ColorPicker'
 
 // types:
 import type {
@@ -316,7 +329,7 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
         const newVirtualCables   : typeof virtualCables = [];
         // // const oldInvalidCables : Connection[] = [];
         for (const val of (value ?? [])) {
-            const {sideA, sideB} = val;
+            const {sideA, sideB, color} = val;
             const elmA = mergedNodeRefs.get(sideA) ?? null;
             const elmB = mergedNodeRefs.get(sideB) ?? null;
             
@@ -327,6 +340,8 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
                     
                     sideB,
                     elmB,
+                    
+                    color,
                 });
             }
             // // else {
@@ -378,6 +393,8 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
                 sideB : !isDraftCable ? sideB : '',
                 tailX : !isDraftCable ? tailX : ((cable.lastX * cable.transition) + (pointerPositionRef.current.x * (1 - cable.transition))),
                 tailY : !isDraftCable ? tailY : ((cable.lastY * cable.transition) + (pointerPositionRef.current.y * (1 - cable.transition))),
+                
+                color : cable.color,
             });
         } // for
         setCables(newCables);
@@ -708,6 +725,8 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
                 
                 sideB : draftCable.sideB,
                 elmB  : draftCable.elmB,
+                
+                color : undefined, // use default color
             };
             setVirtualCables([
                 ...virtualCables,
@@ -1005,7 +1024,7 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
                 onKeyDown={handleModalKeyDown}
             >
                 {cables.map((cable) => {
-                    const {sideA, headX, headY, sideB, tailX, tailY} = cable;
+                    const {sideA, headX, headY, sideB, tailX, tailY, color} = cable;
                     
                     
                     
@@ -1016,6 +1035,11 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
                         {
                             // identifiers:
                             key : cableKey,
+                            
+                            
+                            
+                            // variants:
+                            color,
                             
                             
                             
@@ -1096,6 +1120,28 @@ const ConnectManyProvider = (props: React.PropsWithChildren<ConnectManyProviderP
                 <Button size='sm' theme='secondary' onClick={() => setSelectedCableKey(null)}>
                     Cancel
                 </Button>
+                <ColorPicker
+                    // values:
+                    value={selectedCable?.color}
+                    onValueChange={(newColor) => {
+                        // conditions:
+                        if (!value) return;
+                        if (!selectedCable) return;
+                        
+                        
+                        
+                        // actions:
+                        const foundIndex = value.findIndex((val) =>
+                            ((val.sideA === selectedCable.sideA) && (val.sideB === selectedCable.sideB))
+                            ||
+                            ((val.sideA === selectedCable.sideB) && (val.sideB === selectedCable.sideA))
+                        );
+                        if (foundIndex < 0) return;
+                        const clonedValue = value?.slice(0) ?? [];
+                        clonedValue[foundIndex].color = newColor;
+                        triggerValueChange(clonedValue);
+                    }}
+                />
             </Popup>
         </ConnectStateContext.Provider>
     );
