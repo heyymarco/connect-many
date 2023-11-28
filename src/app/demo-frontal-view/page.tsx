@@ -12,8 +12,8 @@ import Color from 'color'
 export default function DemoFrontalView() {
     const [cables, setCables] = useState<Connection[]>(() => [
         { sideA: 'inp-a1', sideB: 'out-c3' },
-        { sideA: 'inp-b4', sideB: 'out-c1', color: Color('#FF4701') },
-        { sideA: 'inp-c3', sideB: 'out-b4', color: Color('#BA01FF') },
+        { sideA: 'inp-b4', sideB: 'out-c1', color: Color('#7409A5FF') },
+        { sideA: 'inp-c3', sideB: 'out-b4', color: Color('#0101FFFF') },
     ]);
     
     
