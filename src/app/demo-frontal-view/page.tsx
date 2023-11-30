@@ -37,7 +37,7 @@ export default function DemoFrontalView() {
     
     return (
         <main className={styles.main}>
-            <FrontalView theme='danger'
+            <FrontalView className={styles.theInstrument} theme='danger'
                 header={
                     <Header
                         logo={<Image src='/spongebob.svg' alt='spongebob' width={40} height={40} style={{borderRadius: '10rem'}} />}
